@@ -2,9 +2,9 @@ import pandas as pd
 from django.utils import timezone
 from cleverminer import cleverminer, clm_vars, clm_lcut
 
-from backend.cleverminer_tasks.services.fourft.serialization import serialize_4ft_result
-from cleverminer_tasks.models import Analysis, ProcedureType
-from backend.cleverminer_tasks.services.fourft.configs import fourft_config_from_dict
+from cleverminer_tasks.services.fourft.serialization import serialize_4ft_result
+from cleverminer_tasks.models import Analysis
+from cleverminer_tasks.services.fourft.configs import fourft_config_from_dict, AttributeSpec, CedentConfig
 
 
 class FourFtMiningService:
@@ -23,14 +23,41 @@ class FourFtMiningService:
         df = pd.read_csv(dataset.source, encoding="cp1250", sep=dataset.delimiter)
         return df
 
+    def _build_attribute_literal(self, attr: AttributeSpec):
+        if attr.attr_type == "lcut":
+            return clm_lcut(attr.name, minlen=attr.minlen, maxlen=attr.maxlen)
+        else:
+            return {
+                "name": attr.name,
+                "type": attr.attr_type,
+                "minlen": attr.minlen,
+                "maxlen": attr.maxlen,
+            }
+
+    def _build_cedent(self, cedent: CedentConfig, use_clm_vars_for_subset: bool = True):
+        if not cedent.attributes:
+            return None
+
+        all_subset = all(attr.attr_type == "subset" for attr in cedent.attributes)
+
+        if all_subset and use_clm_vars_for_subset:
+            return clm_vars([a.name for a in cedent.attributes])
+
+        attributes = [self._build_attribute_literal(a) for a in cedent.attributes]
+
+        return {
+            "attributes": attributes,
+            "minlen": cedent.minlen,
+            "maxlen": cedent.maxlen,
+            "type": cedent.type,
+        }
+
+
     def run(self) -> Analysis:
         df = self._load_dataset()
         cfg = self.config
 
         q = cfg.quantifiers
-        ante = cfg.ante
-        succ = cfg.succ
-        cond = cfg.cond
 
         quantifiers = {
             k: v
@@ -43,14 +70,8 @@ class FourFtMiningService:
             if v is not None
         }
 
-        ante_cedent = clm_vars(ante.attributes)
-
-        succ_cedent = {
-            "attributes": [clm_lcut(attr) for attr in succ.attributes],
-            "minlen": succ.minlen,
-            "maxlen": succ.maxlen,
-            "type": succ.type,
-        }
+        ante_cedent = self._build_cedent(cfg.ante, use_clm_vars_for_subset=True)
+        succ_cedent = self._build_cedent(cfg.succ, use_clm_vars_for_subset=False)
 
         params = {
             "df": df,
@@ -60,17 +81,12 @@ class FourFtMiningService:
             "succ": succ_cedent,
         }
 
-        if cond:
-            cond_cedent = {
-                "attributes": clm_vars(cond.attributes),
-                "minlen": cond.minlen,
-                "maxlen": cond.maxlen,
-                "type": cond.type,
-            }
-            params["cond"] = cond_cedent
+        if cfg.cond:
+            cond_cedent = self._build_cedent(cfg.cond, use_clm_vars_for_subset=False)
+            if cond_cedent:
+                params["cond"] = cond_cedent
 
         clm = cleverminer(**params)
-
         result_payload = serialize_4ft_result(clm)
 
         self.analysis.result = result_payload

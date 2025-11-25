@@ -9,10 +9,16 @@ class QuantifiersConfig:
     aad: Optional[float] = None
     relbase: Optional[float] = None
 
+@dataclass
+class AttributeSpec:
+    name: str
+    attr_type: str = "subset"
+    minlen: int = 1
+    maxlen: int = 1
 
 @dataclass
 class CedentConfig:
-    attributes: List[str]
+    attributes: List[AttributeSpec]
     minlen: int = 1
     maxlen: int = 1
     type: str = "con"
@@ -34,15 +40,24 @@ def fourft_config_to_dict(cfg: FourFtConfig) -> Dict[str, Any]:
         data.pop("cond", None)
     return data
 
+def _cedent_from_dict(d: Dict[str, Any]) -> CedentConfig:
+    attrs_raw = d.get("attributes", [])
+    attrs = [AttributeSpec(**a) for a in attrs_raw]
+    return CedentConfig(
+        attributes=attrs,
+        minlen=d.get("minlen", 1),
+        maxlen=d.get("maxlen", 1),
+        type=d.get("type", "con"),
+    )
 
 # translation from db dict to fourft config
 def fourft_config_from_dict(data: Dict[str, Any]) -> FourFtConfig:
     quantifiers = QuantifiersConfig(**data["quantifiers"])
-    ante = CedentConfig(**data["ante"])
-    succ = CedentConfig(**data["succ"])
+    ante = _cedent_from_dict(data["ante"])
+    succ = _cedent_from_dict(data["succ"])
 
     cond_data = data.get("cond")
-    cond = CedentConfig(**cond_data) if cond_data else None
+    cond = _cedent_from_dict(cond_data) if cond_data else None
 
     return FourFtConfig(
         quantifiers=quantifiers,

@@ -1,6 +1,5 @@
 from cleverminer_tasks.models import Analysis, ProcedureType
-from cleverminer_tasks.services.fourft.mining import FourFtMiningService
-
+from .fourft.mining import FourFtMiningService
 
 def run_analysis(analysis: Analysis) -> Analysis:
     if analysis.procedure == ProcedureType.FOUR_FT:

@@ -1,1 +1,3 @@
-from .services import run_demo_analysis
+from .runner import run_analysis
+
+__all__ = ["run_analysis"]
