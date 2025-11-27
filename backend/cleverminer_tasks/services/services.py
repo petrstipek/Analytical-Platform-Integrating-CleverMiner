@@ -1,6 +1,6 @@
 import pandas as pd
-from sklearn.impute import SimpleImputer
 from cleverminer import cleverminer, clm_vars, clm_lcut
+from sklearn.impute import SimpleImputer
 
 
 def run_demo_analysis():
@@ -16,7 +16,7 @@ def run_demo_analysis():
 
     clm = cleverminer(
         df=df,
-        proc="4ftMiner",
+        proc="fourftMiner",
         quantifiers={"Base": 2000, "aad": 0.5},
         ante=clm_vars(["Driver_Age_Band", "Sex", "Speed_limit"]),
         succ={

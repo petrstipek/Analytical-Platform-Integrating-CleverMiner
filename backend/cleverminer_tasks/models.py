@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 User = get_user_model()
 
@@ -11,7 +11,7 @@ class DatasetSourceType(models.TextChoices):
 
 
 class ProcedureType(models.TextChoices):
-    FOUR_FT = "4ftMiner", "4ftMiner"
+    FOUR_FT = "fourftMiner", "fourftMiner"
     SD4FT = "SD4ftMiner", "SD4ftMiner"
 
 
@@ -44,6 +44,7 @@ class Dataset(models.Model):
 
     delimiter = models.CharField(max_length=8, default=";")
     created_at = models.DateTimeField(auto_now_add=True)
+    encoding = models.CharField(max_length=16, default="utf-8")
 
     def __str__(self):
         return self.name
