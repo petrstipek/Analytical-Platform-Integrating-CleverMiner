@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 from pydantic import BaseModel, Field
 
-from cleverminer_tasks.services.shared.baseConfig import CedentConfig
+from cleverminer_tasks.services.shared.baseConfig import CedentConfig, MiningOptions
 
 
 class Sd4FtQuantifiersConfig(BaseModel):
@@ -34,3 +34,5 @@ class Sd4FtConfig(BaseModel):
     set2: CedentConfig
 
     cond: Optional[CedentConfig] = None
+
+    opts: MiningOptions = Field(default_factory=MiningOptions)

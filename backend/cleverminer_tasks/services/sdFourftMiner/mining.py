@@ -30,6 +30,9 @@ class Sd4FtMiningService(BaseMiningService):
                 "scnd": self._build_cedent(self.config.set2),
             }
 
+            if self.config.opts:
+                params['opts'] = self.config.opts.model_dump(exclude_none=True)
+
             if self.config.cond:
                 params["cond"] = self._build_cedent(self.config.cond)
 

@@ -42,3 +42,18 @@ class QuantifiersConfig(BaseModel):
 
     class Config:
         extra = "allow"
+
+
+class MiningOptions(BaseModel):
+    max_categories: Optional[int] = Field(
+        None,
+        description="Ignore columns with more unique values than this."
+    )
+
+    no_optimizations: bool = Field(
+        False,
+        description="Optimalization"
+    )
+
+    class Config:
+        extra = "allow"
