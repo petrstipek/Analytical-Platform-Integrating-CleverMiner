@@ -3,7 +3,7 @@ from cleverminer import (
 )
 from django.utils import timezone
 
-from cleverminer_tasks.models import Analysis
+from cleverminer_tasks.models import Analysis, AnalysisStatus
 from cleverminer_tasks.services.fourftMiner.configs import (
     FourFtConfig,
 )
@@ -41,10 +41,10 @@ class FourFtMiningService(BaseMiningService):
             clm = cleverminer(**params)
 
             self.analysis.result = serialize_4ft_result(clm)
-            self.analysis.status = "done"
+            self.analysis.status = AnalysisStatus.DONE
 
         except Exception as e:
-            self.analysis.status = "error"
+            self.analysis.status = AnalysisStatus.FAILED
             self.analysis.error_log = str(e)
             print(f"Mining Error: {e}")
 

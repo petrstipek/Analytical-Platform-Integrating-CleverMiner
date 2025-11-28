@@ -39,7 +39,7 @@ class Sd4FtMiningService(BaseMiningService):
             self.analysis.status = AnalysisStatus.DONE
 
         except Exception as e:
-            self.analysis.status = "error"
+            self.analysis.status = AnalysisStatus.FAILED
             self.analysis.error_log = str(e)
             print(f"SD4ft Error: {e}")
 

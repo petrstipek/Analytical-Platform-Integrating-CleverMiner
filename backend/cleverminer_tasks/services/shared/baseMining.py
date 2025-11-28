@@ -8,7 +8,7 @@ from cleverminer import (
     clm_subset
 )
 
-from cleverminer_tasks.services.fourftMiner.configs import AttributeSpec, AttributeType, CedentConfig, GaceType
+from cleverminer_tasks.services.shared.baseConfig import AttributeSpec, AttributeType, CedentConfig, GaceType
 
 
 class BaseMiningService(ABC):
