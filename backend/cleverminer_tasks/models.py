@@ -13,6 +13,7 @@ class DatasetSourceType(models.TextChoices):
 class ProcedureType(models.TextChoices):
     FOUR_FT = "fourftMiner", "fourftMiner"
     SD4FT = "SD4ftMiner", "SD4ftMiner"
+    CF_MINER = "CFMiner", "CFMiner"
 
 
 class AnalysisStatus(models.TextChoices):

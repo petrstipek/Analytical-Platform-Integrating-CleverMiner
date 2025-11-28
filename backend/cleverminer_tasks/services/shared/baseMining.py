@@ -18,7 +18,7 @@ class BaseMiningService(ABC):
     def _load_dataset(self) -> pd.DataFrame:
         dataset = self.analysis.dataset
 
-        if dataset.source_type != "url":
+        if dataset.source_type not in ["url", "local"]:
             raise ValueError(f"Unsupported source_type: {dataset.source_type}")
 
         encoding = getattr(dataset, 'encoding', 'utf-8')
