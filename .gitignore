@@ -60,3 +60,5 @@ frontend/.next/ # If you were using Next.js
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints
+
+backend/accidents.txt

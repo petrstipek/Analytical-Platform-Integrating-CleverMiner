@@ -14,6 +14,7 @@ class ProcedureType(models.TextChoices):
     FOUR_FT = "fourftMiner", "fourftMiner"
     SD4FT = "SD4ftMiner", "SD4ftMiner"
     CF_MINER = "CFMiner", "CFMiner"
+    UIC_MINER = "UICMiner", "UICMiner"
 
 
 class AnalysisStatus(models.TextChoices):
