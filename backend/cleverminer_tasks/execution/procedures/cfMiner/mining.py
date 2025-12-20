@@ -18,12 +18,16 @@ class CfMiningService(BaseMiningService):
         if self.config.quantifiers.extra_params:
             q_dict.update(self.config.quantifiers.extra_params)
 
+        cond = self._build_cedent(self.config.cond)
+        if not cond:
+            raise ValueError("CFMiner requires 'cond' with at least one attribute.")
+
         params = {
             "df": df,
             "proc": "CFMiner",
             "target": self.config.target,
             "quantifiers": q_dict,
-            "cond": self._build_cedent(self.config.cond),
+            "cond": cond
         }
 
         if self.config.opts:

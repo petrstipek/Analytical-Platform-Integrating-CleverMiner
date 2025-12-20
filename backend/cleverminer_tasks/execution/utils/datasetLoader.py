@@ -10,6 +10,20 @@ def load_dataset(dataset: Dataset) -> pd.DataFrame:
     encoding = getattr(dataset, "encoding", "utf-8")
     delimiter = getattr(dataset, "delimiter", ",")
 
+    if delimiter in ("\\t", "/t"):
+        delimiter = "\t"
+    elif delimiter in ("\\n", "/n"):
+        delimiter = "\n"
+
+    if delimiter == "\t":
+        return pd.read_csv(
+            dataset.source,
+            encoding=encoding,
+            sep=delimiter,
+            low_memory=False,
+            engine="c",
+        )
+
     return pd.read_csv(
         dataset.source,
         encoding=encoding,
