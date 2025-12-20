@@ -22,7 +22,7 @@ class IsOwnerOrAdmin(permissions.BasePermission):
 
 class DatasetViewSet(viewsets.ModelViewSet):
     serializer_class = DatasetSerializer
-    permission_classes = [permissions.AllowAny]  # TODO, will need to switch later
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
 
     def get_queryset(self):
         qs = Dataset.objects.all()
@@ -34,13 +34,12 @@ class DatasetViewSet(viewsets.ModelViewSet):
         return qs.none()
 
     def perform_create(self, serializer):
-        owner = self.request.user if self.request.user.is_authenticated else None  # TODO, should not be None
-        serializer.save(owner=owner)
+        serializer.save(owner=self.request.user)
 
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
-    permission_classes = [permissions.AllowAny]  # TODO, will need to switch later
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
 
     def get_queryset(self):
         qs = Task.objects.select_related("dataset").all()
@@ -52,8 +51,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return qs.none()
 
     def perform_create(self, serializer):
-        owner = self.request.user if self.request.user.is_authenticated else None  # TODO, should not be None
-        serializer.save(owner=owner)
+        serializer.save(owner=self.request.user)
 
     @action(detail=True, methods=["post"])
     def runs(self, request, pk=None):
@@ -62,9 +60,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(RunSerializer(run).data, status=status.HTTP_201_CREATED)
 
 
-class RunViewSet(viewsets.ModelViewSet):
+class RunViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = RunSerializer
-    permission_classes = [permissions.AllowAny]  # TODO, will need to switch later
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         qs = Run.objects.select_related("task", "task__dataset").all()
