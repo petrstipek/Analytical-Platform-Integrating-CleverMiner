@@ -9,9 +9,9 @@ from cleverminer_tasks.services.shared.baseSerializer import base_serialization
 
 
 class Sd4FtMiningService(BaseMiningService):
-    def __init__(self, analysis):
-        super().__init__(analysis)
-        self.config = Sd4FtConfig(**analysis.params)
+    def __init__(self, run):
+        super().__init__(run)
+        self.config = Sd4FtConfig(**self.task.params)
 
     def _mine(self, df: pd.DataFrame) -> Dict[str, Any]:
         q_dict = self.config.quantifiers.model_dump(exclude_none=True, exclude={'extra_params'})

@@ -9,9 +9,9 @@ from .serialization import serialize_uic_result
 
 
 class UICMiningService(BaseMiningService):
-    def __init__(self, analysis):
-        super().__init__(analysis)
-        self.config = UicMinerConfig(**analysis.params)
+    def __init__(self, run):
+        super().__init__(run)
+        self.config = UicMinerConfig(**self.task.params)
 
     def _mine(self, df: pd.DataFrame) -> Dict[str, Any]:
         q_dict = self.config.quantifiers.model_dump(exclude_none=True, exclude={'extra_params'})
