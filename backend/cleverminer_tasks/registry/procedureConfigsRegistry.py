@@ -9,8 +9,8 @@ from cleverminer_tasks.execution.procedures.uicMiner.config import UicMinerConfi
 from cleverminer_tasks.models import ProcedureType
 
 PROCEDURE_CONFIG_REGISTRY: Mapping[str, Type[BaseModel]] = {
-    ProcedureType.FOUR_FT.value: FourFtConfig,
-    ProcedureType.SD4FT.value: Sd4FtConfig,
-    ProcedureType.CF_MINER.value: CfMinerConfig,
-    ProcedureType.UIC_MINER.value: UicMinerConfig,
+    ProcedureType.FOUR_FT: FourFtConfig,
+    ProcedureType.SD4FT: Sd4FtConfig,
+    ProcedureType.CF_MINER: CfMinerConfig,
+    ProcedureType.UIC_MINER: UicMinerConfig,
 }

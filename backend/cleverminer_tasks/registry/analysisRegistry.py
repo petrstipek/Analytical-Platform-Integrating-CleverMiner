@@ -8,8 +8,8 @@ from cleverminer_tasks.execution.shared.baseMining import BaseMiningService
 from cleverminer_tasks.models import ProcedureType
 
 MINING_SERVICE_ANALYSIS_REGISTRY: dict[str, Type[BaseMiningService]] = {
-    ProcedureType.FOUR_FT.value: FourFtMiningService,
-    ProcedureType.SD4FT.value: Sd4FtMiningService,
-    ProcedureType.CF_MINER.value: CfMiningService,
-    ProcedureType.UIC_MINER.value: UICMiningService
+    ProcedureType.FOUR_FT: FourFtMiningService,
+    ProcedureType.SD4FT: Sd4FtMiningService,
+    ProcedureType.CF_MINER: CfMiningService,
+    ProcedureType.UIC_MINER: UICMiningService
 }
