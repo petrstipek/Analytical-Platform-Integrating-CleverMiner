@@ -19,5 +19,5 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("cleverminer-api/", include("cleverminer_tasks.urls")),
+    path("", include("cleverminer_tasks.urls")),
 ]
