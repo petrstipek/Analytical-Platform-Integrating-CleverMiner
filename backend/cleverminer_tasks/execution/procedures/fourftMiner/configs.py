@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from cleverminer_tasks.services.shared.baseConfig import CedentConfig, \
+from cleverminer_tasks.execution.shared.baseConfig import CedentConfig, \
     QuantifiersConfig
 
 

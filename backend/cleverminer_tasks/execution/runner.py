@@ -1,5 +1,5 @@
 from cleverminer_tasks.models import Run
-from .analysisRegistry import MINING_SERVICE_ANALYSIS_REGISTRY
+from cleverminer_tasks.registry.analysisRegistry import MINING_SERVICE_ANALYSIS_REGISTRY
 
 
 def run_analysis(run: Run) -> Run:

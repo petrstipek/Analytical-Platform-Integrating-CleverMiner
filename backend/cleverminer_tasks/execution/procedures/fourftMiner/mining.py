@@ -3,9 +3,9 @@ from typing import Dict, Any
 import pandas as pd
 from cleverminer import cleverminer
 
-from cleverminer_tasks.services.fourftMiner.configs import FourFtConfig
-from cleverminer_tasks.services.fourftMiner.serialization import serialize_4ft_result
-from cleverminer_tasks.services.shared.baseMining import BaseMiningService
+from cleverminer_tasks.execution.procedures.fourftMiner.configs import FourFtConfig
+from cleverminer_tasks.execution.procedures.fourftMiner.serialization import serialize_4ft_result
+from cleverminer_tasks.execution.shared.baseMining import BaseMiningService
 
 
 class FourFtMiningService(BaseMiningService):

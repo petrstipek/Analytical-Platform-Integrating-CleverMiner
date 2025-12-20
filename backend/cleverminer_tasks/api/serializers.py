@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from cleverminer_tasks.models import Dataset, Task, Run
-from cleverminer_tasks.services.procedure_configs import PROCEDURE_CONFIG_REGISTRY
+from cleverminer_tasks.registry.procedureConfigsRegistry import PROCEDURE_CONFIG_REGISTRY
 
 
 class DatasetSerializer(serializers.ModelSerializer):

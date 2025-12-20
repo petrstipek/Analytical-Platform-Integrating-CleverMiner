@@ -3,7 +3,7 @@ from typing import Any, Dict
 import pandas as pd
 from cleverminer import cleverminer
 
-from cleverminer_tasks.services.shared.baseMining import BaseMiningService
+from cleverminer_tasks.execution.shared.baseMining import BaseMiningService
 from .config import CfMinerConfig
 from .serialization import serialize_cf_result
 

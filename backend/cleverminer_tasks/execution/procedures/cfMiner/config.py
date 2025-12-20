@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 from pydantic import BaseModel, Field
 
-from cleverminer_tasks.services.shared.baseConfig import CedentConfig, MiningOptions
+from cleverminer_tasks.execution.shared.baseConfig import CedentConfig, MiningOptions
 
 
 class CfQuantifiersConfig(BaseModel):

@@ -3,15 +3,15 @@ from typing import Dict, Any
 import pandas as pd
 from cleverminer import cleverminer
 
-from cleverminer_tasks.services.sdFourftMiner.configs import Sd4FtConfig
-from cleverminer_tasks.services.shared.baseMining import BaseMiningService
-from cleverminer_tasks.services.shared.baseSerializer import base_serialization
+from cleverminer_tasks.execution.shared.baseMining import BaseMiningService
+from .config import UicMinerConfig
+from .serialization import serialize_uic_result
 
 
-class Sd4FtMiningService(BaseMiningService):
+class UICMiningService(BaseMiningService):
     def __init__(self, run):
         super().__init__(run)
-        self.config = Sd4FtConfig(**self.task.params)
+        self.config = UicMinerConfig(**self.task.params)
 
     def _mine(self, df: pd.DataFrame) -> Dict[str, Any]:
         q_dict = self.config.quantifiers.model_dump(exclude_none=True, exclude={'extra_params'})
@@ -20,20 +20,21 @@ class Sd4FtMiningService(BaseMiningService):
 
         params = {
             "df": df,
-            "proc": "SD4ftMiner",
+            "proc": "UICMiner",
+            "target": self.config.target,
             "quantifiers": q_dict,
             "ante": self._build_cedent(self.config.ante),
-            "succ": self._build_cedent(self.config.succ),
-            "frst": self._build_cedent(self.config.set1),
-            "scnd": self._build_cedent(self.config.set2),
         }
-
-        if self.config.opts:
-            params['opts'] = self.config.opts.model_dump(exclude_none=True)
 
         if self.config.cond:
             params["cond"] = self._build_cedent(self.config.cond)
 
+        if self.config.opts:
+            params['opts'] = self.config.opts.model_dump(exclude_none=True)
+
+        print(
+            f"Running UIC-Miner on Target: {self.config.target} with weights {self.config.quantifiers.aad_weights}")
+
         clm = cleverminer(**params)
 
-        return base_serialization(clm)
+        return serialize_uic_result(clm, self.config.target)

@@ -11,8 +11,9 @@ from cleverminer import (
 )
 from django.utils import timezone
 
+from cleverminer_tasks.execution.shared.baseConfig import AttributeSpec, AttributeType, CedentConfig, GaceType
+from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
 from cleverminer_tasks.models import Run, RunStatus
-from cleverminer_tasks.services.shared.baseConfig import AttributeSpec, AttributeType, CedentConfig, GaceType
 
 
 class BaseMiningService(ABC):
@@ -20,26 +21,6 @@ class BaseMiningService(ABC):
         self.run_instance = run
         self.task = run.task
         self.dataset = self.task.dataset
-
-    def _load_dataset(self) -> pd.DataFrame:
-        dataset = self.dataset
-
-        if dataset.source_type not in ["url", "local"]:
-            raise ValueError(f"Unsupported source_type: {dataset.source_type}")
-
-        encoding = getattr(dataset, 'encoding', 'utf-8')
-        delimiter = getattr(dataset, 'delimiter', ',')
-
-        try:
-            df = pd.read_csv(
-                dataset.source,
-                encoding=encoding,
-                sep=delimiter,
-                low_memory=False
-            )
-            return df
-        except Exception as e:
-            raise ValueError(f"Failed to load CSV: {str(e)}")
 
     @staticmethod
     def _build_attribute(attr: AttributeSpec):
@@ -87,7 +68,7 @@ class BaseMiningService(ABC):
         run.save(update_fields=["status", "started_at", "error_log"])
 
         try:
-            df = self._load_dataset()
+            df = load_dataset(self.dataset)
             result = self._mine(df)
             run.result = result
             run.status = RunStatus.DONE
