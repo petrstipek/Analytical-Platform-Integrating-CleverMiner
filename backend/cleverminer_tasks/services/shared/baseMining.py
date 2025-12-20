@@ -100,5 +100,5 @@ class BaseMiningService(ABC):
         return run
 
     @abstractmethod
-    def _mine(self, df) -> Dict[str, Any]:
+    def _mine(self, df: pd.DataFrame) -> Dict[str, Any]:
         raise NotImplementedError
