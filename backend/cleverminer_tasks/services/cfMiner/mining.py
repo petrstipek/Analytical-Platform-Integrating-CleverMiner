@@ -1,18 +1,23 @@
 from cleverminer import cleverminer
 from django.utils import timezone
 
-from cleverminer_tasks.models import AnalysisStatus
+from cleverminer_tasks.models import RunStatus
 from cleverminer_tasks.services.shared.baseMining import BaseMiningService
 from .config import CfMinerConfig
 from .serialization import serialize_cf_result
 
 
 class CfMiningService(BaseMiningService):
-    def __init__(self, analysis):
-        super().__init__(analysis)
-        self.config = CfMinerConfig(**analysis.params)
+    def __init__(self, run):
+        super().__init__(run)
+        self.config = CfMinerConfig(**self.task.params)
 
-    def run(self):
+    def execute(self):
+        run = self.run_instance
+        run.status = RunStatus.RUNNING
+        run.started_at = timezone.now()
+        run.error_log = None
+        run.save(update_fields=["status", "started_at", "error_log"])
         try:
             df = self._load_dataset()
 
@@ -35,14 +40,13 @@ class CfMiningService(BaseMiningService):
 
             clm = cleverminer(**params)
 
-            self.analysis.result = serialize_cf_result(clm, self.config.target)
-            self.analysis.status = AnalysisStatus.DONE
+            run.result = serialize_cf_result(clm, self.config.target)
+            run.status = RunStatus.DONE
 
         except Exception as e:
-            self.analysis.status = AnalysisStatus.FAILED
-            self.analysis.error_log = str(e)
-            print(f"CF-Miner Error: {e}")
+            run.status = RunStatus.FAILED
+            run.error_log = str(e)
 
-        self.analysis.finished_at = timezone.now()
-        self.analysis.save()
-        return self.analysis
+        run.finished_at = timezone.now()
+        run.save(update_fields=["result", "status", "error_log", "finished_at"])
+        return run

@@ -8,12 +8,15 @@ from cleverminer import (
     clm_subset
 )
 
+from cleverminer_tasks.models import Run
 from cleverminer_tasks.services.shared.baseConfig import AttributeSpec, AttributeType, CedentConfig, GaceType
 
 
 class BaseMiningService(ABC):
-    def __init__(self, analysis):
-        self.analysis = analysis
+    def __init__(self, run: Run):
+        self.run_instance = run
+        self.task = run.task
+        self.dataset = self.task.dataset
 
     def _load_dataset(self) -> pd.DataFrame:
         dataset = self.analysis.dataset
@@ -74,5 +77,5 @@ class BaseMiningService(ABC):
         }
 
     @abstractmethod
-    def run(self):
+    def execute(self):
         pass

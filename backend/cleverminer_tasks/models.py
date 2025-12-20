@@ -24,6 +24,14 @@ class AnalysisStatus(models.TextChoices):
     FAILED = "failed", "Failed"
 
 
+class RunStatus(models.TextChoices):
+    QUEUED = "queued", "Queued"
+    RUNNING = "running", "Running"
+    DONE = "done", "Done"
+    FAILED = "failed", "Failed"
+    CANCELED = "canceled", "Canceled"
+
+
 class Dataset(models.Model):
     name = models.CharField(max_length=100)
 
@@ -52,40 +60,42 @@ class Dataset(models.Model):
         return self.name
 
 
-class Analysis(models.Model):
+class Task(models.Model):
     name = models.CharField(max_length=200)
 
     owner = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="analyses",
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="tasks"
     )
     dataset = models.ForeignKey(
-        Dataset,
-        on_delete=models.CASCADE,
-        related_name="analyses",
+        Dataset, on_delete=models.CASCADE, related_name="tasks"
     )
 
     procedure = models.CharField(
-        max_length=32,
-        choices=ProcedureType.choices,
-        default=ProcedureType.FOUR_FT,
+        max_length=32, choices=ProcedureType.choices, default=ProcedureType.FOUR_FT
     )
 
     params = models.JSONField()
 
-    status = models.CharField(
-        max_length=16,
-        choices=AnalysisStatus.choices,
-        default=AnalysisStatus.CREATED,
-    )
-
-    result = models.JSONField(null=True, blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
-    finished_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.name} ({self.procedure})"
+
+
+class Run(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="runs")
+
+    status = models.CharField(
+        max_length=16, choices=RunStatus.choices, default=RunStatus.QUEUED
+    )
+
+    result = models.JSONField(null=True, blank=True)
+    error_log = models.TextField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Run #{self.id} of {self.task_id} ({self.status})"
