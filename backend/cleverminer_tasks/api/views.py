@@ -1,14 +1,14 @@
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from cleverminer_tasks.api.serializers import DatasetSerializer, TaskSerializer, RunSerializer
 from cleverminer_tasks.execution.runner import run_analysis
 from cleverminer_tasks.models import Dataset, Task, RunStatus, Run
 
 
-class HealthView(APIView):
+class HealthView(GenericAPIView):
     def get(self, request):
         return Response({"status": "ok"})
 

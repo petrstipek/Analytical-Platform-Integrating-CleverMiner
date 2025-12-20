@@ -12,4 +12,5 @@ router.register(r"runs", views.RunViewSet, basename="run")
 urlpatterns = [
     path("health/", HealthView.as_view(), name="api-health"),
     path("", include(router.urls)),
+    path("", include("cleverminer_tasks.api.procedures.urls")),
 ]
