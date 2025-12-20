@@ -1,5 +1,7 @@
 from typing import Dict, Any
 
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,13 +11,21 @@ from cleverminer_tasks.registry.procedureConfigsRegistry import PROCEDURE_CONFIG
 
 class ProcedureListView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    @extend_schema(
+        responses={200: OpenApiTypes.OBJECT},
+        description="List all available procedures",
+    )
     def get(self, request):
         procedures = sorted(PROCEDURE_CONFIG_REGISTRY.keys())
         return Response([{'procedure': p} for p in procedures])
 
 class ProcedureSchemaView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        responses={200: OpenApiTypes.OBJECT},
+        description="Show schema for procedure",
+    )
 
     def get(self, request, procedure: str):
         config_cls = PROCEDURE_CONFIG_REGISTRY.get(procedure)
@@ -26,6 +36,11 @@ class ProcedureSchemaView(APIView):
 
 class ProcedureExampleView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        responses={200: OpenApiTypes.OBJECT},
+        description="Show example for procedure",
+    )
 
     def get(self, request, procedure: str):
         config_cls = PROCEDURE_CONFIG_REGISTRY.get(procedure)
