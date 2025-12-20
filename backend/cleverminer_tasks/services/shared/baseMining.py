@@ -1,4 +1,6 @@
+import traceback
 from abc import ABC, abstractmethod
+from typing import Dict, Any
 
 import pandas as pd
 from cleverminer import (
@@ -7,8 +9,9 @@ from cleverminer import (
     clm_seq,
     clm_subset
 )
+from django.utils import timezone
 
-from cleverminer_tasks.models import Run
+from cleverminer_tasks.models import Run, RunStatus
 from cleverminer_tasks.services.shared.baseConfig import AttributeSpec, AttributeType, CedentConfig, GaceType
 
 
@@ -19,7 +22,7 @@ class BaseMiningService(ABC):
         self.dataset = self.task.dataset
 
     def _load_dataset(self) -> pd.DataFrame:
-        dataset = self.analysis.dataset
+        dataset = self.dataset
 
         if dataset.source_type not in ["url", "local"]:
             raise ValueError(f"Unsupported source_type: {dataset.source_type}")
@@ -76,6 +79,26 @@ class BaseMiningService(ABC):
             "type": cedent.type,
         }
 
+    def execute(self) -> Run:
+        run = self.run_instance
+        run.status = RunStatus.RUNNING
+        run.started_at = timezone.now()
+        run.error_log = None
+        run.save(update_fields=["status", "started_at", "error_log"])
+
+        try:
+            df = self._load_dataset()
+            result = self._mine(df)
+            run.result = result
+            run.status = RunStatus.DONE
+        except Exception:
+            run.status = RunStatus.FAILED
+            run.error_log = traceback.format_exc()
+
+        run.finished_at = timezone.now()
+        run.save(update_fields=["result", "status", "error_log", "finished_at"])
+        return run
+
     @abstractmethod
-    def execute(self):
-        pass
+    def _mine(self, df) -> Dict[str, Any]:
+        raise NotImplementedError

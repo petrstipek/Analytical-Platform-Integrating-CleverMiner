@@ -18,4 +18,4 @@ def run_analysis(run: Run) -> Run:
     else:
         raise ValueError(f"Unsupported procedure: {procedure}")
 
-    return service.run()
+    return service.execute()
