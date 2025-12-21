@@ -29,13 +29,15 @@ def serialize_uic_result(clm, target_column: str) -> Dict[str, Any]:
             hist_rule = clm.get_hist(rule_id, fullCond=False)
             hist_background = clm.get_hist_cond(rule_id)
 
-            rules.append({
-                "id": rule_id,
-                "text": text,
-                "quantifiers": quantifiers,
-                "histogram_rule": hist_rule,
-                "histogram_background": hist_background,
-            })
+            rules.append(
+                {
+                    "id": rule_id,
+                    "text": text,
+                    "quantifiers": quantifiers,
+                    "histogram_rule": hist_rule,
+                    "histogram_background": hist_background,
+                }
+            )
 
         except Exception as e:
             print(f"Skipping rule {rule_id} due to serialization error: {e}")
@@ -45,7 +47,7 @@ def serialize_uic_result(clm, target_column: str) -> Dict[str, Any]:
         "summary": {
             "rule_count": rule_count,
             "target": target_column,
-            "categories": categories
+            "categories": categories,
         },
         "rules": rules,
     }

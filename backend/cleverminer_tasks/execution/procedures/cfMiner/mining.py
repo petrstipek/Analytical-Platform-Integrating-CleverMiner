@@ -14,7 +14,9 @@ class CfMiningService(BaseMiningService):
         self.config = CfMinerConfig(**self.task.params)
 
     def _mine(self, df: pd.DataFrame) -> Dict[str, Any]:
-        q_dict = self.config.quantifiers.model_dump(exclude_none=True, exclude={'extra_params'})
+        q_dict = self.config.quantifiers.model_dump(
+            exclude_none=True, exclude={"extra_params"}
+        )
         if self.config.quantifiers.extra_params:
             q_dict.update(self.config.quantifiers.extra_params)
 
@@ -27,11 +29,11 @@ class CfMiningService(BaseMiningService):
             "proc": "CFMiner",
             "target": self.config.target,
             "quantifiers": q_dict,
-            "cond": cond
+            "cond": cond,
         }
 
         if self.config.opts:
-            params['opts'] = self.config.opts.model_dump(exclude_none=True)
+            params["opts"] = self.config.opts.model_dump(exclude_none=True)
 
         clm = cleverminer(**params)
 

@@ -6,7 +6,9 @@ from cleverminer_tasks.execution.shared.baseConfig import CedentConfig, MiningOp
 
 
 class CfQuantifiersConfig(BaseModel):
-    Base: Optional[int] = Field(None, description="Min absolute rows satisfying condition")
+    Base: Optional[int] = Field(
+        None, description="Min absolute rows satisfying condition"
+    )
     RelBase: Optional[float] = Field(None, description="Relative base (0.0 - 1.0)")
 
     S_Up: Optional[int] = Field(None, description="Min consecutive steps UP")
@@ -21,8 +23,12 @@ class CfQuantifiersConfig(BaseModel):
     RelMax: Optional[float] = Field(None, description="Min relative peak (0.0 - 1.0)")
     RelMin: Optional[float] = Field(None, description="Min relative valley (0.0 - 1.0)")
 
-    RelMax_leq: Optional[float] = Field(None, description="Max relative peak (Upper bound)")
-    RelMin_leq: Optional[float] = Field(None, description="Max relative valley (Upper bound)")
+    RelMax_leq: Optional[float] = Field(
+        None, description="Max relative peak (Upper bound)"
+    )
+    RelMin_leq: Optional[float] = Field(
+        None, description="Max relative valley (Upper bound)"
+    )
 
     extra_params: Dict[str, float] = Field(default_factory=dict)
 

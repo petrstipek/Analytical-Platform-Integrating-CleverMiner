@@ -6,7 +6,9 @@ from cleverminer_tasks.execution.shared.baseConfig import CedentConfig, MiningOp
 
 
 class UicQuantifiersConfig(BaseModel):
-    aad_weights: Optional[List[int]] = Field(None, description="Weights vector (e.g. [5, 1, 0])")
+    aad_weights: Optional[List[int]] = Field(
+        None, description="Weights vector (e.g. [5, 1, 0])"
+    )
     aad_score: Optional[float] = Field(None, description="Minimum improvement score")
 
     Base: Optional[int] = Field(None, description="Min absolute rows")

@@ -4,12 +4,14 @@ import pandas as pd
 
 from cleverminer_tasks.models import Dataset
 
+
 def _normalize_delimiter(delimiter: str) -> str:
     if delimiter in ("\\t", "/t"):
         return "\t"
     if delimiter in ("\\n", "/n"):
         return "\n"
     return delimiter
+
 
 def load_dataset(dataset: Dataset, nrows: Optional[int] = None) -> pd.DataFrame:
     if dataset.source_type not in ["url", "local"]:

@@ -19,11 +19,13 @@ def serialize_cf_result(clm, target_column: str) -> Dict[str, Any]:
             quantifiers = clm.get_quantifiers(rule_id)
             text = clm.get_ruletext(rule_id)
 
-            rules.append({
-                "id": rule_id,
-                "text": text,
-                "quantifiers": quantifiers,
-            })
+            rules.append(
+                {
+                    "id": rule_id,
+                    "text": text,
+                    "quantifiers": quantifiers,
+                }
+            )
         except Exception:
             continue
 
@@ -31,7 +33,7 @@ def serialize_cf_result(clm, target_column: str) -> Dict[str, Any]:
         "summary": {
             "rule_count": rule_count,
             "target": target_column,
-            "categories": categories
+            "categories": categories,
         },
         "rules": rules,
     }

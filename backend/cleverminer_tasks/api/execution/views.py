@@ -7,6 +7,7 @@ from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.execution.runner import run_analysis
 from cleverminer_tasks.models import Task, RunStatus, Run
 
+
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]

@@ -14,7 +14,9 @@ class Sd4FtMiningService(BaseMiningService):
         self.config = Sd4FtConfig(**self.task.params)
 
     def _mine(self, df: pd.DataFrame) -> Dict[str, Any]:
-        q_dict = self.config.quantifiers.model_dump(exclude_none=True, exclude={'extra_params'})
+        q_dict = self.config.quantifiers.model_dump(
+            exclude_none=True, exclude={"extra_params"}
+        )
         if self.config.quantifiers.extra_params:
             q_dict.update(self.config.quantifiers.extra_params)
 
@@ -29,7 +31,7 @@ class Sd4FtMiningService(BaseMiningService):
         }
 
         if self.config.opts:
-            params['opts'] = self.config.opts.model_dump(exclude_none=True)
+            params["opts"] = self.config.opts.model_dump(exclude_none=True)
 
         if self.config.cond:
             params["cond"] = self._build_cedent(self.config.cond)

@@ -3,15 +3,15 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any
 
 import pandas as pd
-from cleverminer import (
-    clm_lcut,
-    clm_rcut,
-    clm_seq,
-    clm_subset
-)
+from cleverminer import clm_lcut, clm_rcut, clm_seq, clm_subset
 from django.utils import timezone
 
-from cleverminer_tasks.execution.shared.baseConfig import AttributeSpec, AttributeType, CedentConfig, GaceType
+from cleverminer_tasks.execution.shared.baseConfig import (
+    AttributeSpec,
+    AttributeType,
+    CedentConfig,
+    GaceType,
+)
 from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
 from cleverminer_tasks.models import Run, RunStatus
 
@@ -28,13 +28,10 @@ class BaseMiningService(ABC):
             AttributeType.LCUT: clm_lcut,
             AttributeType.RCUT: clm_rcut,
             AttributeType.SEQ: clm_seq,
-            AttributeType.SUBSET: clm_subset
+            AttributeType.SUBSET: clm_subset,
         }
 
-        common_params = {
-            "minlen": attr.minlen,
-            "maxlen": attr.maxlen
-        }
+        common_params = {"minlen": attr.minlen, "maxlen": attr.maxlen}
 
         if attr.gace != GaceType.POSITIVE:
             common_params["gace"] = attr.gace.value
@@ -42,11 +39,7 @@ class BaseMiningService(ABC):
         if attr.attr_type in method_map:
             return method_map[attr.attr_type](attr.name, **common_params)
         else:
-            params = {
-                "name": attr.name,
-                "type": attr.attr_type.value,
-                **common_params
-            }
+            params = {"name": attr.name, "type": attr.attr_type.value, **common_params}
             return params
 
     def _build_cedent(self, cedent: CedentConfig):

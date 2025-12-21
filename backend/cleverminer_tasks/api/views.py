@@ -6,12 +6,13 @@ from rest_framework.response import Response
 
 
 class HealthView(GenericAPIView):
-        @extend_schema(
-            responses={200: OpenApiTypes.OBJECT},
-            description="Check if the API is running",
-        )
-        def get(self, request):
-            return Response({"status": "ok"})
+    @extend_schema(
+        responses={200: OpenApiTypes.OBJECT},
+        description="Check if the API is running",
+    )
+    def get(self, request):
+        return Response({"status": "ok"})
+
 
 class IsOwnerOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):

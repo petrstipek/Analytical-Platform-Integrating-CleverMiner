@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,42 +14,134 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Dataset',
+            name="Dataset",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('source_type', models.CharField(choices=[('url', 'URL'), ('local', 'Local file'), ('storage_file', 'Storage file')], default='url', max_length=32)),
-                ('source', models.CharField(max_length=512)),
-                ('delimiter', models.CharField(default=';', max_length=8)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('encoding', models.CharField(default='utf-8', max_length=16)),
-                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='datasets', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "source_type",
+                    models.CharField(
+                        choices=[
+                            ("url", "URL"),
+                            ("local", "Local file"),
+                            ("storage_file", "Storage file"),
+                        ],
+                        default="url",
+                        max_length=32,
+                    ),
+                ),
+                ("source", models.CharField(max_length=512)),
+                ("delimiter", models.CharField(default=";", max_length=8)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("encoding", models.CharField(default="utf-8", max_length=16)),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="datasets",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Task',
+            name="Task",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('procedure', models.CharField(choices=[('fourftMiner', 'fourftMiner'), ('SD4ftMiner', 'SD4ftMiner'), ('CFMiner', 'CFMiner'), ('UICMiner', 'UICMiner')], default='fourftMiner', max_length=32)),
-                ('params', models.JSONField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('dataset', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='cleverminer_tasks.dataset')),
-                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tasks', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                (
+                    "procedure",
+                    models.CharField(
+                        choices=[
+                            ("fourftMiner", "fourftMiner"),
+                            ("SD4ftMiner", "SD4ftMiner"),
+                            ("CFMiner", "CFMiner"),
+                            ("UICMiner", "UICMiner"),
+                        ],
+                        default="fourftMiner",
+                        max_length=32,
+                    ),
+                ),
+                ("params", models.JSONField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "dataset",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tasks",
+                        to="cleverminer_tasks.dataset",
+                    ),
+                ),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="tasks",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Run',
+            name="Run",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('queued', 'Queued'), ('running', 'Running'), ('done', 'Done'), ('failed', 'Failed'), ('canceled', 'Canceled')], default='queued', max_length=16)),
-                ('result', models.JSONField(blank=True, null=True)),
-                ('error_log', models.TextField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('started_at', models.DateTimeField(blank=True, null=True)),
-                ('finished_at', models.DateTimeField(blank=True, null=True)),
-                ('task', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='runs', to='cleverminer_tasks.task')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("queued", "Queued"),
+                            ("running", "Running"),
+                            ("done", "Done"),
+                            ("failed", "Failed"),
+                            ("canceled", "Canceled"),
+                        ],
+                        default="queued",
+                        max_length=16,
+                    ),
+                ),
+                ("result", models.JSONField(blank=True, null=True)),
+                ("error_log", models.TextField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("started_at", models.DateTimeField(blank=True, null=True)),
+                ("finished_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "task",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="runs",
+                        to="cleverminer_tasks.task",
+                    ),
+                ),
             ],
         ),
     ]

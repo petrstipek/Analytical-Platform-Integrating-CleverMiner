@@ -14,7 +14,9 @@ class UICMiningService(BaseMiningService):
         self.config = UicMinerConfig(**self.task.params)
 
     def _mine(self, df: pd.DataFrame) -> Dict[str, Any]:
-        q_dict = self.config.quantifiers.model_dump(exclude_none=True, exclude={'extra_params'})
+        q_dict = self.config.quantifiers.model_dump(
+            exclude_none=True, exclude={"extra_params"}
+        )
         if self.config.quantifiers.extra_params:
             q_dict.update(self.config.quantifiers.extra_params)
 
@@ -30,10 +32,11 @@ class UICMiningService(BaseMiningService):
             params["cond"] = self._build_cedent(self.config.cond)
 
         if self.config.opts:
-            params['opts'] = self.config.opts.model_dump(exclude_none=True)
+            params["opts"] = self.config.opts.model_dump(exclude_none=True)
 
         print(
-            f"Running UIC-Miner on Target: {self.config.target} with weights {self.config.quantifiers.aad_weights}")
+            f"Running UIC-Miner on Target: {self.config.target} with weights {self.config.quantifiers.aad_weights}"
+        )
 
         clm = cleverminer(**params)
 
