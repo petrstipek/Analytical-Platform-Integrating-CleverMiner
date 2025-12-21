@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from cleverminer_tasks.api.dataset.serializers import DatasetSerializer
+from cleverminer_tasks.api.dataset.utils.clmDataGuidance import clm_column_data_guidance
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
 from cleverminer_tasks.models import Dataset
@@ -77,6 +78,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
             non_null = int(series.notna().sum())
             nulls = int(series.isna().sum())
             nunique = int(series.nunique(dropna=True))
+            guidance = clm_column_data_guidance(series, str(c), max_categories_default=100)
 
             col_stats.append({
                 "name": str(c),
@@ -84,6 +86,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
                 "non_null": non_null,
                 "nulls": nulls,
                 "nunique": nunique,
+                'clm_guidance': guidance
             })
 
         vc_col = request.query_params.get("value_counts_col")
