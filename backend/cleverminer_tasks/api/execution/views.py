@@ -2,27 +2,10 @@ from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from cleverminer_tasks.api.execution.serializers import DatasetSerializer, TaskSerializer, RunSerializer
+from cleverminer_tasks.api.execution.serializers import TaskSerializer, RunSerializer
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.execution.runner import run_analysis
-from cleverminer_tasks.models import Dataset, Task, RunStatus, Run
-
-class DatasetViewSet(viewsets.ModelViewSet):
-    serializer_class = DatasetSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
-
-    def get_queryset(self):
-        qs = Dataset.objects.all()
-        user = self.request.user
-        if user.is_authenticated and user.is_staff:
-            return qs
-        if user.is_authenticated:
-            return qs.filter(owner=user)
-        return qs.none()
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-
+from cleverminer_tasks.models import Task, RunStatus, Run
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
