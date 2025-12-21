@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from cleverminer_tasks.models import Dataset, Task, Run
+from cleverminer_tasks.models import Dataset
 
 class DatasetSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner_id")

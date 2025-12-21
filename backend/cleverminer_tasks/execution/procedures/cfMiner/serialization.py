@@ -24,7 +24,7 @@ def serialize_cf_result(clm, target_column: str) -> Dict[str, Any]:
                 "text": text,
                 "quantifiers": quantifiers,
             })
-        except Exception as e:
+        except Exception:
             continue
 
     return {
