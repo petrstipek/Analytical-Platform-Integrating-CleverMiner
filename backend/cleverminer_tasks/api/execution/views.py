@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from cleverminer_tasks.api.execution.serializers import TaskSerializer, RunSerializer
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
-from cleverminer_tasks.execution.runner import run_analysis
+from cleverminer_tasks.execution.tasks import execute_runner_for_tasks
 from cleverminer_tasks.models import Task, RunStatus, Run
 
 
@@ -54,7 +54,7 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_409_CONFLICT,
             )
 
-        run_analysis(run)
+        execute_runner_for_tasks.delay(run.id) # celery task
         run.refresh_from_db()
 
-        return Response(RunSerializer(run).data)
+        return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)

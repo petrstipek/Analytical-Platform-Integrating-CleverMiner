@@ -16,6 +16,7 @@ dependencies = [
     "django-celery-results>=2.6.0",
     "djangorestframework==3.16.1",
     "drf-spectacular==0.29.0",
+    "flower>=2.0.1",
     "fonttools==4.61.1",
     "inflection==0.5.1",
     "joblib==1.5.3",
