@@ -4,7 +4,8 @@ from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from cleverminer_tasks.api.execution.serializers import TaskSerializer, RunSerializer
+from cleverminer_tasks.api.execution.serializers import TaskSerializer, RunSerializer, RunSummarySerializer, \
+    RunDetailSerializer
 from cleverminer_tasks.api.execution.service import create_run, enqueue_run, RunEnqueueError
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.execution.tasks import execute_runner_for_tasks
@@ -27,11 +28,16 @@ class TaskViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=["get", "post"])
     def runs(self, request, pk=None):
         task = self.get_object()
+
+        if request.method.lower() == "get":
+            qs = Run.objects.filter(task=task).order_by("-created_at")
+            return Response(RunSummarySerializer(qs, many=True).data)
+
         run = Run.objects.create(task=task, status=RunStatus.QUEUED)
-        return Response(RunSerializer(run).data, status=status.HTTP_201_CREATED)
+        return Response(RunDetailSerializer(run).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=["post"])
     def create_run_and_execute(self, request, pk=None):
@@ -59,6 +65,11 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
         if user.is_authenticated:
             return qs.filter(task__owner=user)
         return qs.none()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return RunSummarySerializer
+        return RunDetailSerializer
 
     @action(detail=True, methods=["post"])
     def execute(self, request, pk=None):
