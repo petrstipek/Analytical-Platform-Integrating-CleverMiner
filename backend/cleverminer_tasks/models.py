@@ -95,5 +95,7 @@ class Run(models.Model):
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
 
+    celery_task_id = models.CharField(max_length=255, null=True, blank=True)
+
     def __str__(self):
         return f"Run #{self.id} of {self.task_id} ({self.status})"

@@ -1,8 +1,11 @@
+from celery.result import AsyncResult
+from django.utils import timezone
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from cleverminer_tasks.api.execution.serializers import TaskSerializer, RunSerializer
+from cleverminer_tasks.api.execution.service import create_run, enqueue_run, RunEnqueueError
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.execution.tasks import execute_runner_for_tasks
 from cleverminer_tasks.models import Task, RunStatus, Run
@@ -33,10 +36,15 @@ class TaskViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def create_run_and_execute(self, request, pk=None):
         task = self.get_object()
-        run = Run.objects.create(task=task, status=RunStatus.QUEUED)
-        execute_runner_for_tasks.delay(run.id)
-        run.refresh_from_db()
+        run = create_run(task=task)
+
+        try:
+            enqueue_run(run=run)
+        except RunEnqueueError as e:
+            return Response({"error detail": str(e)}, status=status.HTTP_409_CONFLICT)
+
         return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
+
 
 
 class RunViewSet(viewsets.ReadOnlyModelViewSet):
@@ -56,13 +64,33 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
     def execute(self, request, pk=None):
         run = self.get_object()
 
-        if run.status not in [RunStatus.QUEUED, RunStatus.FAILED]:
+        try:
+            enqueue_run(run=run)
+        except RunEnqueueError as e:
+            return Response({"error detail": str(e)}, status=status.HTTP_409_CONFLICT)
+
+        return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
+
+    @action(detail=True, methods=['post'])
+    def stop_task_execution(self, request, pk=None):
+        run = self.get_object()
+
+        if not run.celery_task_id:
             return Response(
-                {"detail": f"Run cannot be executed from status '{run.status}'."},
+                {"detail": "Run has no associated Celery task."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if run.status not in (RunStatus.QUEUED, RunStatus.RUNNING):
+            return Response(
+                {"detail": f"Run cannot be stopped from status '{run.status}'."},
                 status=status.HTTP_409_CONFLICT,
             )
 
-        execute_runner_for_tasks.delay(run.id) # celery task
-        run.refresh_from_db()
+        AsyncResult(run.celery_task_id).revoke(terminate=True)
+
+        run.status = RunStatus.CANCELED
+        run.finished_at = timezone.now()
+        run.save(update_fields=["status", "finished_at"])
 
         return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
