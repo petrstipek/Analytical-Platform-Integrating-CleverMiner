@@ -134,3 +134,17 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API for datasets, tasks (definitions) and runs (executions).",
     "VERSION": "0.1.0",
 }
+
+# Celery settings
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 60 * 60
+CELERY_TASK_SOFT_TIME_LIMIT = 55 * 60
+
+INSTALLED_APPS += [
+    'django_celery_results',
+]
+
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'default'
