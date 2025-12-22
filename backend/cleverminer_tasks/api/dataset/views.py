@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 from cleverminer_tasks.api.dataset.serializers import DatasetSerializer
 from cleverminer_tasks.api.dataset.utils.clmDataGuidance import clm_column_data_guidance
+from cleverminer_tasks.api.dataset.utils.clmTargetCandidates import build_clm_candidates
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
 from cleverminer_tasks.models import Dataset
@@ -127,5 +128,33 @@ class DatasetViewSet(viewsets.ModelViewSet):
                 "row_count": row_count,
                 "columns": col_stats,
                 "value_counts": value_counts,
+            }
+        )
+
+    @action(detail=True, methods=["get"], url_path="clm-candidates")
+    def clm_candidates(self, request, pk=None):
+        dataset = self.get_object()
+
+        max_categories_default = int(
+            request.query_params.get("max_categories_default", 100)
+        )
+        target_max_unique = int(request.query_params.get("target_max_unique", 30))
+
+        ignore_raw = request.query_params.get("ignore", "")
+        ignore_columns = [x.strip() for x in ignore_raw.split(",") if x.strip()]
+
+        df = load_dataset(dataset, nrows=None)
+
+        payload = build_clm_candidates(
+            df,
+            max_categories_default=max_categories_default,
+            target_max_unique=target_max_unique,
+            ignore_columns=ignore_columns,
+        )
+
+        return Response(
+            {
+                "dataset_id": dataset.id,
+                **payload,
             }
         )
