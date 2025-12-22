@@ -30,6 +30,14 @@ class TaskViewSet(viewsets.ModelViewSet):
         run = Run.objects.create(task=task, status=RunStatus.QUEUED)
         return Response(RunSerializer(run).data, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=["post"])
+    def create_run_and_execute(self, request, pk=None):
+        task = self.get_object()
+        run = Run.objects.create(task=task, status=RunStatus.QUEUED)
+        execute_runner_for_tasks.delay(run.id)
+        run.refresh_from_db()
+        return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
+
 
 class RunViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = RunSerializer
