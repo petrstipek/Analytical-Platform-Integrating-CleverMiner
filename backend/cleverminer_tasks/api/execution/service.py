@@ -5,16 +5,20 @@ from celery.result import AsyncResult
 from cleverminer_tasks.models import Run, RunStatus, Task
 from cleverminer_tasks.execution.tasks import execute_runner_for_tasks
 
+
 @dataclass(frozen=True)
 class EnqueueResult:
     run: Run
     celery_task_id: str
 
+
 class RunEnqueueError(Exception):
     """Domain-level error for run enqueueing."""
 
+
 def create_run(*, task: Task) -> Run:
     return Run.objects.create(task=task, status=RunStatus.QUEUED)
+
 
 def enqueue_run(*, run: Run) -> EnqueueResult:
     if run.status == RunStatus.QUEUED and run.celery_task_id:

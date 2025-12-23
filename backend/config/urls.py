@@ -31,5 +31,5 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
 ]

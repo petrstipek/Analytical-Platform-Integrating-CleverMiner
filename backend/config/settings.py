@@ -39,19 +39,19 @@ INSTALLED_APPS = [
     "cleverminer_tasks.apps.CleverminerTasksConfig",
     "rest_framework",
     "drf_spectacular",
-    'corsheaders',
-    'django.contrib.sites',
-    'rest_framework.authtoken',
-    'dj_rest_auth',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'dj_rest_auth.registration',
+    "corsheaders",
+    "django.contrib.sites",
+    "rest_framework.authtoken",
+    "dj_rest_auth",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "dj_rest_auth.registration",
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 MIDDLEWARE = [
@@ -63,7 +63,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'allauth.account.middleware.AccountMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -144,9 +144,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework_simplejwt.authentication.JWTAuthentication',
-        ),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
 }
 
 SPECTACULAR_SETTINGS = {
@@ -163,18 +163,19 @@ CELERY_TASK_TIME_LIMIT = 60 * 60
 CELERY_TASK_SOFT_TIME_LIMIT = 55 * 60
 
 INSTALLED_APPS += [
-    'django_celery_results',
+    "django_celery_results",
 ]
 
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'default'
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "default"
 
 # JWT settings
 from datetime import timedelta
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
 }
 
 # Development Only
@@ -185,20 +186,20 @@ CORS_ALLOWED_ORIGINS = [
 
 # dj-rest-auth settings
 REST_USE_JWT = True
-JWT_AUTH_COOKIE = 'cleverminer-analytical-platform-auth'
+JWT_AUTH_COOKIE = "cleverminer-analytical-platform-auth"
 
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'accounts.serializers.UserSerializer',
+    "USER_DETAILS_SERIALIZER": "accounts.serializers.UserSerializer",
 }
 
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_UNIQUE_EMAIL = True
 
-ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
 
 ACCOUNT_SIGNUP_FIELDS = [
-    'username*',
-    'email*',
-    'password1*',
-    'password2*',
+    "username*",
+    "email*",
+    "password1*",
+    "password2*",
 ]

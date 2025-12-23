@@ -4,9 +4,17 @@ from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from cleverminer_tasks.api.execution.serializers import TaskSerializer, RunSerializer, RunSummarySerializer, \
-    RunDetailSerializer
-from cleverminer_tasks.api.execution.service import create_run, enqueue_run, RunEnqueueError
+from cleverminer_tasks.api.execution.serializers import (
+    TaskSerializer,
+    RunSerializer,
+    RunSummarySerializer,
+    RunDetailSerializer,
+)
+from cleverminer_tasks.api.execution.service import (
+    create_run,
+    enqueue_run,
+    RunEnqueueError,
+)
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.execution.tasks import execute_runner_for_tasks
 from cleverminer_tasks.models import Task, RunStatus, Run
@@ -52,7 +60,6 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
 
 
-
 class RunViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = RunSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -82,7 +89,7 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def stop_task_execution(self, request, pk=None):
         run = self.get_object()
 
