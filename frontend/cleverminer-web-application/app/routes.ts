@@ -1,5 +1,10 @@
-import {type RouteConfig, index, layout, route} from "@react-router/dev/routes";
+import { type RouteConfig, layout, index, route } from '@react-router/dev/routes';
 
-export default [index("routes/home.tsx"), layout('shared/components/layout/AppShell.tsx', [
-    route('projects', 'modules/projects/pages/ProjectsMainPage.tsx')
-])] satisfies RouteConfig;
+export default [
+  layout('shared/components/layout/platformLayout/PlatformLayout.tsx', [
+    route('projects', 'modules/projects/pages/ProjectsMainPage.tsx'),
+  ]),
+  layout('shared/components/layout/baseLayout/BaseLayout.tsx', [
+    index('modules/homePage/pages/HomePage.tsx'),
+  ]),
+] satisfies RouteConfig;
