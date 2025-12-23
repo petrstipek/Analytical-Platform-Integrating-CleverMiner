@@ -1,7 +1,5 @@
-from django.contrib.auth import get_user_model
 from django.db import models
-
-User = get_user_model()
+from django.conf import settings
 
 
 class DatasetSourceType(models.TextChoices):
@@ -32,13 +30,74 @@ class RunStatus(models.TextChoices):
     CANCELED = "canceled", "Canceled"
 
 
+class ProjectRole(models.TextChoices):
+    OWNER = "owner", "Owner"
+    ADMIN = "admin", "Admin"
+    EDITOR = "editor", "Editor"
+    VIEWER = "viewer", "Viewer"
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=100)
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_projects",
+    )
+
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="ProjectMembership",
+        related_name="projects",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class ProjectMembership(models.Model):
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="memberships"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="project_memberships",
+    )
+    role = models.CharField(
+        max_length=16, choices=ProjectRole.choices, default=ProjectRole.VIEWER
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [("project", "user")]
+        indexes = [
+            models.Index(fields=["project", "user"]),
+            models.Index(fields=["user", "role"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user_id} in {self.project_id} ({self.role})"
+
+
 class Dataset(models.Model):
     name = models.CharField(max_length=100)
 
     owner = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
+        related_name="datasets",
+    )
+
+    projects = models.ManyToManyField(
+        "Project",
         blank=True,
         related_name="datasets",
     )
@@ -61,10 +120,22 @@ class Dataset(models.Model):
 
 
 class Task(models.Model):
+    project = models.ForeignKey(
+        "Project",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="tasks",
+    )
+
     name = models.CharField(max_length=200)
 
     owner = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="tasks"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="tasks",
     )
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="tasks")
 

@@ -10,4 +10,5 @@ urlpatterns = [
     path("", include("cleverminer_tasks.api.execution.urls")),
     path("", include("cleverminer_tasks.api.procedures.urls")),
     path("", include("cleverminer_tasks.api.dataset.urls")),
+    path("", include("cleverminer_tasks.api.project.urls")),
 ]
