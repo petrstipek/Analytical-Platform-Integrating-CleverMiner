@@ -2,7 +2,12 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from cleverminer_tasks.api.project.serializer import AddMemberSerializer
+from cleverminer_tasks.api.project.serializer import (
+    AddMemberSerializer,
+    MemberActionSerializer,
+    ProjectSerializer,
+    ProjectMembershipSerializer,
+)
 from cleverminer_tasks.api.project.service import create_project_membership
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.models import Project, ProjectMembership, ProjectRole
@@ -22,6 +27,7 @@ class IsUserProjectAdmin(permissions.BasePermission):
 
 class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    serializer_class = ProjectSerializer
 
     def get_queryset(self):
         qs = Project.objects.all()
@@ -57,9 +63,43 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         return Response({"status": "Member added"}, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=["post"], url_path="remove-member")
+    def remove_member(self, request, pk=None):
+        project = self.get_object()
+
+        serializer = MemberActionSerializer(
+            data=request.data, context={"project": project}
+        )
+
+        serializer.is_valid(raise_exception=True)
+        membership = serializer.validated_data["membership"]
+
+        membership.delete()
+
+        return Response({"status": "Member removed"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"], url_path="update-member-role")
+    def update_member_role(self, request, pk=None):
+        project = self.get_object()
+
+        serializer = MemberActionSerializer(
+            data=request.data, context={"project": project}
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        membership = serializer.validated_data["membership"]
+        new_role = serializer.validated_data.get("role")
+
+        membership.role = new_role
+        membership.save()
+
+        return Response({"status": "Member role updated"}, status=status.HTTP_200_OK)
+
 
 class ProjectMembershipViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+    serializer_class = ProjectMembershipSerializer
 
     def get_queryset(self):
         qs = ProjectMembership.objects.all()
