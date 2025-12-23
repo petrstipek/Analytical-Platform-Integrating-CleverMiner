@@ -32,4 +32,5 @@ urlpatterns = [
         name="swagger-ui",
     ),
     path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
+    path("api/", include("accounts.urls")),
 ]
