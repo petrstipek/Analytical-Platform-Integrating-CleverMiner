@@ -52,7 +52,7 @@ export default function App() {
   const { data: me, isLoading } = useMe();
   const location = useLocation();
 
-  const publicRoutes = ['/login', '/register', '/'];
+  const publicRoutes = ['/login', '/register', '/', '/projects'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
   if (isLoading) {
