@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "corsheaders",
     "django.contrib.sites",
-    "rest_framework.authtoken",
     "dj_rest_auth",
     "allauth",
     "allauth.account",
@@ -187,8 +186,17 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # dj-rest-auth settings
-REST_USE_JWT = True
-JWT_AUTH_COOKIE = "cleverminer-analytical-platform-auth"
+REST_AUTH = {
+    "USE_JWT": True,
+    "SESSION_LOGIN": False,
+    "TOKEN_MODEL": None,
+    "JWT_AUTH_COOKIE": "cleverminer-analytical-platform-auth",
+    "JWT_AUTH_REFRESH_COOKIE": "cleverminer-analytical-platform-refresh",
+    "JWT_AUTH_SECURE": False,
+    "JWT_AUTH_HTTPONLY": True,
+    "JWT_AUTH_SAMESITE": "Lax",
+}
+
 
 REST_AUTH_SERIALIZERS = {
     "USER_DETAILS_SERIALIZER": "accounts.serializers.UserSerializer",
