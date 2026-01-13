@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Step1TaskSetup, Step2LogicBuilder, Step3Quantifiers } from './wizard/';
 import { createTaskSchema, type CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
+import { useCreateTaskMutation } from '@/modules/tasks/hooks/tasks.hook';
 
 export default function CreateTaskWizard() {
   const [step, setStep] = useState(1);
+  const { mutate, isPending } = useCreateTaskMutation();
 
   const methods = useForm<CreateTaskFormValues>({
     resolver: zodResolver(createTaskSchema),
@@ -28,7 +30,8 @@ export default function CreateTaskWizard() {
     },
   });
 
-  const nextStep = async () => {
+  const nextStep = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault();
     let isValid = false;
 
     if (step === 1) {
@@ -38,13 +41,18 @@ export default function CreateTaskWizard() {
     }
 
     if (isValid) setStep((p) => p + 1);
+    else {
+      // TODO - remove for production
+      console.warn('Validation Failed for Step', step);
+      console.log('Current Errors:', methods.formState.errors);
+      console.log('Current Values:', methods.getValues());
+    }
   };
 
   const prevStep = () => setStep((p) => p - 1);
 
   const onSubmit = (data: CreateTaskFormValues) => {
-    console.log('Final Validated Payload:', data);
-    // TODO - api connection
+    mutate(data);
   };
 
   const procedure = methods.watch('procedure');
@@ -79,8 +87,8 @@ export default function CreateTaskWizard() {
               </Button>
 
               {step === 3 ? (
-                <Button type="submit" disabled={methods.formState.isSubmitting}>
-                  {methods.formState.isSubmitting ? 'Creating...' : 'Create & Run Task'}
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? 'Starting Mining...' : 'Create & Run Task'}
                 </Button>
               ) : (
                 <Button type="button" onClick={nextStep}>

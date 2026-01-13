@@ -48,6 +48,7 @@ export default function CedentEditor({ title, description, config, onChange }: C
           <p className="text-muted-foreground text-sm">{description}</p>
         </div>
         <Button
+          type="button"
           size="sm"
           variant="secondary"
           onClick={() => onChange({ ...config, type: config.type === 'con' ? 'dis' : 'con' })}
@@ -74,7 +75,12 @@ export default function CedentEditor({ title, description, config, onChange }: C
         )}
       </div>
 
-      <Button variant="outline" className="w-full border-dashed" onClick={addAttribute}>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full border-dashed"
+        onClick={addAttribute}
+      >
         <Plus className="mr-2 h-4 w-4" /> Add Attribute
       </Button>
     </div>

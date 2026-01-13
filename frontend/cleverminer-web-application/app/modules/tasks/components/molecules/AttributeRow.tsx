@@ -74,6 +74,7 @@ export default function AttributeRow({ attribute, onChange, onRemove }: Attribut
       </div>
 
       <Button
+        type="button"
         variant="ghost"
         size="icon"
         className="text-destructive hover:bg-destructive/10 h-8 w-8"
