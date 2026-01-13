@@ -20,9 +20,17 @@ export default function Step2LogicBuilder({ procedure }: Step2LogicBuilderProps)
 
   const config = watch('configuration');
 
+  const header = (
+    <div>
+      <h2 className="text-2xl font-bold tracking-tight text-gray-900">Analysis Cedents Setup</h2>
+      <p className="text-muted-foreground">Choose cedents and other parameters for the analysis.</p>
+    </div>
+  );
+
   if (procedure === 'CFMiner') {
     return (
       <div className="space-y-6">
+        {header}
         {visibleSections.includes('target') && (
           <Card>
             <CardHeader className="pb-3">
@@ -72,49 +80,58 @@ export default function Step2LogicBuilder({ procedure }: Step2LogicBuilderProps)
   }
 
   return (
-    <div className="flex min-h-[500px] flex-col gap-6 md:flex-row">
-      <Tabs defaultValue={visibleSections[0]} orientation="vertical" className="flex w-full gap-6">
-        <TabsList className="flex h-auto w-48 flex-col items-start justify-start space-y-1 bg-transparent p-0">
-          {visibleSections.map((section) => {
-            if (section === 'target') return null;
+    <div className={'space-y-6'}>
+      {header}
+      <div className="flex min-h-[500px] flex-col gap-6 md:flex-row">
+        <Tabs
+          defaultValue={visibleSections[0]}
+          orientation="vertical"
+          className="flex w-full gap-6"
+        >
+          <TabsList className="flex h-auto w-48 flex-col items-start justify-start space-y-1 bg-transparent p-0">
+            {visibleSections.map((section) => {
+              if (section === 'target') return null;
 
-            const count =
-              (config?.[section as keyof typeof config] as any)?.attributes?.length || 0;
+              const count =
+                (config?.[section as keyof typeof config] as any)?.attributes?.length || 0;
 
-            return (
-              <TabItem
-                key={section}
-                value={section}
-                label={SECTION_LABELS[section]}
-                count={count}
-              />
-            );
-          })}
-        </TabsList>
-
-        <div className="bg-background flex-1 rounded-lg border p-6 shadow-sm">
-          {visibleSections.map((section) => {
-            if (section === 'target') return null;
-
-            return (
-              <TabsContent key={section} value={section} className="m-0 mt-0">
-                <Controller
-                  control={control}
-                  name={`configuration.${section}` as any}
-                  render={({ field }) => (
-                    <CedentEditor
-                      title={SECTION_LABELS[section]}
-                      description={`Configure the ${SECTION_LABELS[section]} logic.`}
-                      config={field.value || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }}
-                      onChange={field.onChange}
-                    />
-                  )}
+              return (
+                <TabItem
+                  key={section}
+                  value={section}
+                  label={SECTION_LABELS[section]}
+                  count={count}
                 />
-              </TabsContent>
-            );
-          })}
-        </div>
-      </Tabs>
+              );
+            })}
+          </TabsList>
+
+          <div className="bg-background flex-1 rounded-lg border p-6 shadow-sm">
+            {visibleSections.map((section) => {
+              if (section === 'target') return null;
+
+              return (
+                <TabsContent key={section} value={section} className="m-0 mt-0">
+                  <Controller
+                    control={control}
+                    name={`configuration.${section}` as any}
+                    render={({ field }) => (
+                      <CedentEditor
+                        title={SECTION_LABELS[section]}
+                        description={`Configure the ${SECTION_LABELS[section]} logic.`}
+                        config={
+                          field.value || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }
+                        }
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </TabsContent>
+              );
+            })}
+          </div>
+        </Tabs>
+      </div>
     </div>
   );
 }

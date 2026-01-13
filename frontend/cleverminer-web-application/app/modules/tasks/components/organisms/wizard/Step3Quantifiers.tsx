@@ -35,6 +35,12 @@ export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
 
   return (
     <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+          Analysis Quantifiers Setup
+        </h2>
+        <p className="text-muted-foreground">Define quantifiers for the selected analysis.</p>
+      </div>
       {Object.entries(groups).map(([groupName, fields]) => (
         <Card key={groupName}>
           <CardHeader className="pb-3">

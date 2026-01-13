@@ -23,6 +23,10 @@ export default function Step1TaskSetup() {
 
   return (
     <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Analysis Base Setup</h2>
+        <p className="text-muted-foreground">Define name, procedure, and used dataset.</p>
+      </div>
       <div className="space-y-2">
         <Label>Task Name</Label>
         <Input {...register('name')} placeholder="e.g. Analyze Loan Defaults" />
@@ -36,7 +40,7 @@ export default function Step1TaskSetup() {
             value={String(dataset)}
             onValueChange={(val) => setValue('dataset', parseInt(val), { shouldValidate: true })}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select dataset..." />
             </SelectTrigger>
             <SelectContent>
@@ -53,7 +57,7 @@ export default function Step1TaskSetup() {
             value={procedure}
             onValueChange={(val) => setValue('procedure', val, { shouldValidate: true })}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select procedure..." />
             </SelectTrigger>
             <SelectContent>

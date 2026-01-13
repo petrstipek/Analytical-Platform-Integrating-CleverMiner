@@ -83,7 +83,7 @@ export default function CreateTaskWizard() {
           </div>
 
           <Card className="border-0 shadow-lg ring-1 ring-gray-200">
-            <CardContent className="p-8">
+            <CardContent className="p-6">
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 {step === 1 && <Step1TaskSetup />}
                 {step === 2 && <Step2LogicBuilder procedure={procedure} />}
