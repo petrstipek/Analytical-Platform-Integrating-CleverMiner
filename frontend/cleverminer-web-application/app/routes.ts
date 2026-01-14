@@ -5,6 +5,7 @@ export default [
     route('projects', 'modules/projects/pages/ProjectsMainPage.tsx'),
     route('tasks', 'modules/tasks/pages/TaskPage.page.tsx'),
     route('datasets', 'modules/datasets/pages/DatasetUpload.page.tsx'),
+    route('datasets/:id', 'modules/datasets/pages/DatasetDetail.page.tsx'),
   ]),
   layout('shared/components/layout/baseLayout/BaseLayout.tsx', [
     index('modules/homePage/pages/HomePage.tsx'),

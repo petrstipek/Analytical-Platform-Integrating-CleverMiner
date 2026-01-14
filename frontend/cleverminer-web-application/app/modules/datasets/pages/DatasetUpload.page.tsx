@@ -12,7 +12,7 @@ import {
   CardTitle,
   CardDescription,
 } from '@/shared/components/ui/card';
-import { useUploadDatasetMutation } from '../hooks/datasets.hooks';
+import { useUploadDatasetMutation } from '../hooks/datasets.hook';
 
 type FormValues = {
   name: string;
@@ -57,7 +57,6 @@ export default function DatasetUploadPage() {
 
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* 1. Name Input */}
             <div className="space-y-2">
               <Label htmlFor="name">Dataset Name</Label>
               <Input
@@ -68,7 +67,6 @@ export default function DatasetUploadPage() {
               {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
             </div>
 
-            {/* 2. Drag & Drop File Area */}
             <div className="space-y-2">
               <Label>CSV Data File</Label>
               <div className="flex w-full items-center justify-center">
@@ -110,7 +108,6 @@ export default function DatasetUploadPage() {
               </div>
             </div>
 
-            {/* 3. Submit Button */}
             <Button
               type="submit"
               className="w-full font-medium"
