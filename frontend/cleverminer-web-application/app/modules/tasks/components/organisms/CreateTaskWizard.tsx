@@ -9,6 +9,7 @@ import { Step1TaskSetup, Step2LogicBuilder, Step3Quantifiers } from './wizard/';
 import { createTaskSchema, type CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
 import { useCreateTaskMutation } from '@/modules/tasks/hooks/tasks.hook';
 import { NavBarWizard } from '@/modules/tasks/components/atoms';
+import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -16,7 +17,12 @@ const STEPS = [
   { id: 3, label: 'Quantifiers', icon: Calculator },
 ];
 
-export default function CreateTaskWizard() {
+type CreateTaskWizardProps = {
+  datasets?: DatasetType[];
+  datasetsLoading: boolean;
+};
+
+export default function CreateTaskWizard({ datasets, datasetsLoading }: CreateTaskWizardProps) {
   const [step, setStep] = useState(1);
   const { mutate, isPending } = useCreateTaskMutation();
 
@@ -85,7 +91,7 @@ export default function CreateTaskWizard() {
           <Card className="border-0 shadow-lg ring-1 ring-gray-200">
             <CardContent className="p-6">
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                {step === 1 && <Step1TaskSetup />}
+                {step === 1 && <Step1TaskSetup datasets={datasets} />}
                 {step === 2 && <Step2LogicBuilder procedure={procedure} />}
                 {step === 3 && <Step3Quantifiers procedure={procedure} />}
               </div>

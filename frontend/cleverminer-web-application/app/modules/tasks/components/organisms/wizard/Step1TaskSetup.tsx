@@ -9,8 +9,13 @@ import {
   SelectValue,
 } from '@/shared/components/ui/select';
 import { type CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
+import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 
-export default function Step1TaskSetup() {
+type Step1TaskSetupProps = {
+  datasets?: DatasetType[];
+};
+
+export default function Step1TaskSetup({ datasets }: Step1TaskSetupProps) {
   const {
     register,
     setValue,
@@ -19,7 +24,7 @@ export default function Step1TaskSetup() {
   } = useFormContext<CreateTaskFormValues>();
 
   const procedure = watch('procedure');
-  const dataset = watch('dataset');
+  const datasetWatch = watch('dataset');
 
   return (
     <div className="space-y-6">
@@ -37,15 +42,18 @@ export default function Step1TaskSetup() {
         <div className="space-y-2">
           <Label>Dataset</Label>
           <Select
-            value={String(dataset)}
+            value={String(datasetWatch)}
             onValueChange={(val) => setValue('dataset', parseInt(val), { shouldValidate: true })}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select dataset..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">data01.csv</SelectItem>
-              <SelectItem value="2">data02.csv</SelectItem>
+              {datasets?.map((dataset) => (
+                <SelectItem key={dataset.id} value={String(dataset.id)}>
+                  {dataset.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           {errors.dataset && <p className="text-destructive text-sm">{errors.dataset.message}</p>}

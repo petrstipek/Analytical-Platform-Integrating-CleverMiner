@@ -1,6 +1,7 @@
 import { apiClient } from '@/lib/api-client';
 import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
 import type { Task } from '@/modules/tasks/domain/task.type';
+import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 
 export interface TaskResponse {
   id: number;
@@ -30,5 +31,10 @@ export async function getTasks(): Promise<Task[]> {
 
 export async function getTask(id: number): Promise<Task> {
   const res = await apiClient.get(`/tasks/${id}/`);
+  return res.data;
+}
+
+export async function getDatasets(): Promise<DatasetType[]> {
+  const res = await apiClient.get('/datasets/');
   return res.data;
 }
