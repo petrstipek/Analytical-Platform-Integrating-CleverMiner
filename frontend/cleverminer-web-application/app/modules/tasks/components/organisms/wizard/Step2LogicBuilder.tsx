@@ -1,19 +1,26 @@
 import { useFormContext, Controller } from 'react-hook-form';
 import { Target, Filter } from 'lucide-react';
 import { Tabs, TabsList, TabsContent } from '@/shared/components/ui/tabs';
-import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { CedentEditor } from '../../molecules';
 import { LOGIC_LAYOUTS, SECTION_LABELS } from '@/modules/tasks/utils/logic-layout';
 import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
 import TabItem from '@/modules/tasks/components/atoms/TabItem';
+import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
+import { AttributeSelector } from '@/modules/tasks/components/atoms';
 
 interface Step2LogicBuilderProps {
   procedure: string;
+  availableColumns: DatasetsColumnsType[];
+  isLoading: boolean;
 }
 
-export default function Step2LogicBuilder({ procedure }: Step2LogicBuilderProps) {
+export default function Step2LogicBuilder({
+  procedure,
+  availableColumns,
+  isLoading,
+}: Step2LogicBuilderProps) {
   const { control, register, watch } = useFormContext<CreateTaskFormValues>();
 
   const visibleSections = LOGIC_LAYOUTS[procedure] || [];
@@ -26,6 +33,10 @@ export default function Step2LogicBuilder({ procedure }: Step2LogicBuilderProps)
       <p className="text-muted-foreground">Choose cedents and other parameters for the analysis.</p>
     </div>
   );
+
+  if (isLoading) {
+    return <div>Loading columns...</div>;
+  }
 
   if (procedure === 'CFMiner') {
     return (
@@ -41,7 +52,11 @@ export default function Step2LogicBuilder({ procedure }: Step2LogicBuilderProps)
             <CardContent>
               <div className="space-y-2">
                 <Label>Column Name</Label>
-                <Input {...register('configuration.target')} placeholder="e.g. Severity" />
+                <AttributeSelector
+                  name="configuration.target"
+                  columns={availableColumns}
+                  disabled={isLoading}
+                />
                 <p className="text-muted-foreground text-sm">
                   The main attribute to analyze (histogram axis).
                 </p>
@@ -69,6 +84,7 @@ export default function Step2LogicBuilder({ procedure }: Step2LogicBuilderProps)
                       (field.value as any) || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }
                     }
                     onChange={field.onChange}
+                    availableColumns={availableColumns}
                   />
                 )}
               />
@@ -123,6 +139,7 @@ export default function Step2LogicBuilder({ procedure }: Step2LogicBuilderProps)
                           field.value || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }
                         }
                         onChange={field.onChange}
+                        availableColumns={availableColumns}
                       />
                     )}
                   />

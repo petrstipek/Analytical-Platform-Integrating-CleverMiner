@@ -10,6 +10,8 @@ import { createTaskSchema, type CreateTaskFormValues } from '@/modules/tasks/uti
 import { useCreateTaskMutation } from '@/modules/tasks/hooks/tasks.hook';
 import { NavBarWizard } from '@/modules/tasks/components/atoms';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
+import { getDatasetsColumns } from '@/modules/tasks/api/tasks.api';
+import { useQuery } from '@tanstack/react-query';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -43,6 +45,14 @@ export default function CreateTaskWizard({ datasets, datasetsLoading }: CreateTa
         opts: { no_optimizations: false },
       },
     },
+  });
+
+  const selectedDatasetId = methods.watch('dataset');
+
+  const { data: columns = [], isLoading: isLoadingColumns } = useQuery({
+    queryKey: ['dataset-columns', selectedDatasetId],
+    queryFn: () => getDatasetsColumns(Number(selectedDatasetId)),
+    enabled: !!selectedDatasetId && Number(selectedDatasetId) !== 0,
   });
 
   const validateAndMove = async (targetStep: number) => {
@@ -92,7 +102,13 @@ export default function CreateTaskWizard({ datasets, datasetsLoading }: CreateTa
             <CardContent className="p-6">
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 {step === 1 && <Step1TaskSetup datasets={datasets} />}
-                {step === 2 && <Step2LogicBuilder procedure={procedure} />}
+                {step === 2 && (
+                  <Step2LogicBuilder
+                    availableColumns={columns}
+                    isLoading={isLoadingColumns}
+                    procedure={procedure}
+                  />
+                )}
                 {step === 3 && <Step3Quantifiers procedure={procedure} />}
               </div>
             </CardContent>

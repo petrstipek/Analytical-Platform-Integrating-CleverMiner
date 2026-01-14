@@ -4,15 +4,23 @@ import { Badge } from '@/shared/components/ui/badge';
 import { AttributeType, GaceType } from '../../domain/task-schema';
 import type { CedentConfig } from '../../domain/task-schema';
 import AttributeRow from './AttributeRow';
+import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
 
 interface CedentEditorProps {
   title: string;
   description: string;
   config: CedentConfig;
   onChange: (newConfig: CedentConfig) => void;
+  availableColumns?: DatasetsColumnsType[];
 }
 
-export default function CedentEditor({ title, description, config, onChange }: CedentEditorProps) {
+export default function CedentEditor({
+  title,
+  description,
+  config,
+  onChange,
+  availableColumns,
+}: CedentEditorProps) {
   const addAttribute = () => {
     const newAttr = {
       name: '',
@@ -70,6 +78,7 @@ export default function CedentEditor({ title, description, config, onChange }: C
               attribute={attr}
               onChange={(updated: any) => updateAttribute(idx, updated)}
               onRemove={() => removeAttribute(idx)}
+              availableColumns={availableColumns}
             />
           ))
         )}
