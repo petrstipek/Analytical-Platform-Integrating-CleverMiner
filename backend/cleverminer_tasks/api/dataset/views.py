@@ -1,8 +1,10 @@
 import math
 import pandas as pd
+from drf_spectacular.utils import extend_schema
 from pydantic import ValidationError
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 
 from cleverminer_tasks.api.dataset.serializers import DatasetSerializer
@@ -16,6 +18,8 @@ from cleverminer_tasks.models import Dataset
 class DatasetViewSet(viewsets.ModelViewSet):
     serializer_class = DatasetSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
+
+    parser_classes = (MultiPartParser, FormParser)
 
     def get_queryset(self):
         qs = Dataset.objects.all()
@@ -158,3 +162,10 @@ class DatasetViewSet(viewsets.ModelViewSet):
                 **payload,
             }
         )
+
+    @extend_schema(
+        operation_id="upload_dataset",
+        request={"multipart/form-data": DatasetSerializer},
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)

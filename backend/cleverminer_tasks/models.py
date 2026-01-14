@@ -115,6 +115,15 @@ class Dataset(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     encoding = models.CharField(max_length=16, default="utf-8")
 
+    file = models.FileField(upload_to="datasets/", null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.file:
+            self.source_type = DatasetSourceType.STORAGE_FILE
+            if not self.source:
+                self.source = self.file.name
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
