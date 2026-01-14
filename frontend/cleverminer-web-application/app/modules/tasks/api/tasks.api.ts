@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
+import type { Task } from '@/modules/tasks/domain/task.type';
 
 export interface TaskResponse {
   id: number;
@@ -14,11 +15,15 @@ export async function createTask(payload: CreateTaskFormValues): Promise<TaskRes
     procedure: payload.procedure,
     params: payload.configuration,
   };
-  console.log('Sending formatted payload:', apiPayload);
   const res = await apiClient.post<TaskResponse>('/tasks/', apiPayload);
   return res.data;
 }
 
 export async function createAndExecuteTask(taskId: number): Promise<void> {
   await apiClient.post(`/tasks/${taskId}/create_run_and_execute/`);
+}
+
+export async function getTasks(): Promise<Task[]> {
+  const res = await apiClient.get('/tasks/');
+  return res.data;
 }
