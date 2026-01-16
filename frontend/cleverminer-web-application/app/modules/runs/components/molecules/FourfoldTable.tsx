@@ -8,6 +8,8 @@ export default function FourfoldTable({ data }: FourfoldTableProps) {
   const [a, b, c, d] = data;
   const total = a + b + c + d;
 
+  const getIntensity = (val: number) => Math.max(0.05, val / total);
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -24,11 +26,17 @@ export default function FourfoldTable({ data }: FourfoldTableProps) {
           <div className="flex items-center justify-center bg-slate-100 p-2 text-xs font-semibold text-slate-500">
             Antecedent
           </div>
-          <div className="border-r border-b bg-green-50 p-3 font-mono font-bold text-green-700">
+          <div
+            className="border-b p-3 font-mono text-slate-700"
+            style={{ backgroundColor: `rgba(99, 102, 241, ${getIntensity(a)})` }}
+          >
             {a.toLocaleString()}
             <div className="text-[10px] font-normal text-green-600/70">Matched (a)</div>
           </div>
-          <div className="border-b bg-white p-3 font-mono text-slate-700">
+          <div
+            className="border-b p-3 font-mono text-slate-700"
+            style={{ backgroundColor: `rgba(99, 102, 241, ${getIntensity(b)})` }}
+          >
             {b.toLocaleString()}
             <div className="text-[10px] font-normal text-slate-400">Mismatch (b)</div>
           </div>
@@ -36,11 +44,17 @@ export default function FourfoldTable({ data }: FourfoldTableProps) {
           <div className="flex items-center justify-center bg-slate-100 p-2 text-xs font-semibold text-slate-500">
             No Antecedent
           </div>
-          <div className="border-r bg-white p-3 font-mono text-slate-700">
+          <div
+            className="border-b p-3 font-mono text-slate-700"
+            style={{ backgroundColor: `rgba(99, 102, 241, ${getIntensity(c)})` }}
+          >
             {c.toLocaleString()}
             <div className="text-[10px] font-normal text-slate-400">Mismatch (c)</div>
           </div>
-          <div className="bg-slate-50 p-3 font-mono text-slate-700">
+          <div
+            className="border-b p-3 font-mono text-slate-700"
+            style={{ backgroundColor: `rgba(99, 102, 241, ${getIntensity(d)})` }}
+          >
             {d.toLocaleString()}
             <div className="text-[10px] font-normal text-slate-400">Rest (d)</div>
           </div>
