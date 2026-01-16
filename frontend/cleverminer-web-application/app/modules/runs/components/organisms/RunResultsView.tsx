@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Clock, CheckCheck, List } from 'lucide-react';
 import { formatDistance } from 'date-fns';
 import { Card, CardContent } from '@/shared/components/ui/card';
-import { RulesList, FourfoldTable } from '../molecules';
+import { RulesList, FourfoldTable, RuleCharts } from '../molecules';
 import { DatasetSummaryCard } from '@/modules/datasets/components/atoms';
 import type { RunResult, RunResultRule } from '@/modules/runs/domain/runs-results.type';
 
@@ -52,6 +52,7 @@ export default function RunResultsView({ task }: { task: RunResult }) {
           <h3 className="text-lg font-semibold tracking-tight">Rule Details</h3>
           {selectedRule ? (
             <div className="sticky top-6 space-y-4">
+              <RuleCharts fourfold={selectedRule.quantifiers.fourfold} />
               <FourfoldTable data={selectedRule.quantifiers.fourfold} />
 
               <Card>
