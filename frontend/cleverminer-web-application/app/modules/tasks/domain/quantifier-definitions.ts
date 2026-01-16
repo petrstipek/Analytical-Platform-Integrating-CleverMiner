@@ -185,7 +185,7 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       group: 'Confidence',
     },
   ],
-  '4ftMiner': [
+  fourftMiner: [
     {
       key: 'Base',
       label: 'Base',

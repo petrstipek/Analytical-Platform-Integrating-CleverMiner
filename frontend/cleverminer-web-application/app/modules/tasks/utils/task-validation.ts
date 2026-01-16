@@ -13,12 +13,17 @@ const attributeSchema = z
     path: ['minlen'],
   });
 
-const cedentSchema = z.object({
-  type: z.enum(['con', 'dis']),
-  minlen: z.number().min(1),
-  maxlen: z.number().min(1),
-  attributes: z.array(attributeSchema),
-});
+const cedentSchema = z
+  .object({
+    type: z.enum(['con', 'dis']),
+    minlen: z.number().min(0, 'Min length cannot be negative'),
+    maxlen: z.number().min(1, 'Max length must be at least 1'),
+    attributes: z.array(attributeSchema),
+  })
+  .refine((data) => data.minlen <= data.maxlen, {
+    message: 'Cedent Min length cannot be greater than Max length',
+    path: ['minlen'],
+  });
 
 const quantifiersSchema = z.record(
   z.string(),

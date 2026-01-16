@@ -4,7 +4,7 @@ export const LOGIC_LAYOUTS: Record<string, LogicSection[]> = {
   SD4ftMiner: ['ante', 'succ', 'cond', 'set1', 'set2'],
   CFMiner: ['target', 'cond'],
   UICMiner: ['target', 'ante', 'cond'],
-  '4ftMiner': ['ante', 'succ', 'cond'],
+  fourftMiner: ['ante', 'succ', 'cond'],
 };
 
 export const SECTION_LABELS: Record<LogicSection, string> = {

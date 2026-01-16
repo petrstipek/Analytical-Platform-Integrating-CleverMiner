@@ -72,7 +72,7 @@ export default function Step1TaskSetup({ datasets }: Step1TaskSetupProps) {
               <SelectItem value="SD4ftMiner">SD4ftMiner</SelectItem>
               <SelectItem value="CFMiner">CFMiner</SelectItem>
               <SelectItem value="UICMiner">UICMiner</SelectItem>
-              <SelectItem value="4ftMiner">4ftMiner</SelectItem>
+              <SelectItem value="fourftMiner">4ftMiner</SelectItem>
             </SelectContent>
           </Select>
         </div>
