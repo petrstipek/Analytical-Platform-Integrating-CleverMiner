@@ -8,6 +8,7 @@ export default [
     route('tasks/:taskId', 'modules/tasks/pages/TaskDetail.page.tsx'),
     route('datasets', 'modules/datasets/pages/DatasetUpload.page.tsx'),
     route('datasets/:id', 'modules/datasets/pages/DatasetDetail.page.tsx'),
+    route('run/:runId', 'modules/runs/pages/RunDetail.page.tsx'),
   ]),
   layout('shared/components/layout/baseLayout/BaseLayout.tsx', [
     index('modules/homePage/pages/HomePage.tsx'),
