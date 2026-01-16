@@ -11,5 +11,7 @@ export default [
   ]),
   layout('shared/components/layout/baseLayout/BaseLayout.tsx', [
     index('modules/homePage/pages/HomePage.tsx'),
+    route('login', 'modules/auth/pages/Login.page.tsx'),
+    route('register', 'modules/auth/pages/Register.page.tsx'),
   ]),
 ] satisfies RouteConfig;
