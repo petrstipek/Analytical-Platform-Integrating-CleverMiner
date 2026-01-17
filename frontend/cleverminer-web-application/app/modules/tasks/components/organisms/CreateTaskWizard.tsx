@@ -3,8 +3,8 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Settings, Calculator, BrainCircuit } from 'lucide-react';
 
-import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/shared/components/ui/card';
+import { Button } from '@/shared/components/ui/atoms/button';
+import { Card, CardContent, CardFooter } from '@/shared/components/ui/molecules/card';
 import { Step1TaskSetup, Step2LogicBuilder, Step3Quantifiers } from './wizard/';
 import { createTaskSchema, type CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
 import { useCreateTaskMutation } from '@/modules/tasks/hooks/tasks.hook';

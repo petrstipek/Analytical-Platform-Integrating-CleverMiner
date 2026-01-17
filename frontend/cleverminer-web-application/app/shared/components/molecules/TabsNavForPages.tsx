@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
+import { TabsList, TabsTrigger } from '@/shared/components/ui/molecules/tabs';
 
 export type TabsNavItem = {
   value: string;

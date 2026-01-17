@@ -1,4 +1,4 @@
-import { Tabs, TabsContent } from '@/shared/components/ui/tabs';
+import { Tabs, TabsContent } from '@/shared/components/ui/molecules/tabs';
 import {
   ProjectHeader,
   ProjectStats,

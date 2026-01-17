@@ -1,6 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { Task } from '@/modules/tasks/domain/task.type';
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/shared/components/ui/atoms/button';
 import { ArrowUpDown } from 'lucide-react';
 
 export const columns: ColumnDef<Task>[] = [

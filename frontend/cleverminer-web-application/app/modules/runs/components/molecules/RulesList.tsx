@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/shared/components/ui/table';
+} from '@/shared/components/ui/organisms/table';
 import type { RunResultRule } from '@/modules/runs/domain/runs-results.type';
 
 interface RulesListProps {

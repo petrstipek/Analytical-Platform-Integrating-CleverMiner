@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Card, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
 import React from 'react';
 
 interface DatasetSummaryCardProps {

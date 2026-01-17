@@ -1,7 +1,7 @@
 import { useFormContext, Controller } from 'react-hook-form';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/atoms/input';
+import { Label } from '@/shared/components/ui/atoms/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
 import { QUANTIFIER_SCHEMAS } from '@/modules/tasks/domain/quantifier-definitions';
 import type { QuantifierFieldDef } from '@/modules/tasks/domain/quantifier-definitions';
 import { VectorInput } from '@/modules/tasks/components/molecules/';

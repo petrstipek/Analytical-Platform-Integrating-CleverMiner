@@ -1,12 +1,12 @@
 import { Hash, Plus, Settings2 } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
-import { Badge } from '@/shared/components/ui/badge';
+import { Button } from '@/shared/components/ui/atoms/button';
+import { Badge } from '@/shared/components/ui/atoms/badge';
 import { AttributeType, GaceType } from '../../domain/task-schema';
 import type { CedentConfig } from '../../domain/task-schema';
 import AttributeRow from './AttributeRow';
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
 import { Label } from '@radix-ui/react-label';
-import { Input } from '@/shared/components/ui/input';
+import { Input } from '@/shared/components/ui/atoms/input';
 
 interface CedentEditorProps {
   title: string;

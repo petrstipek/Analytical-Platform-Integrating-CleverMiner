@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { FileText, MoreHorizontal, Plus } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/shared/components/ui/atoms/button';
 import type { ProjectType } from '@/modules/projects/domain/project.type';
 
 type ProjectHeaderProps = {

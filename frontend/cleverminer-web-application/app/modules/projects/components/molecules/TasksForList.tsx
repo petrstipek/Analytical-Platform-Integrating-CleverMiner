@@ -1,6 +1,6 @@
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { AccordionContent, AccordionTrigger } from '@/shared/components/ui/accordion';
-import { Badge } from '@/shared/components/ui/badge';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
+import { AccordionContent, AccordionTrigger } from '@/shared/components/ui/molecules/accordion';
+import { Badge } from '@/shared/components/ui/atoms/badge';
 import { cn } from '@/lib/utils';
 import type { TaskType } from '@/modules/projects/domain/task.type';
 import { TASK_STATUS_BADGE_CLASS } from '@/shared/components/utils/uiStatus';

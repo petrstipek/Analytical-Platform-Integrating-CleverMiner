@@ -1,6 +1,6 @@
 import { Filter } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
-import { Accordion, AccordionItem } from '@/shared/components/ui/accordion';
+import { Button } from '@/shared/components/ui/atoms/button';
+import { Accordion, AccordionItem } from '@/shared/components/ui/molecules/accordion';
 import { TASKS } from '@/modules/projects/utils/mockData';
 import { TasksForList } from '@/modules/projects/components/molecules';
 

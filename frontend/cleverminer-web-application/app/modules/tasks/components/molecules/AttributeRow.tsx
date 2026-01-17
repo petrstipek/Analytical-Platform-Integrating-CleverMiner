@@ -1,13 +1,13 @@
 import { Binary, Type, X } from 'lucide-react';
-import { Input } from '@/shared/components/ui/input';
+import { Input } from '@/shared/components/ui/atoms/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
-import { Button } from '@/shared/components/ui/button';
+} from '@/shared/components/ui/atoms/select';
+import { Button } from '@/shared/components/ui/atoms/button';
 import { AttributeType, type AttributeSpec } from '../../domain/task-schema';
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
 

@@ -1,7 +1,7 @@
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { SD4ftMinerDetails, CFMinerDetails } from '../components/organisms/procedures';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/atoms/alert';
 import { Terminal } from 'lucide-react';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import { getTask } from '@/modules/tasks/api/tasks.api';

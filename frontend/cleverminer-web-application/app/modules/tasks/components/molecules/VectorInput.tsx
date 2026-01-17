@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
+import { Input } from '@/shared/components/ui/atoms/input';
+import { Label } from '@/shared/components/ui/atoms/label';
 
 interface VectorInputProps {
   value: number[] | null;

@@ -1,5 +1,5 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui/card';
-import { Badge } from '@/shared/components/ui/badge';
+import { Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui/molecules/card';
+import { Badge } from '@/shared/components/ui/atoms/badge';
 
 export default function SD4ftMinerDetails({ params }: { params: any }) {
   return (

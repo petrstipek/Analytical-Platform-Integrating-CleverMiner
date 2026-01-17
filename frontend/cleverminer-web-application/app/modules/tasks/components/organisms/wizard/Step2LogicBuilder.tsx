@@ -1,8 +1,8 @@
 import { useFormContext, Controller } from 'react-hook-form';
 import { Target, Filter } from 'lucide-react';
-import { Tabs, TabsList, TabsContent } from '@/shared/components/ui/tabs';
-import { Label } from '@/shared/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Tabs, TabsList, TabsContent } from '@/shared/components/ui/molecules/tabs';
+import { Label } from '@/shared/components/ui/atoms/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
 import { CedentEditor } from '../../molecules';
 import { LOGIC_LAYOUTS, SECTION_LABELS } from '@/modules/tasks/utils/logic-layout';
 import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';

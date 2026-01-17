@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FileSpreadsheet, Upload, Loader2, FileText } from 'lucide-react';
 
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
+import { Button } from '@/shared/components/ui/atoms/button';
+import { Input } from '@/shared/components/ui/atoms/input';
+import { Label } from '@/shared/components/ui/atoms/label';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@/shared/components/ui/card';
+} from '@/shared/components/ui/molecules/card';
 import { useUploadDatasetMutation } from '../hooks/datasets.hook';
 
 type FormValues = {

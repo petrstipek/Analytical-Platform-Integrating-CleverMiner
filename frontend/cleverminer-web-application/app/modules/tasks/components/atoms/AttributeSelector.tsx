@@ -5,9 +5,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
+} from '@/shared/components/ui/atoms/select';
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
-import { FormControl, FormField, FormItem, FormMessage } from '@/shared/components/ui/form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/shared/components/ui/organisms/form';
 
 type AttributeSelectorProps = {
   name: string;

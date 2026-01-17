@@ -1,13 +1,13 @@
 import { useFormContext } from 'react-hook-form';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
+import { Input } from '@/shared/components/ui/atoms/input';
+import { Label } from '@/shared/components/ui/atoms/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
+} from '@/shared/components/ui/atoms/select';
 import { type CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 

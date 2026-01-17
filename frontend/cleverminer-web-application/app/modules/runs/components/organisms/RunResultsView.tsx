@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Clock, CheckCheck, List } from 'lucide-react';
 import { formatDistance } from 'date-fns';
-import { Card, CardContent } from '@/shared/components/ui/card';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import { RulesList, FourfoldTable, RuleCharts } from '../molecules';
 import { DatasetSummaryCard } from '@/modules/datasets/components/atoms';
 import type { RunResult, RunResultRule } from '@/modules/runs/domain/runs-results.type';

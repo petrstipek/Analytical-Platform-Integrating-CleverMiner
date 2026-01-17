@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
-import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
+import { Avatar, AvatarFallback } from '@/shared/components/ui/atoms/avatar';
+import { Button } from '@/shared/components/ui/atoms/button';
 import type { Member } from '@/modules/projects/domain/member.type';
 
 type ProjectMembersProps = {

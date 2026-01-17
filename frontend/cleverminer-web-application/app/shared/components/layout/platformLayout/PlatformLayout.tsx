@@ -1,19 +1,20 @@
 import { Outlet } from 'react-router';
-import { Topbar } from '../Topbar';
-import { Sidebar } from './Sidebar';
+import { SidebarInset, SidebarProvider } from '@/shared/components/ui/organisms/sidebar';
+import { PlatformSiteHeader } from '@/shared/components/ui/organisms/site-header';
+import { AppSidebar } from '@/shared/components/ui/organisms/navigation/app-sidebar';
 
 export default function PlatformLayout() {
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-
-      <div className="flex flex-1 flex-col">
-        <Topbar />
-
-        <main className="bg-muted/30 flex-1 overflow-auto p-6">
-          <Outlet />
-        </main>
-      </div>
+    <div className="[--header-height:calc(--spacing(14))]">
+      <SidebarProvider className="flex flex-col">
+        <PlatformSiteHeader />
+        <div className="flex flex-1">
+          <AppSidebar />
+          <SidebarInset className="flex flex-1 flex-col p-4 md:p-6 lg:p-8">
+            <Outlet />
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
     </div>
   );
 }

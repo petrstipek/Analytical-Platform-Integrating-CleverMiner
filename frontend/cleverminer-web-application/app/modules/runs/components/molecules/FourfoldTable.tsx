@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui/molecules/card';
 
 interface FourfoldTableProps {
   data: [number, number, number, number];

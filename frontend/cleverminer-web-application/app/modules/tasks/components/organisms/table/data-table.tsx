@@ -17,9 +17,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/shared/components/ui/table';
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
+} from '@/shared/components/ui/organisms/table';
+import { Button } from '@/shared/components/ui/atoms/button';
+import { Input } from '@/shared/components/ui/atoms/input';
 import { Search, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {

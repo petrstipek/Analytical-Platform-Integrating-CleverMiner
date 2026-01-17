@@ -1,7 +1,7 @@
 import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { ScrollArea } from '@/shared/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
+import { ScrollArea } from '@/shared/components/ui/molecules/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/molecules/tabs';
 import { useDatasetAnalysis, useDatasetPreview } from '../../hooks/datasetAnalysis.hook';
 import { ColumnCard } from '@/modules/datasets/components/molecules';
 import { DatasetSummaryCard } from '@/modules/datasets/components/atoms';

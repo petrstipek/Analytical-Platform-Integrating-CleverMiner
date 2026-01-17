@@ -1,7 +1,7 @@
 import { Database, FileText, Plus, UploadCloud } from 'lucide-react';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { Input } from '@/shared/components/ui/input';
-import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
+import { Input } from '@/shared/components/ui/atoms/input';
+import { Button } from '@/shared/components/ui/atoms/button';
 
 const MOCK_DATASETS = [
   { id: 1, name: 'Q1_Customer_Data.csv', size: '2.4 MB', uploaded: '2 mins ago' },
