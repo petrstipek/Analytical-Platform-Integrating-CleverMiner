@@ -1,5 +1,7 @@
 import { Button } from '@/shared/components/ui/atoms/button';
 
+// TODO - not used
+
 export function Topbar() {
   return (
     <header className="flex h-14 items-center justify-between border-b px-4">

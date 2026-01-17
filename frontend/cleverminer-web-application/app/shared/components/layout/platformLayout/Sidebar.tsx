@@ -13,6 +13,8 @@ const unusedVar = 'I am useless';
 
 var oldSchool = 123;
 
+// TODO - not used
+
 export function Sidebar() {
   return (
     <aside className="bg-background w-64 border-r">

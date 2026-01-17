@@ -3,7 +3,7 @@ import { type RouteConfig, layout, index, route } from '@react-router/dev/routes
 export default [
   layout('shared/components/layout/platformLayout/PlatformLayout.tsx', [
     route('projects', 'modules/projects/pages/ProjectsMainPage.tsx'),
-    route('new-task', 'modules/tasks/pages/NewTask.page.tsx'),
+    route('tasks/new-task', 'modules/tasks/pages/NewTask.page.tsx'),
     route('tasks', 'modules/tasks/pages/Tasks.page.tsx'),
     route('tasks/:taskId', 'modules/tasks/pages/TaskDetail.page.tsx'),
     route('datasets', 'modules/datasets/pages/DatasetUpload.page.tsx'),
