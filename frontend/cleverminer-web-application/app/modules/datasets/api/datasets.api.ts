@@ -26,3 +26,8 @@ export async function uploadDataset(payload: UploadDatasetPayload): Promise<Data
 
   return res.data;
 }
+
+export async function getDatasets(): Promise<Dataset[]> {
+  const result = await apiClient.get('/datasets/');
+  return result.data;
+}

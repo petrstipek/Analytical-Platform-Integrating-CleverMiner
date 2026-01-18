@@ -11,7 +11,8 @@ export default [
       route('edit-task/:taskId', 'modules/tasks/pages/EditTask.page.tsx'),
     ]),
 
-    route('datasets', 'modules/datasets/pages/DatasetUpload.page.tsx'),
+    route('datasets', 'modules/datasets/pages/Datasets.page.tsx'),
+    route('datasets-upload', 'modules/datasets/pages/DatasetUpload.page.tsx'),
     route('datasets/:id', 'modules/datasets/pages/DatasetDetail.page.tsx'),
     route('run/:runId', 'modules/runs/pages/RunDetail.page.tsx'),
     route('runs', 'modules/runs/pages/Runs.page.tsx'),
