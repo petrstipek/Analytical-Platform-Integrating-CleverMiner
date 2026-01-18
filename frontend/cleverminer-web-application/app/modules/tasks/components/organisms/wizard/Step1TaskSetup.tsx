@@ -13,6 +13,7 @@ import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 
 type Step1TaskSetupProps = {
   datasets?: DatasetType[];
+  isLoadingDataset?: boolean;
 };
 
 export default function Step1TaskSetup({ datasets }: Step1TaskSetupProps) {

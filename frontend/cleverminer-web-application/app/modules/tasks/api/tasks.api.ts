@@ -50,3 +50,17 @@ export async function getRunsForTask(taskId: number): Promise<TaskRun[]> {
   const res = await apiClient.get(`/tasks/${taskId}/runs/`);
   return res.data;
 }
+
+export async function updateTask(
+  taskId: number,
+  payload: CreateTaskFormValues,
+): Promise<TaskResponse> {
+  const apiPayload = {
+    name: payload.name,
+    dataset: Number(payload.dataset),
+    procedure: payload.procedure,
+    params: payload.configuration,
+  };
+  const res = await apiClient.patch(`/tasks/${taskId}/`, apiPayload);
+  return res.data;
+}

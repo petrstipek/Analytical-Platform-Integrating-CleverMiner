@@ -7,7 +7,7 @@ import {
   UICMinerDetails,
 } from '../components/organisms/procedures';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/atoms/alert';
-import { Pencil, Terminal } from 'lucide-react';
+import { Pencil, Play, Terminal } from 'lucide-react';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import { getRunsForTask, getTask } from '@/modules/tasks/api/tasks.api';
 import { Button } from '@/shared/components/ui/atoms/button';
@@ -18,6 +18,9 @@ export default function TaskDetailPage() {
   const { taskId } = useParams();
   const navigate = useNavigate();
 
+  const numericId = Number(taskId);
+  const isValidId = !isNaN(numericId) && numericId > 0;
+
   const {
     data: task,
     isLoading,
@@ -25,15 +28,16 @@ export default function TaskDetailPage() {
   } = useQuery({
     queryKey: ['task', taskId],
     queryFn: () => getTask(Number(taskId!)),
-    enabled: !!taskId,
+    enabled: isValidId,
   });
 
   const { data: tasksRuns, isLoading: isLoadingRuns } = useQuery({
     queryKey: ['tasksRuns', taskId],
     queryFn: () => getRunsForTask(Number(taskId)),
-    enabled: !!taskId,
+    enabled: isValidId,
   });
 
+  if (!isValidId) return <div>Invalid Task ID</div>;
   if (isLoading) return <div className="p-10 text-center">Loading task details...</div>;
   if (error || !task) return <div>Error loading task.</div>;
 
@@ -76,16 +80,26 @@ export default function TaskDetailPage() {
           </p>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={() => {
-            navigate(`/tasks/${taskId}/edit`, { state: { initialStep: 2 } });
-          }}
-          className="bg-primary gap-2 text-white"
-        >
-          <Pencil className="h-4 w-4" />
-          Edit Configuration
-        </Button>
+        <div className="flex items-center gap-2" data-testid="task-actions">
+          <Button
+            onClick={() => {
+              navigate(`/tasks/edit-task/${taskId}`, { state: { initialStep: 2 } });
+            }}
+            className="bg-primary gap-2 text-white"
+          >
+            <Pencil className="h-4 w-4" />
+            Edit Configuration
+          </Button>
+          <Button
+            onClick={() => {
+              navigate(`/new-task/${taskId}`, { state: { initialStep: 2 } });
+            }}
+            className="gap-2 bg-green-600 text-white hover:bg-green-700"
+          >
+            <Play className="h-4 w-4" />
+            Run Task
+          </Button>
+        </div>
       </div>
 
       <div className="animate-in fade-in duration-500">{renderProcedureDetails()}</div>

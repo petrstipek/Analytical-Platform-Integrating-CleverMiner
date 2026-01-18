@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Settings, Calculator, BrainCircuit } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/atoms/button';
 import { Card, CardContent, CardFooter } from '@/shared/components/ui/molecules/card';
 import { Step1TaskSetup, Step2LogicBuilder, Step3Quantifiers } from './wizard/';
-import { createTaskSchema, type CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
-import { useCreateTaskMutation } from '@/modules/tasks/hooks/tasks.hook';
+import { type CreateTaskFormValues, createTaskSchema } from '@/modules/tasks/utils/task-validation';
+import { useCreateTaskMutation, useUpdateTaskMutation } from '@/modules/tasks/hooks/tasks.hook';
 import { NavBarWizard } from '@/modules/tasks/components/atoms';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import { getDatasetsColumns } from '@/modules/tasks/api/tasks.api';
 import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'react-router';
+import type { Task } from '@/modules/tasks/domain/task.type';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -22,11 +24,21 @@ const STEPS = [
 type CreateTaskWizardProps = {
   datasets?: DatasetType[];
   datasetsLoading: boolean;
+  existingTask?: Task;
 };
 
-export default function CreateTaskWizard({ datasets, datasetsLoading }: CreateTaskWizardProps) {
+export default function CreateTaskWizard({
+  datasets,
+  datasetsLoading,
+  existingTask,
+}: CreateTaskWizardProps) {
+  const location = useLocation();
   const [step, setStep] = useState(1);
-  const { mutate, isPending } = useCreateTaskMutation();
+
+  const taskId = existingTask?.id;
+
+  const { mutate: updateTask, isPending: isUpdating } = useUpdateTaskMutation();
+  const { mutate: createTask, isPending } = useCreateTaskMutation();
 
   const methods = useForm<CreateTaskFormValues>({
     resolver: zodResolver(createTaskSchema),
@@ -46,6 +58,21 @@ export default function CreateTaskWizard({ datasets, datasetsLoading }: CreateTa
       },
     },
   });
+
+  useEffect(() => {
+    if (existingTask) {
+      const formData = {
+        name: existingTask.name,
+        dataset: existingTask.dataset,
+        procedure: existingTask.procedure,
+        configuration: existingTask.params,
+      };
+      methods.reset(formData);
+      if (location.state?.initialStep) {
+        setStep(location.state.initialStep);
+      }
+    }
+  }, [existingTask, methods, location.state]);
 
   const selectedDatasetId = methods.watch('dataset');
 
@@ -73,15 +100,19 @@ export default function CreateTaskWizard({ datasets, datasetsLoading }: CreateTa
     }
   };
 
-  const nextStep = (e?: React.MouseEvent) => {
+  const nextStep = async (e?: React.MouseEvent) => {
     e?.preventDefault();
-    validateAndMove(step + 1);
+    await validateAndMove(step + 1);
   };
 
   const prevStep = () => validateAndMove(step - 1);
 
   const onSubmit = (data: CreateTaskFormValues) => {
-    mutate(data);
+    if (taskId) {
+      updateTask({ taskId, data });
+    } else {
+      createTask(data);
+    }
   };
 
   const procedure = methods.watch('procedure');
@@ -92,7 +123,9 @@ export default function CreateTaskWizard({ datasets, datasetsLoading }: CreateTa
         <form onSubmit={methods.handleSubmit(onSubmit)} className="max-w-8xl mx-auto space-y-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">New Analysis</h1>
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                {existingTask ? `Edit Analysis: ${existingTask?.name}` : 'New Analysis'}
+              </h1>
               <p className="text-muted-foreground">Define your data mining task parameters.</p>
             </div>
             <NavBarWizard steps={STEPS} validateAndMove={validateAndMove} step={step} />
@@ -101,7 +134,9 @@ export default function CreateTaskWizard({ datasets, datasetsLoading }: CreateTa
           <Card className="border-0 shadow-lg ring-1 ring-gray-200">
             <CardContent className="p-6">
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                {step === 1 && <Step1TaskSetup datasets={datasets} />}
+                {step === 1 && (
+                  <Step1TaskSetup datasets={datasets} isLoadingDataset={datasetsLoading} />
+                )}
                 {step === 2 && (
                   <Step2LogicBuilder
                     availableColumns={columns}
