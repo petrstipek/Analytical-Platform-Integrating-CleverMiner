@@ -1,19 +1,15 @@
 import * as React from 'react';
 import {
-  BookOpen,
-  Bot,
   Command,
-  Frame,
   LifeBuoy,
-  Map,
-  PieChart,
   Send,
-  Settings2,
-  SquareTerminal,
+  Database,
+  FolderDot,
+  SquareCheckBig,
+  CirclePlay,
 } from 'lucide-react';
 
 import { NavMain } from '@/shared/components/ui/organisms/navigation/nav-main';
-import { NavProjects } from '@/shared/components/ui/organisms/navigation/nav-projects';
 import { NavSecondary } from '@/shared/components/ui/organisms/navigation/nav-secondary';
 import { NavUser } from '@/shared/components/ui/organisms/navigation/nav-user';
 import {
@@ -36,7 +32,7 @@ const data = {
     {
       title: 'Tasks',
       url: '/tasks',
-      icon: SquareTerminal,
+      icon: SquareCheckBig,
       isActive: true,
       items: [
         {
@@ -48,7 +44,7 @@ const data = {
     {
       title: 'Projects',
       url: '/projects',
-      icon: Bot,
+      icon: FolderDot,
       items: [
         {
           title: 'New project',
@@ -57,9 +53,20 @@ const data = {
       ],
     },
     {
+      title: 'Datasets',
+      url: '/datasets',
+      icon: Database,
+      items: [
+        {
+          title: 'New dataset',
+          url: '/projects/new-project',
+        },
+      ],
+    },
+    {
       title: 'Runs',
       url: '#',
-      icon: BookOpen,
+      icon: CirclePlay,
     },
   ],
   navSecondary: [
