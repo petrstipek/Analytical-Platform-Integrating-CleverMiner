@@ -6,7 +6,11 @@ import { Button } from '@/shared/components/ui/atoms/button';
 import { Card, CardContent, CardFooter } from '@/shared/components/ui/molecules/card';
 import { Step1TaskSetup, Step2LogicBuilder, Step3Quantifiers } from './wizard/';
 import { type CreateTaskFormValues, createTaskSchema } from '@/modules/tasks/utils/task-validation';
-import { useCreateTaskMutation, useUpdateTaskMutation } from '@/modules/tasks/hooks/tasks.hook';
+import {
+  useCreateTaskAndRunMutation,
+  useCreateTaskMutation,
+  useUpdateTaskMutation,
+} from '@/modules/tasks/hooks/tasks.hook';
 import { NavBarWizard } from '@/modules/tasks/components/atoms';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import { getDatasetsColumns } from '@/modules/tasks/api/tasks.api';
@@ -34,11 +38,14 @@ export default function CreateTaskWizard({
 }: CreateTaskWizardProps) {
   const location = useLocation();
   const [step, setStep] = useState(1);
+  type SubmitIntent = 'run' | 'save';
+  const [intent, setIntent] = useState<SubmitIntent>('run');
 
   const taskId = existingTask?.id;
 
   const { mutate: updateTask, isPending: isUpdating } = useUpdateTaskMutation();
-  const { mutate: createTask, isPending } = useCreateTaskMutation();
+  const { mutate: createTaskAndRun, isPending } = useCreateTaskAndRunMutation();
+  const { mutate: createTask, isPending: isCreating } = useCreateTaskMutation();
 
   const methods = useForm<CreateTaskFormValues>({
     resolver: zodResolver(createTaskSchema),
@@ -108,8 +115,13 @@ export default function CreateTaskWizard({
   const prevStep = () => validateAndMove(step - 1);
 
   const onSubmit = (data: CreateTaskFormValues) => {
+    // TODO - will not work with the update now
     if (taskId) {
       updateTask({ taskId, data });
+      return;
+    }
+    if (intent === 'run') {
+      createTaskAndRun(data);
     } else {
       createTask(data);
     }
@@ -160,13 +172,19 @@ export default function CreateTaskWizard({
               </Button>
 
               {step === 3 ? (
-                <Button
-                  type="submit"
-                  disabled={isPending}
-                  className="w-48 bg-green-600 hover:bg-green-700"
-                >
-                  {isPending ? 'Starting Mining...' : 'Run Task'}
-                </Button>
+                <div className="flex justify-between gap-4">
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="w-48 bg-green-600 hover:bg-green-700"
+                    onClick={() => setIntent('run')}
+                  >
+                    {isPending ? 'Starting Mining...' : 'Run Task'}
+                  </Button>
+                  <Button type="button" onClick={() => setIntent('save')} className="w-32">
+                    Save Task
+                  </Button>
+                </div>
               ) : (
                 <Button type="button" onClick={nextStep} className="w-32">
                   Next Step

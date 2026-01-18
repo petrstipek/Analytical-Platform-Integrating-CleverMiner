@@ -17,34 +17,37 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+let isRedirectingToLogin = false;
+
 apiClient.interceptors.response.use(
-  (response) => response,
+  (r) => r,
   async (error) => {
     const originalRequest = error.config;
+    const url = originalRequest?.url ?? '';
 
     const isAuthRequest =
-      originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/refresh');
+      url.includes('/auth/login') ||
+      url.includes('/auth/refresh') ||
+      url.includes('/auth/logout') ||
+      url.includes('/auth/user');
 
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest) {
       originalRequest._retry = true;
 
       try {
-        await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/auth/refresh/`,
-          {},
-          { withCredentials: true },
-        );
-
+        await apiClient.post('/auth/refresh/', {});
         return apiClient(originalRequest);
-      } catch (refreshError) {
-        console.error('Session expired', refreshError);
-
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
+      } catch {
+        if (!isRedirectingToLogin && window.location.pathname !== '/login') {
+          isRedirectingToLogin = true;
+          window.location.assign('/login');
         }
-
-        return Promise.reject(refreshError);
+        return Promise.reject(error);
       }
+    }
+
+    if (error.response?.status === 401 && window.location.pathname === '/login') {
+      return Promise.reject(error);
     }
 
     return Promise.reject(error);

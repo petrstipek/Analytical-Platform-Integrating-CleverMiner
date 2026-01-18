@@ -15,6 +15,7 @@ import { QueryClient } from '@tanstack/query-core';
 import React, { useState } from 'react';
 import { useMe } from '@/modules/auth/api/queries/auth.queries';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'sonner';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -71,7 +72,12 @@ export default function App() {
     return <Navigate to="/projects" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <Toaster richColors position="top-right" />
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

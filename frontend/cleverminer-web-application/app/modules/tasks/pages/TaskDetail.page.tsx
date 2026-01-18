@@ -13,6 +13,7 @@ import { getRunsForTask, getTask } from '@/modules/tasks/api/tasks.api';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { TaskRunsColumns } from '@/modules/tasks/components/organisms/table/taskRuns.columns';
 import { DataTable } from '@/modules/tasks/components/organisms/table/data-table';
+import { useCreateAndExecuteRunMutation } from '@/modules/tasks/hooks/tasks.hook';
 
 export default function TaskDetailPage() {
   const { taskId } = useParams();
@@ -36,6 +37,8 @@ export default function TaskDetailPage() {
     queryFn: () => getRunsForTask(Number(taskId)),
     enabled: isValidId,
   });
+
+  const { mutate: createAndExecuteRun } = useCreateAndExecuteRunMutation();
 
   if (!isValidId) return <div>Invalid Task ID</div>;
   if (isLoading) return <div className="p-10 text-center">Loading task details...</div>;
@@ -92,7 +95,7 @@ export default function TaskDetailPage() {
           </Button>
           <Button
             onClick={() => {
-              navigate(`/new-task/${taskId}`, { state: { initialStep: 2 } });
+              createAndExecuteRun(Number(taskId));
             }}
             className="gap-2 bg-green-600 text-white hover:bg-green-700"
           >
