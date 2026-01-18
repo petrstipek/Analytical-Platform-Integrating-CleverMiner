@@ -5,3 +5,8 @@ export async function getRun(runId: number): Promise<RunResult> {
   const result = await apiClient.get(`/runs/${runId}`);
   return result.data;
 }
+
+export async function getRuns(): Promise<RunResult[]> {
+  const result = await apiClient.get('/runs/');
+  return result.data;
+}

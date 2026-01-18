@@ -25,4 +25,9 @@ export interface RunResult {
   started_at: Date;
   finished_at: Date;
   updated_at: Date;
+  results_summary?: {
+    has_result: boolean;
+    rule_count: number;
+    target: string | null;
+  };
 }

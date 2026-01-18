@@ -12,7 +12,7 @@ import { ProceduresType } from '@/shared/domain/procedures.type';
 import { getRunsForTask, getTask } from '@/modules/tasks/api/tasks.api';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { TaskRunsColumns } from '@/modules/tasks/components/organisms/table/taskRuns.columns';
-import { DataTable } from '@/modules/tasks/components/organisms/table/data-table';
+import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { useCreateAndExecuteRunMutation } from '@/modules/tasks/hooks/tasks.hook';
 
 export default function TaskDetailPage() {

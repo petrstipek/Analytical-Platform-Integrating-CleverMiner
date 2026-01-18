@@ -65,8 +65,8 @@ const data = {
     },
     {
       title: 'Runs',
-      url: '#',
       icon: CirclePlay,
+      url: '/runs',
     },
   ],
   navSecondary: [
