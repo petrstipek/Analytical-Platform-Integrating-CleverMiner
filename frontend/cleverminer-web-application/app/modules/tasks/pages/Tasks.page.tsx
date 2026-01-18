@@ -11,5 +11,5 @@ export default function TasksPage() {
   if (isLoading) return <div>Loading...</div>;
   if (!data) return <div>No tasks found</div>;
 
-  return <DataTable columns={columns} data={data} />;
+  return <DataTable columns={columns} data={data} showSearch={true} />;
 }

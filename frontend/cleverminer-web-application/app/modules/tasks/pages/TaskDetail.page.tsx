@@ -1,13 +1,22 @@
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { SD4ftMinerDetails, CFMinerDetails } from '../components/organisms/procedures';
+import {
+  SD4ftMinerDetails,
+  CFMinerDetails,
+  FourFtMinerDetails,
+  UICMinerDetails,
+} from '../components/organisms/procedures';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/atoms/alert';
-import { Terminal } from 'lucide-react';
+import { Pencil, Terminal } from 'lucide-react';
 import { ProceduresType } from '@/shared/domain/procedures.type';
-import { getTask } from '@/modules/tasks/api/tasks.api';
+import { getRunsForTask, getTask } from '@/modules/tasks/api/tasks.api';
+import { Button } from '@/shared/components/ui/atoms/button';
+import { TaskRunsColumns } from '@/modules/tasks/components/organisms/table/taskRuns.columns';
+import { DataTable } from '@/modules/tasks/components/organisms/table/data-table';
 
 export default function TaskDetailPage() {
   const { taskId } = useParams();
+  const navigate = useNavigate();
 
   const {
     data: task,
@@ -16,6 +25,12 @@ export default function TaskDetailPage() {
   } = useQuery({
     queryKey: ['task', taskId],
     queryFn: () => getTask(Number(taskId!)),
+    enabled: !!taskId,
+  });
+
+  const { data: tasksRuns, isLoading: isLoadingRuns } = useQuery({
+    queryKey: ['tasksRuns', taskId],
+    queryFn: () => getRunsForTask(Number(taskId)),
     enabled: !!taskId,
   });
 
@@ -28,6 +43,10 @@ export default function TaskDetailPage() {
         return <SD4ftMinerDetails params={task.params} />;
       case ProceduresType.CFMINER:
         return <CFMinerDetails params={task.params} />;
+      case ProceduresType.FOURFTMINER:
+        return <FourFtMinerDetails params={task.params} />;
+      case ProceduresType.UCIMINER:
+        return <UICMinerDetails params={task.params} />;
       default:
         return (
           <Alert>
@@ -46,7 +65,46 @@ export default function TaskDetailPage() {
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">{task.name}</h1>
+          <p className="text-muted-foreground">
+            <span className="mr-2 rounded bg-slate-100 px-1 py-0.5 font-mono text-xs text-slate-600">
+              {task.procedure}
+            </span>
+            Analyze the task set up.
+          </p>
+        </div>
+
+        <Button
+          variant="outline"
+          onClick={() => {
+            navigate(`/tasks/${taskId}/edit`, { state: { initialStep: 2 } });
+          }}
+          className="gap-2"
+        >
+          <Pencil className="h-4 w-4" />
+          Edit Configuration
+        </Button>
+      </div>
+
       <div className="animate-in fade-in duration-500">{renderProcedureDetails()}</div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Runs</h1>
+        <p className="text-muted-foreground">
+          <span className="mr-2 rounded bg-slate-100 px-1 py-0.5 font-mono text-xs text-slate-600">
+            {task.procedure}
+          </span>
+          Analyze the task runs.
+        </p>
+        <div className="mt-6">
+          {isLoadingRuns ? (
+            <div className="p-10 text-center">Loading task runs...</div>
+          ) : (
+            <DataTable columns={TaskRunsColumns} data={tasksRuns!} />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation
 import type { Task } from '@/modules/tasks/domain/task.type';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
+import type { TaskRun } from '@/modules/tasks/domain/task-run.type';
 
 export interface TaskResponse {
   id: number;
@@ -43,4 +44,9 @@ export async function getDatasets(): Promise<DatasetType[]> {
 export async function getDatasetsColumns(datasetId: number): Promise<DatasetsColumnsType[]> {
   const res = await apiClient.get(`/datasets/${datasetId}/columns/`);
   return res.data.columns;
+}
+
+export async function getRunsForTask(taskId: number): Promise<TaskRun[]> {
+  const res = await apiClient.get(`/tasks/${taskId}/runs/`);
+  return res.data;
 }

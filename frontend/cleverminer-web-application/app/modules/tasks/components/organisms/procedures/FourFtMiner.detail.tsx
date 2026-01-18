@@ -1,6 +1,6 @@
 import { CedentDetail, QuantifiersDetail } from '@/modules/tasks/components/molecules';
 
-export default function SD4ftMinerDetails({ params }: { params: any }) {
+export default function FourFtMinerDetails({ params }: { params: any }) {
   return (
     <div className="space-y-6">
       <QuantifiersDetail data={params.quantifiers} />
@@ -13,11 +13,11 @@ export default function SD4ftMinerDetails({ params }: { params: any }) {
             </h3>
           </div>
           <CedentDetail title="Antecedent" data={params.ante} color="blue" />
-          <CedentDetail title="Condition" data={params.cond} />
+          <CedentDetail title="Condition" data={params.cond} color="amber" />
         </div>
 
         <div className="flex items-center justify-center py-4 md:col-span-1 md:py-0">
-          <div className="rounded-full border bg-slate-100 p-2">
+          <div className="rounded-full border bg-slate-100 p-2 shadow-sm" title="Implication">
             <span className="text-2xl font-bold text-slate-400">⇒</span>
           </div>
         </div>
@@ -31,13 +31,6 @@ export default function SD4ftMinerDetails({ params }: { params: any }) {
           <CedentDetail title="Succedent" data={params.succ} color="green" />
         </div>
       </div>
-
-      {(params.set1?.attributes?.length > 0 || params.set2?.attributes?.length > 0) && (
-        <div className="grid grid-cols-1 gap-6 border-t pt-6 md:grid-cols-2">
-          <CedentDetail title="Set 1" data={params.set1} />
-          <CedentDetail title="Set 2" data={params.set2} />
-        </div>
-      )}
     </div>
   );
 }
