@@ -26,12 +26,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   showSearch?: boolean;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   showSearch = false,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -69,7 +71,7 @@ export function DataTable<TData, TValue>({
 
       <div className="overflow-hidden rounded-md border bg-white shadow-sm">
         <Table>
-          <TableHeader className="bg-slate-50/50">
+          <TableHeader className="bg-primary">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
@@ -78,7 +80,7 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="h-10 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                    className="h-10 text-xs font-semibold tracking-wider text-white uppercase"
                   >
                     {header.isPlaceholder
                       ? null
@@ -94,6 +96,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
+                  onClick={() => onRowClick && onRowClick(row.original)}
                   data-state={row.getIsSelected() && 'selected'}
                   className="transition-colors hover:bg-slate-50/60"
                 >

@@ -81,7 +81,7 @@ export default function TaskDetailPage() {
           onClick={() => {
             navigate(`/tasks/${taskId}/edit`, { state: { initialStep: 2 } });
           }}
-          className="gap-2"
+          className="bg-primary gap-2 text-white"
         >
           <Pencil className="h-4 w-4" />
           Edit Configuration
@@ -101,7 +101,11 @@ export default function TaskDetailPage() {
           {isLoadingRuns ? (
             <div className="p-10 text-center">Loading task runs...</div>
           ) : (
-            <DataTable columns={TaskRunsColumns} data={tasksRuns!} />
+            <DataTable
+              columns={TaskRunsColumns}
+              data={tasksRuns!}
+              onRowClick={(row) => navigate(`/run/${row.id}`)}
+            />
           )}
         </div>
       </div>
