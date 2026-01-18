@@ -7,7 +7,7 @@ export default function BaseLayout() {
     <div className="flex h-screen">
       <div className="flex flex-1 flex-col">
         <Topbar />
-        <main className="bg-muted/30 flex-1 overflow-auto">
+        <main className="bg-muted/30 flex flex-1">
           <Outlet />
         </main>
         <Footer />

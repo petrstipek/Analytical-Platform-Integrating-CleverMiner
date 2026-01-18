@@ -6,6 +6,8 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --color-cleverminer-one: oklch(0.218 0.036 251.294);
+    --color-cleverminer-two: oklch(0.269 0.042 262.698);
 }
 
 html,
@@ -60,7 +62,7 @@ body {
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: oklch(0.269 0.042 262.698);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);

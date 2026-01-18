@@ -28,7 +28,7 @@ const NAV_PRIMARY: NavItemDef[] = [
 
 export function Topbar() {
   return (
-    <header className="bg-background/70 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b backdrop-blur">
+    <header className="bg-primary-foreground/70 supports-[backdrop-filter]:bg-primary-foreground/60 sticky top-0 z-50 border-b backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4">
         <div className="flex items-center gap-3">
           <Link to="/" className="group flex items-center gap-2">
