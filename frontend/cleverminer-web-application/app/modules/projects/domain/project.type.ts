@@ -1,7 +1,8 @@
 export type ProjectType = {
-  title: string;
-  description: string;
-  status: boolean;
-  totalTasks: number;
-  completedTasks: number;
+  id: number;
+  name: string;
+  created_at: Date;
+  updatedAt: Date;
+  owner: number;
+  members: number[];
 };

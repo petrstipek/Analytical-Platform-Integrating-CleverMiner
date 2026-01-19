@@ -2,14 +2,17 @@ import { type RouteConfig, layout, index, route } from '@react-router/dev/routes
 
 export default [
   layout('shared/components/layout/platformLayout/PlatformLayout.tsx', [
-    route('projects', 'modules/projects/pages/ProjectsMainPage.tsx'),
-    route('new-project', 'modules/projects/pages/NewProject.page.tsx'),
-
     route('tasks', 'modules/tasks/pages/Tasks.layout.tsx', [
       index('modules/tasks/pages/Tasks.page.tsx'),
       route('new-task', 'modules/tasks/pages/NewTask.page.tsx'),
       route(':taskId', 'modules/tasks/pages/TaskDetail.page.tsx'),
       route('edit-task/:taskId', 'modules/tasks/pages/EditTask.page.tsx'),
+    ]),
+
+    route('projects', 'modules/projects/pages/Projects.layout.tsx', [
+      index('modules/projects/pages/Projects.page.tsx'),
+      route('new-project', 'modules/projects/pages/NewProject.page.tsx'),
+      route(':projectId', 'modules/projects/pages/ProjectDetails.page.tsx'),
     ]),
 
     route('datasets', 'modules/datasets/pages/Datasets.page.tsx'),
