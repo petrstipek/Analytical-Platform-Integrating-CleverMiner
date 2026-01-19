@@ -1,5 +1,7 @@
 from celery.result import AsyncResult
 from django.utils import timezone
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -16,7 +18,6 @@ from cleverminer_tasks.api.execution.service import (
     RunEnqueueError,
 )
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
-from cleverminer_tasks.execution.tasks import execute_runner_for_tasks
 from cleverminer_tasks.models import Task, RunStatus, Run
 
 
@@ -24,12 +25,30 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="project",
+                type=OpenApiTypes.INT,
+                location="query",
+                required=False,
+                description="Filter tasks by project id",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
     def get_queryset(self):
         qs = Task.objects.select_related("dataset").all()
+        project_id = self.request.query_params.get("project")
+
         user = self.request.user
         if user.is_authenticated and user.is_staff:
             return qs
         if user.is_authenticated:
+            if project_id:
+                return qs.filter(project_id=project_id)
             return qs.filter(owner=user)
         return qs.none()
 

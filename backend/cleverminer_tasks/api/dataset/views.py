@@ -1,6 +1,7 @@
 import math
 import pandas as pd
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from pydantic import ValidationError
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
@@ -21,12 +22,30 @@ class DatasetViewSet(viewsets.ModelViewSet):
 
     parser_classes = (MultiPartParser, FormParser)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="project",
+                type=OpenApiTypes.INT,
+                location="query",
+                required=False,
+                description="Filter tasks by project id",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
     def get_queryset(self):
         qs = Dataset.objects.all()
         user = self.request.user
+        project_id = self.request.query_params.get("project")
+
         if user.is_authenticated and user.is_staff:
             return qs
         if user.is_authenticated:
+            if project_id:
+                return qs.filter(project_id=project_id)
             return qs.filter(owner=user)
         return qs.none()
 
