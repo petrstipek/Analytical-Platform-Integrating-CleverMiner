@@ -21,13 +21,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/shared/components/ui/organisms/sidebar';
+import { useMe } from '@/modules/auth/api/queries/auth.queries';
+import { useMemo } from 'react';
 
 const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
   navMain: [
     {
       title: 'Tasks',
@@ -84,6 +81,17 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: me, isPending, isError } = useMe();
+
+  const user = useMemo(() => {
+    if (!me) return null;
+    return {
+      name: me.username,
+      email: me.email,
+      avatar: '/avatars/shadcn.jpg',
+    };
+  }, [me]);
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -108,7 +116,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {isPending && (
+          <NavUser
+            user={{
+              name: 'Loading…',
+              email: '',
+              avatar: '/avatars/shadcn.jpg',
+            }}
+          />
+        )}
+
+        {!isPending && user && <NavUser user={user} />}
+
+        {!isPending && (isError || !user) && (
+          <NavUser user={{ name: 'Guest', email: '', avatar: '/avatars/shadcn.jpg' }} />
+        )}
       </SidebarFooter>
     </Sidebar>
   );
