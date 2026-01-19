@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { login, logout } from '@/modules/auth/api/auth.api';
+import { login, logout, register } from '@/modules/auth/api/auth.api';
 
 export function useLogin() {
   const queryClient = useQueryClient();
@@ -29,6 +29,22 @@ export function useLogout() {
     onSuccess: () => {
       queryClient.setQueryData(['me'], null);
       navigate('/login');
+    },
+  });
+}
+
+export function useRegister() {
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: register,
+    onSuccess: () => {
+      navigate('/login');
+      toast.success('Successfully registered!');
+    },
+    onError: () => {
+      toast.error('Registration failed');
+      console.error('Registration failed');
     },
   });
 }
