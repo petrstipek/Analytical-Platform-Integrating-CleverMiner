@@ -46,7 +46,7 @@ export function useCreateAndExecuteRunMutation() {
     mutationFn: async (taskId: number) => {
       await createAndExecuteTask(taskId);
     },
-    onSuccess: (task) => {
+    onSuccess: () => {
       toast.success(`Run for task created and started!`);
     },
     onError: (error: any) => {

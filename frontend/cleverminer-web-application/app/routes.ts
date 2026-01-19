@@ -3,6 +3,7 @@ import { type RouteConfig, layout, index, route } from '@react-router/dev/routes
 export default [
   layout('shared/components/layout/platformLayout/PlatformLayout.tsx', [
     route('projects', 'modules/projects/pages/ProjectsMainPage.tsx'),
+    route('new-project', 'modules/projects/pages/NewProject.page.tsx'),
 
     route('tasks', 'modules/tasks/pages/Tasks.layout.tsx', [
       index('modules/tasks/pages/Tasks.page.tsx'),
