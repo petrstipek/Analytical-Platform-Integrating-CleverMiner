@@ -8,7 +8,10 @@ from cleverminer_tasks.api.project.serializer import (
     ProjectSerializer,
     ProjectMembershipSerializer,
 )
-from cleverminer_tasks.api.project.service import create_project_membership
+from cleverminer_tasks.api.project.service import (
+    create_project_membership,
+    create_project,
+)
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.models import Project, ProjectMembership, ProjectRole
 
@@ -42,6 +45,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if self.action in ("add_member", "remove_member", "update_member_role"):
             return [permissions.IsAuthenticated(), IsUserProjectAdmin()]
         return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        project = create_project(owner=request.user, **serializer.validated_data)
+
+        out = self.get_serializer(project)
+        return Response(out.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=["post"], url_path="add-member")
     def add_member(self, request, pk=None):
