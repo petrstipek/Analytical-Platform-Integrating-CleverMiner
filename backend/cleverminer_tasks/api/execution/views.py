@@ -11,11 +11,13 @@ from cleverminer_tasks.api.execution.serializers import (
     RunSerializer,
     RunSummarySerializer,
     RunDetailSerializer,
+    RunStatusSummarySerializer,
 )
 from cleverminer_tasks.api.execution.service import (
     create_run,
     enqueue_run,
     RunEnqueueError,
+    get_run_status_summary,
 )
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.models import Task, RunStatus, Run
@@ -77,6 +79,12 @@ class TaskViewSet(viewsets.ModelViewSet):
             return Response({"error detail": str(e)}, status=status.HTTP_409_CONFLICT)
 
         return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
+
+    @action(detail=False, methods=["get"], url_path="summary")
+    def summary(self, request):
+        data = get_run_status_summary(user=request.user)
+        serializer = RunStatusSummarySerializer(data)
+        return Response(serializer.data)
 
 
 class RunViewSet(viewsets.ReadOnlyModelViewSet):

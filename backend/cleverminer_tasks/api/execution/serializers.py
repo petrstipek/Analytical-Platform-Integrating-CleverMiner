@@ -127,3 +127,12 @@ class RunDetailSerializer(serializers.ModelSerializer):
 
     def get_result_summary(self, obj: Run):
         return RunSummarySerializer(obj).data["result_summary"]
+
+
+class RunStatusSummarySerializer(serializers.Serializer):
+    total = serializers.IntegerField()
+    queued = serializers.IntegerField()
+    running = serializers.IntegerField()
+    failed = serializers.IntegerField()
+    done = serializers.IntegerField()
+    canceled = serializers.IntegerField()

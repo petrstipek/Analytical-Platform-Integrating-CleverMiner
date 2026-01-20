@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from celery.result import AsyncResult
+from django.db.models import Count
 
 from cleverminer_tasks.models import Run, RunStatus, Task
 from cleverminer_tasks.execution.tasks import execute_runner_for_tasks
@@ -32,3 +33,22 @@ def enqueue_run(*, run: Run) -> EnqueueResult:
     run.save(update_fields=["celery_task_id"])
 
     return EnqueueResult(run=run, celery_task_id=async_result.id)
+
+
+def get_run_status_summary(*, user) -> dict:
+    qs = Run.objects.all()
+
+    if not user.is_staff:
+        qs = qs.filter(task__owner=user)
+
+    db_counts = qs.values("status").annotate(count=Count("id"))
+    db_count_map = {row["status"]: row["count"] for row in db_counts}
+
+    result = {
+        "total": qs.count(),
+    }
+
+    for status, _label in RunStatus.choices:
+        result[status] = db_count_map.get(status, 0)
+
+    return result
