@@ -50,7 +50,7 @@ export default function ProjectDetailsPage() {
 
           <div className="space-y-6">
             <ProjectTeamMembers members={TEAM} />
-            // TODO - project stats
+            {/*TODO - project stats*/}
             {/*<ProjectStats project={baseProjectData} />*/}
           </div>
         </div>
