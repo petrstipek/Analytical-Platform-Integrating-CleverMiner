@@ -32,7 +32,7 @@ export function Topbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4">
         <div className="flex items-center gap-3">
           <Link to="/" className="group flex items-center gap-2">
-            <div className="ring-border relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl ring-1">
+            <div className="ring-border bg-cleverminer-three relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl ring-1">
               <div className="from-primary/90 to-primary/40 absolute inset-0 bg-gradient-to-br" />
               <span className="text-primary-foreground relative text-xs font-semibold">CM</span>
             </div>
@@ -57,13 +57,16 @@ export function Topbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Separator orientation="vertical" className="mx-1 hidden h-7 md:block" />
+          <Separator
+            orientation="vertical"
+            className="bg-cleverminer-three mx-1 hidden h-7 md:block"
+          />
 
-          <Button asChild variant="ghost" className="hidden sm:inline-flex">
+          <Button asChild className="bg-cleverminer-three hidden text-white sm:inline-flex">
             <Link to="/login">Log in</Link>
           </Button>
 
-          <Button asChild className="relative overflow-hidden">
+          <Button asChild className="bg-cleverminer-three relative overflow-hidden text-white">
             <Link to="/register">
               <span className="relative z-10">Create account</span>
               <span className="pointer-events-none absolute inset-0 -translate-x-[70%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-[70%]" />
@@ -92,10 +95,10 @@ export function Topbar() {
                 <Separator className="my-6" />
 
                 <div className="flex flex-col items-center gap-3">
-                  <Button asChild variant="outline" className="w-[300px]">
+                  <Button asChild variant="outline" className="bg-cleverminer-three w-[300px]">
                     <Link to="/login">Log in</Link>
                   </Button>
-                  <Button asChild className="w-[300px]">
+                  <Button asChild className="bg-cleverminer-three w-[300px]">
                     <Link to="/register">Create account</Link>
                   </Button>
                 </div>

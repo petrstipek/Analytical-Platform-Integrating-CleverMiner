@@ -71,7 +71,7 @@ export function DataTable<TData, TValue>({
 
       <div className="overflow-hidden rounded-md border bg-white shadow-sm">
         <Table>
-          <TableHeader className="bg-primary">
+          <TableHeader className="bg-cleverminer-three">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}

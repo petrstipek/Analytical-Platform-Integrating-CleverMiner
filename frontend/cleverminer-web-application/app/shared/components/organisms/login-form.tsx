@@ -69,7 +69,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
               </Field>
 
               <Field>
-                <Button type="submit" className="w-full" disabled={isPending}>
+                <Button type="submit" className="bg-cleverminer-three w-full" disabled={isPending}>
                   {isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -127,7 +127,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   radius={4}
                   borderStyle="2px dashed #5227FF"
                   faceColor="#1B263BFF"
-                  rippleColor="#4A8FEAFF"
+                  rippleColor="#2C5FA0FF"
                   rippleSpeed={1.5}
                   autoAnimate
                   rippleOnClick

@@ -98,9 +98,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
+              <a>
+                <div className="ring-border bg-cleverminer-one relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl ring-1">
+                  <div className="from-primary/90 to-primary/40 absolute inset-0 bg-gradient-to-br" />
+                  <span className="text-primary-foreground relative text-xs font-semibold">CM</span>
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">CleverMiner</span>
