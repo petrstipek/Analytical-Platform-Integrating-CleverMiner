@@ -7,4 +7,6 @@ export type Task = {
   procedure: ProceduresType;
   createdAt: Date;
   params?: any;
+  updated_at?: Date;
+  created_at: Date;
 };

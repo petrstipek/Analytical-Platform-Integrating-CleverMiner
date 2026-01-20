@@ -16,10 +16,10 @@ export default function ProjectHeader({ project }: ProjectHeaderProps) {
             Projects
           </Link>
           <span>/</span>
-          <span>{project.title}</span>
+          <span>{project.name}</span>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">{project.title}</h1>
-        <p className="text-muted-foreground">{project.description}</p>
+        <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
+        <p className="text-muted-foreground">Project description</p>
 
         <div className="text-muted-foreground flex items-center gap-4 pt-2 text-sm">
           <div className="flex items-center gap-1.5">
@@ -27,10 +27,7 @@ export default function ProjectHeader({ project }: ProjectHeaderProps) {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span>
             </span>
-            {project.status ? 'Active' : 'Inactive'}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <FileText className="h-4 w-4" /> {project.totalTasks} Tasks
+            {String(project.updatedAt)}
           </div>
         </div>
       </div>

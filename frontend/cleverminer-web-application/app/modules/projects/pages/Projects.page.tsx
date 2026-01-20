@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import getBaseProjects from '@/modules/projects/api/queries/projects.queries';
+import { getBaseProjects } from '@/modules/projects/api/queries/projects.queries';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { ProjectColumns } from '@/modules/projects/components/organisms/table/projects.columns';
 import { useNavigate } from 'react-router';
