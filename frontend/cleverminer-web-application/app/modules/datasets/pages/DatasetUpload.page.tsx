@@ -41,8 +41,12 @@ export default function DatasetUploadPage() {
   };
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center bg-gray-50/50 p-6">
-      <Card className="w-full max-w-lg border shadow-lg">
+    <div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dataset Upload</h1>
+        <p className="text-muted-foreground">Upload new dataset to the platform</p>
+      </div>
+      <Card className="w-full border shadow-lg">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="bg-primary/10 rounded-lg p-2">

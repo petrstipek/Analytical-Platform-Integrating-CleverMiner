@@ -56,7 +56,7 @@ const data = {
       items: [
         {
           title: 'New dataset',
-          url: '/projects/new-project',
+          url: '/datasets/upload',
         },
       ],
     },
