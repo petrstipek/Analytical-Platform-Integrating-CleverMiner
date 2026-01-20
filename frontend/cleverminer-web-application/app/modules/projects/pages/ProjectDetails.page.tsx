@@ -1,11 +1,7 @@
 import { Tabs, TabsContent } from '@/shared/components/ui/molecules/tabs';
-import {
-  ProjectHeader,
-  ProjectStats,
-  ProjectTeamMembers,
-} from '@/modules/projects/components/molecules/';
+import { ProjectHeader, ProjectTeamMembers } from '@/modules/projects/components/molecules/';
 import { TabsNavForPages, type TabsNavItem } from '@/shared/components/molecules/TabsNavForPages';
-import { PROJECT, TEAM } from '@/modules/projects/utils/mockData';
+import { TEAM } from '@/modules/projects/utils/mockData';
 import { ProjectDatasetsTab, ProjectTasksTab } from '@/modules/projects/components/molecules/tabs';
 import { useQuery } from '@tanstack/react-query';
 import { getProject } from '@/modules/projects/api/queries/projects.queries';
@@ -21,7 +17,7 @@ const projectTabs: TabsNavItem[] = [
 export default function ProjectDetailsPage() {
   const { projectId } = useParams();
   const { data: baseProjectData, isLoading: baseProjectLoading } = useQuery({
-    queryKey: ['project', PROJECT.id],
+    queryKey: ['project', projectId],
     queryFn: () => getProject(Number(projectId)),
   });
 
@@ -54,7 +50,8 @@ export default function ProjectDetailsPage() {
 
           <div className="space-y-6">
             <ProjectTeamMembers members={TEAM} />
-            <ProjectStats project={PROJECT} />
+            // TODO - project stats
+            {/*<ProjectStats project={baseProjectData} />*/}
           </div>
         </div>
       </Tabs>
