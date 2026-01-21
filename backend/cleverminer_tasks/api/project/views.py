@@ -2,7 +2,11 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from cleverminer_tasks.api.execution.serializers import RunSerializer
+from cleverminer_tasks.api.dataset.serializers import DatasetSerializer
+from cleverminer_tasks.api.execution.serializers import (
+    RunSerializer,
+    RunSummarySerializer,
+)
 from cleverminer_tasks.api.project.serializer import (
     AddMemberSerializer,
     MemberActionSerializer,
@@ -118,7 +122,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
             serializer = RunSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = RunSerializer(queryset, many=True)
+        serializer = RunSummarySerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"], url_path="datasets")
+    def project_datasets(self, request, pk=None):
+        project = self.get_object()
+        queryset = project.datasets.all().order_by("-created_at")
+
+        serializer = DatasetSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

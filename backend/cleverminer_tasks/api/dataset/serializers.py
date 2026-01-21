@@ -1,10 +1,13 @@
 from rest_framework import serializers
 
-from cleverminer_tasks.models import Dataset
+from cleverminer_tasks.models import Dataset, Project
 
 
 class DatasetSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner_id")
+    project_id = serializers.IntegerField(
+        write_only=True, required=False, allow_null=True
+    )
 
     class Meta:
         model = Dataset
@@ -18,6 +21,7 @@ class DatasetSerializer(serializers.ModelSerializer):
             "encoding",
             "created_at",
             "file",
+            "project_id",
         ]
         read_only_fields = ["id", "owner", "created_at"]
 
@@ -60,3 +64,27 @@ class DatasetSerializer(serializers.ModelSerializer):
             )
 
         return attrs
+
+    def validate_project_id(self, project_id):
+        if not project_id:
+            return None
+
+        user = self.context["request"].user
+
+        is_member = Project.objects.filter(
+            id=project_id, memberships__user=user
+        ).exists()
+        if not is_member:
+            raise serializers.ValidationError("User is not a member of the project.")
+
+        return project_id
+
+    def create(self, validated_data):
+        project_id = validated_data.pop("project_id", None)
+        dataset = super().create(validated_data)
+
+        if project_id:
+            project = Project.objects.get(id=project_id)
+            dataset.projects.add(project)
+
+        return dataset
