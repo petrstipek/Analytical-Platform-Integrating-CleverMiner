@@ -6,6 +6,7 @@ class DatasetSourceType(models.TextChoices):
     URL = "url", "URL"
     LOCAL = "local", "Local file"
     STORAGE_FILE = "storage_file", "Storage file"
+    GENERATED = "generated", "Generated / Derived"
 
 
 class ProcedureType(models.TextChoices):
@@ -35,6 +36,11 @@ class ProjectRole(models.TextChoices):
     ADMIN = "admin", "Admin"
     EDITOR = "editor", "Editor"
     VIEWER = "viewer", "Viewer"
+
+
+class DatasetFormat(models.TextChoices):
+    CSV = "csv", "CSV"
+    PARQUET = "parquet", "Parquet"
 
 
 class Project(models.Model):
@@ -117,15 +123,49 @@ class Dataset(models.Model):
 
     file = models.FileField(upload_to="datasets/", null=True, blank=True)
 
+    parent = models.ForeignKey(
+        "self", on_delete=models.PROTECT, null=True, blank=True, related_name="children"
+    )
+
+    file_format = models.CharField(
+        max_length=10,
+        choices=DatasetFormat.choices,
+        default=DatasetFormat.CSV,
+    )
+
+    is_ready = models.BooleanField(default=True)
+
     def save(self, *args, **kwargs):
         if self.file:
-            self.source_type = DatasetSourceType.STORAGE_FILE
+            if self.source_type != DatasetSourceType.GENERATED:
+                self.source_type = DatasetSourceType.STORAGE_FILE
             if not self.source:
                 self.source = self.file.name
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
+
+
+class DatasetTransformation(models.Model):
+    output_dataset = models.OneToOneField(
+        Dataset,
+        on_delete=models.CASCADE,
+        related_name="transformation",
+    )
+
+    transform_spec = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=16, choices=RunStatus.choices, default=RunStatus.QUEUED
+    )
+    celery_task_id = models.CharField(max_length=255, null=True, blank=True)
+    error_log = models.TextField(null=True, blank=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Transformation for {self.output_dataset.name}"
 
 
 class Task(models.Model):
