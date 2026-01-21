@@ -10,6 +10,7 @@ export interface Dataset {
 export interface UploadDatasetPayload {
   name: string;
   file: File;
+  projectId?: number;
 }
 
 export async function uploadDataset(payload: UploadDatasetPayload): Promise<Dataset> {
@@ -17,6 +18,7 @@ export async function uploadDataset(payload: UploadDatasetPayload): Promise<Data
 
   formData.append('name', payload.name);
   formData.append('file', payload.file);
+  if (payload.projectId) formData.append('project_id', payload.projectId.toString());
 
   const res = await apiClient.post<Dataset>('/datasets/', formData, {
     headers: {

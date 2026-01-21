@@ -1,7 +1,12 @@
 import { Database, FileText, Plus, UploadCloud } from 'lucide-react';
 import { Card, CardContent } from '@/shared/components/ui/molecules/card';
-import { Input } from '@/shared/components/ui/atoms/input';
 import { Button } from '@/shared/components/ui/atoms/button';
+import { DatasetUploadCard } from '@/modules/datasets/components/molecules';
+import type { UploadPayload } from '@/modules/datasets/domain/uploadDataset.type';
+import { DataTable } from '@/shared/components/organisms/table/data-table';
+import { useNavigate } from 'react-router';
+import { DatasetColumns } from '@/modules/datasets/components/organisms/table/dataset.columns';
+import type { Dataset } from '@/modules/datasets/api/datasets.api';
 
 const MOCK_DATASETS = [
   { id: 1, name: 'Q1_Customer_Data.csv', size: '2.4 MB', uploaded: '2 mins ago' },
@@ -9,29 +14,25 @@ const MOCK_DATASETS = [
   { id: 3, name: 'Legacy_Import_2024.xml', size: '12 MB', uploaded: 'Yesterday' },
 ];
 
-export default function ProjectDatasetsTab() {
+type ProjectDatasetsTabProps = {
+  isPending: boolean;
+  onSubmit: (payload: UploadPayload) => void;
+  datasets: Dataset[];
+};
+
+export default function ProjectDatasetsTab({
+  isPending,
+  onSubmit,
+  datasets,
+}: ProjectDatasetsTabProps) {
+  const navigate = useNavigate();
   return (
     <>
       <div className="space-y-2">
         <h3 className="flex items-center gap-2 text-lg font-semibold">
           <UploadCloud className="h-5 w-5" /> Import Dataset
         </h3>
-        <Card className="hover:bg-muted/40 border-2 border-dashed shadow-none transition-colors">
-          <CardContent className="flex flex-col items-center justify-center space-y-4 py-10 text-center">
-            <div className="bg-primary/10 rounded-full p-4">
-              <Plus className="text-primary h-8 w-8" />
-            </div>
-            <div className="space-y-1">
-              <p className="font-medium">Drag & drop your files here</p>
-              <p className="text-muted-foreground text-sm">
-                or <span className="text-primary cursor-pointer underline">browse files</span> to
-                upload
-              </p>
-            </div>
-            <p className="text-muted-foreground text-xs">Supports CSV</p>
-            <Input type="file" className="hidden" />
-          </CardContent>
-        </Card>
+        <DatasetUploadCard isPending={isPending} onSubmit={onSubmit} />
       </div>
 
       <div className="space-y-2">
@@ -43,32 +44,11 @@ export default function ProjectDatasetsTab() {
             View All
           </Button>
         </div>
-
-        <div className="grid grid-cols-1 gap-4">
-          {MOCK_DATASETS.map((dataset) => (
-            <Card
-              key={dataset.id}
-              className="hover:border-primary/50 group cursor-pointer transition-all"
-            >
-              <CardContent className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-4">
-                  <div className="bg-muted group-hover:bg-primary/10 group-hover:text-primary rounded-md p-2 transition-colors">
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="leading-none font-medium">{dataset.name}</p>
-                    <p className="text-muted-foreground mt-1 text-sm">
-                      Size: {dataset.size} • Uploaded: {dataset.uploaded}
-                    </p>
-                  </div>
-                </div>
-                <Button variant="secondary" size="sm">
-                  Select
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <DataTable
+          columns={DatasetColumns}
+          data={datasets}
+          onRowClick={(row) => navigate(`/datasets/${row.id}`)}
+        />
       </div>
     </>
   );
