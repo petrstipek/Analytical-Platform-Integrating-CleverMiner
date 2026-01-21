@@ -88,3 +88,11 @@ class DatasetSerializer(serializers.ModelSerializer):
             dataset.projects.add(project)
 
         return dataset
+
+
+class CreateDerivedDatasetSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    transform_spec = serializers.JSONField()
+    output_format = serializers.ChoiceField(
+        choices=["csv", "parquet"], default="parquet"
+    )

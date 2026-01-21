@@ -3,12 +3,16 @@ import pandas as pd
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from pydantic import ValidationError
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 
-from cleverminer_tasks.api.dataset.serializers import DatasetSerializer
+from cleverminer_tasks.api.dataset.serializers import (
+    DatasetSerializer,
+    CreateDerivedDatasetSerializer,
+)
+from cleverminer_tasks.api.dataset.service import create_derived_dataset
 from cleverminer_tasks.api.dataset.utils.clmDataGuidance import clm_column_data_guidance
 from cleverminer_tasks.api.dataset.utils.clmTargetCandidates import build_clm_candidates
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
@@ -188,3 +192,51 @@ class DatasetViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        request=CreateDerivedDatasetSerializer,
+        responses={202: OpenApiTypes.OBJECT},
+    )
+    @action(detail=True, methods=["post"], url_path="create-derived")
+    def create_derived(self, request, pk=None):
+        input_dataset = self.get_object()
+
+        ser = CreateDerivedDatasetSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+
+        created = create_derived_dataset(
+            input_dataset=input_dataset,
+            user=request.user,
+            name=ser.validated_data["name"],
+            transform_spec=ser.validated_data["transform_spec"],
+            output_format=ser.validated_data["output_format"],
+        )
+
+        return Response(
+            {
+                "dataset_id": created.dataset.id,
+                "transformation_id": created.transformation.id,
+                "status": created.transformation.status,
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
+
+    @action(detail=True, methods=["get"], url_path="transformation")
+    def transformation(self, request, pk=None):
+        ds = self.get_object()
+        tr = getattr(ds, "transformation", None)
+        if not tr:
+            return Response(
+                {"detail": "No transformation for this dataset."}, status=404
+            )
+
+        return Response(
+            {
+                "transformation_id": tr.id,
+                "status": tr.status,
+                "error_log": tr.error_log,
+                "created_at": tr.created_at,
+                "started_at": tr.started_at,
+                "finished_at": tr.finished_at,
+            }
+        )
