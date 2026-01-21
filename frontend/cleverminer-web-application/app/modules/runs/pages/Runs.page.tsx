@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getRuns } from '@/modules/runs/api/runs.api';
+import { getRuns, getRunsSummary } from '@/modules/runs/api/runs.api';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { RunsColumns } from '@/modules/runs/components/organisms/table/runs.columns';
 import { useNavigate } from 'react-router';
@@ -12,8 +12,13 @@ export default function RunsPage() {
     queryFn: () => getRuns(),
   });
 
-  if (laodingRunsData) return <div>Loading...</div>;
-  if (!runsData) return <div>No runs found</div>;
+  const { data: runsSummaryData, isLoading: loadingRunsSummary } = useQuery({
+    queryKey: ['runs-summary'],
+    queryFn: () => getRunsSummary(),
+  });
+
+  if (laodingRunsData || loadingRunsSummary) return <div>Loading...</div>;
+  if (!runsData || !runsSummaryData) return <div>No runs found</div>;
 
   return (
     <div>
@@ -22,13 +27,17 @@ export default function RunsPage() {
         <p className="text-muted-foreground">See all runs performed on this platform.</p>
       </div>
       <div className="mb-6 grid gap-4 md:grid-cols-3">
-        <BaseSummaryCard title={'Overall Count'} value={'overall count'} variant={'default'} />
         <BaseSummaryCard
-          title={'Finished Runs'}
-          value={'finished runs value'}
-          variant={'success'}
+          title={'Overall Count'}
+          value={runsSummaryData.total}
+          variant={'default'}
         />
-        <BaseSummaryCard title={'Running Runs'} value={'running runs value'} variant={'running'} />
+        <BaseSummaryCard title={'Finished Runs'} value={runsSummaryData.done} variant={'success'} />
+        <BaseSummaryCard
+          title={'Running Runs'}
+          value={runsSummaryData.running}
+          variant={'running'}
+        />
       </div>
       <DataTable
         columns={RunsColumns}
