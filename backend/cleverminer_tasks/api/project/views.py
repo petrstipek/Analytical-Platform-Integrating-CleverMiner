@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from cleverminer_tasks.api.execution.serializers import RunSerializer
 from cleverminer_tasks.api.project.serializer import (
     AddMemberSerializer,
     MemberActionSerializer,
@@ -13,7 +14,7 @@ from cleverminer_tasks.api.project.service import (
     create_project,
 )
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
-from cleverminer_tasks.models import Project, ProjectMembership, ProjectRole
+from cleverminer_tasks.models import Project, ProjectMembership, ProjectRole, Run
 
 
 class IsUserProjectMember(permissions.BasePermission):
@@ -107,6 +108,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
         membership.save()
 
         return Response({"status": "Member role updated"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"], url_path="runs")
+    def project_runs(self, request, pk=None):
+        project = self.get_object()
+        queryset = Run.objects.filter(task__project=project).order_by("-created_at")
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = RunSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = RunSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ProjectMembershipViewSet(viewsets.ModelViewSet):

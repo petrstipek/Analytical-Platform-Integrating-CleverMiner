@@ -139,3 +139,9 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
         run.save(update_fields=["status", "finished_at"])
 
         return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
+
+    @action(detail=False, methods=["get"], url_path="summary")
+    def summary(self, request):
+        data = get_run_status_summary(user=request.user)
+        serializer = RunStatusSummarySerializer(data)
+        return Response(serializer.data)
