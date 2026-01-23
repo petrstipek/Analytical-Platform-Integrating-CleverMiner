@@ -1,4 +1,8 @@
-import { DatasetAnalysisView, DatasetPreview } from '@/modules/datasets/components/organisms';
+import {
+  DatasetAnalysisView,
+  DatasetColumnsAnalysisView,
+  DatasetPreview,
+} from '@/modules/datasets/components/organisms';
 import { useParams } from 'react-router';
 import { DatasetDetailHeader } from '@/modules/datasets/components/molecules';
 import {
@@ -40,6 +44,10 @@ export default function DatasetDetailPage() {
             <TabsTrigger value="preview">Data Preview</TabsTrigger>
           </TabsList>
         </div>
+
+        <TabsContent value="ColumnsAnalysis" className="mt-4">
+          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} />
+        </TabsContent>
 
         <TabsContent value="clmGuidance" className="mt-4">
           <DatasetAnalysisView datasetId={Number(datasetId)} clmGuidance={clmCandidatesData!} />

@@ -15,7 +15,7 @@ export async function getDatasetAnalysis(id: number) {
   return res.data;
 }
 
-export async function getDatasetAnalysisStats(id: number): Promise<DatasetStats[]> {
-  const res = await apiClient.get<DatasetStats[]>(`/datasets/${id}/stats/`);
+export async function getDatasetAnalysisStats(id: number): Promise<DatasetStats> {
+  const res = await apiClient.get<DatasetStats>(`/datasets/${id}/stats/`);
   return res.data;
 }
