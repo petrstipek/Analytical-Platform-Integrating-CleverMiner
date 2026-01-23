@@ -2,9 +2,13 @@ import { useState, useMemo } from 'react';
 import { Search, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { ScrollArea } from '@/shared/components/ui/molecules/scroll-area';
 import { Input } from '@/shared/components/ui/atoms/input';
-import type { DatasetStats } from '@/modules/datasets/api/types/clmGuidance.type';
+import type {
+  DatasetColumnStats,
+  DatasetStats,
+} from '@/modules/datasets/api/types/clmGuidance.type';
 import { ColumnCard } from '@/modules/datasets/components/molecules';
 import ColumnsSummaryCard from '@/modules/datasets/components/atoms/ColumnsSummaryCard';
+import ColumnDetailsDrawer from '@/modules/datasets/components/molecules/ColumnDetailsDrawer';
 
 type DatasetColumnsAnalysisView = {
   columnsAnalysis: DatasetStats;
@@ -13,6 +17,7 @@ export default function DatasetColumnsAnalysisView({
   columnsAnalysis,
 }: DatasetColumnsAnalysisView) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedColumn, setSelectedColumn] = useState<DatasetColumnStats | null>(null);
 
   const processedColumns = useMemo(() => {
     if (!columnsAnalysis?.columns) return [];
@@ -98,7 +103,12 @@ export default function DatasetColumnsAnalysisView({
         {filteredColumns.length > 0 ? (
           <div className="flex flex-col gap-1">
             {filteredColumns.map((item) => (
-              <ColumnCard key={item.data.name} col={item.data} status={item.status} />
+              <ColumnCard
+                key={item.data.name}
+                col={item.data}
+                status={item.status}
+                onClick={() => setSelectedColumn(item.data)}
+              />
             ))}
           </div>
         ) : (
@@ -106,6 +116,11 @@ export default function DatasetColumnsAnalysisView({
             No columns found matching "{searchTerm}"
           </div>
         )}
+        <ColumnDetailsDrawer
+          open={!!selectedColumn}
+          column={selectedColumn}
+          onOpenChange={(isOpen) => !isOpen && setSelectedColumn(null)}
+        />
       </ScrollArea>
     </div>
   );

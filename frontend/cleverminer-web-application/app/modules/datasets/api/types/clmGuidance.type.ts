@@ -38,9 +38,9 @@ export interface DatasetPreviewResponse {
   data: Record<string, any>[];
 }
 
-type DatasetColumnStats = {
+export type DatasetColumnStats = {
   name: string;
-  dtype: ClmStats;
+  dtype: string;
   non_null: number;
   nulls: number;
   nunique: number;

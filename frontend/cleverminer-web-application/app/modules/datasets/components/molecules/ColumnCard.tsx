@@ -5,9 +5,11 @@ import type { ClmCandidate } from '@/modules/datasets/api/types/clmGuidance.type
 export default function ColumnCard({
   col,
   status,
+  onClick,
 }: {
   col: ClmCandidate;
   status: 'good' | 'warning' | 'bad';
+  onClick?: () => void;
 }) {
   const dtype = col.dtype || 'N/A';
 
@@ -25,7 +27,10 @@ export default function ColumnCard({
     col.clm?.recommended_representation || (status === 'bad' ? 'ignored' : 'unknown');
 
   return (
-    <div className="mb-2 flex items-start justify-between rounded-lg border bg-white p-3 shadow-sm transition-all hover:bg-gray-50">
+    <div
+      onClick={onClick}
+      className="mb-2 flex items-start justify-between rounded-lg border bg-white p-3 shadow-sm transition-all hover:bg-gray-50"
+    >
       <div className="flex items-start gap-3">
         <div
           className={`mt-1 rounded p-1 ${
