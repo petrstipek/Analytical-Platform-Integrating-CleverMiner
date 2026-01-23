@@ -1,4 +1,3 @@
-import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import { ScrollArea, ScrollBar } from '@/shared/components/ui/molecules/scroll-area';
 import type { DatasetPreviewResponse } from '@/modules/datasets/api/types/clmGuidance.type';
 
@@ -8,7 +7,7 @@ type DatasetPreviewProps = {
 
 export default function DatasetPreview({ preview }: DatasetPreviewProps) {
   return (
-    <ScrollArea className="h-[600px] w-full max-w-full rounded-md border">
+    <ScrollArea className="h-[600px] w-full max-w-full min-w-0 rounded-md border">
       <div className="min-w-max">
         <table className="text-left text-sm">
           <thead className="sticky top-0 z-10 bg-gray-50 font-semibold text-gray-700 shadow-sm">

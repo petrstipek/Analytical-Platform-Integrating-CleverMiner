@@ -29,7 +29,7 @@ export default function DatasetDetailPage() {
   console.log(columnStatsData);
 
   return (
-    <div className="flex w-full max-w-full min-w-0 flex-col gap-6 overflow-hidden">
+    <div className="grid w-full grid-cols-1 gap-6">
       <DatasetDetailHeader />
 
       <Tabs defaultValue="analysis" className="w-full">
@@ -46,7 +46,9 @@ export default function DatasetDetailPage() {
         </TabsContent>
 
         <TabsContent value="preview" className="mt-4 w-full">
-          <DatasetPreview preview={preview!} />
+          <div className="w-full overflow-hidden">
+            <DatasetPreview preview={preview!} />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
