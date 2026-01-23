@@ -1,6 +1,6 @@
-import type { ClmCandidate } from '@/modules/datasets/api/dataset-analysis.api';
 import { Badge, BarChart3, CheckCircle, XCircle } from 'lucide-react';
 import { DataTypeIcon } from '@/modules/datasets/components/atoms';
+import type { ClmCandidate } from '@/modules/datasets/api/types/clmGuidance.type';
 
 export default function ColumnCard({
   col,
