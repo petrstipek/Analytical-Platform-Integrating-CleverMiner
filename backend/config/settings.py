@@ -189,6 +189,10 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://frontend-production-a802.up.railway.app",
+]
+
 # dj-rest-auth settings
 REST_AUTH = {
     "USE_JWT": True,
@@ -196,9 +200,9 @@ REST_AUTH = {
     "TOKEN_MODEL": None,
     "JWT_AUTH_COOKIE": "cleverminer-analytical-platform-auth",
     "JWT_AUTH_REFRESH_COOKIE": "cleverminer-analytical-platform-refresh",
-    "JWT_AUTH_SECURE": False,
+    "JWT_AUTH_SECURE": True,
     "JWT_AUTH_HTTPONLY": True,
-    "JWT_AUTH_SAMESITE": "Lax",
+    "JWT_AUTH_SAMESITE": "None",
 }
 
 
