@@ -195,12 +195,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://frontend-production-a802.up.railway.app",
+    "https://cleverminer.stipekdevs.cz",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://frontend-production-a802.up.railway.app",
+    "https://cleverminer.stipekdevs.cz",
 ]
 
 # dj-rest-auth settings
