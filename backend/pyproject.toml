@@ -22,6 +22,7 @@ dependencies = [
     "drf-spectacular==0.29.0",
     "flower>=2.0.1",
     "fonttools==4.61.1",
+    "gunicorn>=24.1.1",
     "inflection==0.5.1",
     "joblib==1.5.3",
     "jsonschema==4.25.1",
