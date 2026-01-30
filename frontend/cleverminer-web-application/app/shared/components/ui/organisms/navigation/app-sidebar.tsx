@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  Command,
-  LifeBuoy,
-  Send,
-  Database,
-  FolderDot,
-  SquareCheckBig,
-  CirclePlay,
-} from 'lucide-react';
+import { LifeBuoy, Send, Database, FolderDot, SquareCheckBig, CirclePlay } from 'lucide-react';
 
 import { NavMain } from '@/shared/components/ui/organisms/navigation/nav-main';
 import { NavSecondary } from '@/shared/components/ui/organisms/navigation/nav-secondary';
@@ -88,7 +80,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return {
       name: me.username,
       email: me.email,
-      avatar: '/avatars/shadcn.jpg',
+      avatar: undefined,
     };
   }, [me]);
 
