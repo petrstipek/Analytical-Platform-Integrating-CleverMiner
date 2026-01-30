@@ -5,6 +5,7 @@ import { RunsColumns } from '@/modules/runs/components/organisms/table/runs.colu
 import { useNavigate } from 'react-router';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { LoadingStatus } from '@/shared/components/molecules';
+import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 
 export default function RunsPage() {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ export default function RunsPage() {
 
   if (laodingRunsData || loadingRunsSummary) return <LoadingStatus />;
   if (!runsData || !runsSummaryData) return <div>No runs found</div>;
+
+  const runningRuns = runsData.filter((run) => run.status === RunResultStatus.Running);
 
   return (
     <div>
@@ -40,11 +43,20 @@ export default function RunsPage() {
           variant={'running'}
         />
       </div>
-      <DataTable
-        columns={RunsColumns}
-        data={runsData}
-        onRowClick={(row) => navigate(`/run/${row.id}`)}
-      />
+      <div className="space-y-5">
+        <h3 className="text-2xl font-bold tracking-tight text-gray-900">Running Runs</h3>
+        <DataTable
+          columns={RunsColumns}
+          data={runningRuns}
+          onRowClick={(row) => navigate(`/run/${row.id}`)}
+        />
+        <h3 className="text-2xl font-bold tracking-tight text-gray-900">All Runs</h3>
+        <DataTable
+          columns={RunsColumns}
+          data={runsData}
+          onRowClick={(row) => navigate(`/run/${row.id}`)}
+        />
+      </div>
     </div>
   );
 }

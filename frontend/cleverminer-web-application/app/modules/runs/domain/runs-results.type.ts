@@ -18,9 +18,16 @@ export interface TaskRunResult {
   rules: RunResultRule[];
 }
 
+export enum RunResultStatus {
+  Done = 'done',
+  Running = 'running',
+  Error = 'error',
+  Queued = 'queued',
+}
+
 export interface RunResult {
   id: number;
-  status: 'done' | 'running' | 'error' | 'queued';
+  status: RunResultStatus;
   result?: TaskRunResult;
   started_at: Date;
   finished_at: Date;
