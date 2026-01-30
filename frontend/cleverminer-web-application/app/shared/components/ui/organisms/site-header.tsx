@@ -1,6 +1,3 @@
-import { SidebarIcon } from 'lucide-react';
-
-import { SearchForm } from '@/shared/components/molecules/search-form';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,9 +6,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/shared/components/ui/atoms/breadcrumb';
-import { Button } from '@/shared/components/ui/atoms/button';
 import { Separator } from '@/shared/components/ui/atoms/separator';
-import { SidebarTrigger, useSidebar } from '@/shared/components/ui/organisms/sidebar';
+import { SidebarTrigger } from '@/shared/components/ui/organisms/sidebar';
 import { Link, useLocation } from 'react-router';
 import React from 'react';
 
