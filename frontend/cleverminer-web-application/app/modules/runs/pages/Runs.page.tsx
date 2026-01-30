@@ -4,6 +4,7 @@ import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { RunsColumns } from '@/modules/runs/components/organisms/table/runs.columns';
 import { useNavigate } from 'react-router';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
+import { LoadingStatus } from '@/shared/components/molecules';
 
 export default function RunsPage() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function RunsPage() {
     queryFn: () => getRunsSummary(),
   });
 
-  if (laodingRunsData || loadingRunsSummary) return <div>Loading...</div>;
+  if (laodingRunsData || loadingRunsSummary) return <LoadingStatus />;
   if (!runsData || !runsSummaryData) return <div>No runs found</div>;
 
   return (

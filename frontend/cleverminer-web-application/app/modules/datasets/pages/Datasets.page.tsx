@@ -3,6 +3,7 @@ import { getDatasets } from '@/modules/datasets/api/datasets.api';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { DatasetColumns } from '@/modules/datasets/components/organisms/table/dataset.columns';
 import { useNavigate } from 'react-router';
+import { LoadingStatus } from '@/shared/components/molecules';
 
 export default function DatasetsPage() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function DatasetsPage() {
     queryFn: () => getDatasets(),
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingStatus />;
   if (!data) return <div>No datasets found</div>;
 
   return (
