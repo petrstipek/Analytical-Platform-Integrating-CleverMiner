@@ -1,14 +1,11 @@
 import { useFormContext, Controller } from 'react-hook-form';
-import { Target, Filter } from 'lucide-react';
 import { Tabs, TabsList, TabsContent } from '@/shared/components/ui/molecules/tabs';
-import { Label } from '@/shared/components/ui/atoms/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
 import { CedentEditor } from '../../molecules';
 import { LOGIC_LAYOUTS, SECTION_LABELS } from '@/modules/tasks/utils/logic-layout';
 import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
 import TabItem from '@/modules/tasks/components/atoms/TabItem';
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
-import { AttributeSelector } from '@/modules/tasks/components/atoms';
+import { TargetEditor } from '@/modules/tasks/components/molecules';
 
 interface Step2LogicBuilderProps {
   procedure: string;
@@ -21,7 +18,7 @@ export default function Step2LogicBuilder({
   availableColumns,
   isLoading,
 }: Step2LogicBuilderProps) {
-  const { control, register, watch } = useFormContext<CreateTaskFormValues>();
+  const { control, watch } = useFormContext<CreateTaskFormValues>();
 
   const visibleSections = LOGIC_LAYOUTS[procedure] || [];
 
@@ -38,72 +35,15 @@ export default function Step2LogicBuilder({
     return <div>Loading columns...</div>;
   }
 
-  if (procedure === 'CFMiner') {
-    return (
-      <div className="space-y-6">
-        {header}
-        {visibleSections.includes('target') && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base font-medium">
-                <Target className="text-primary h-5 w-5" /> Target Attribute
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Label>Column Name</Label>
-                <AttributeSelector
-                  name="configuration.target"
-                  columns={availableColumns}
-                  disabled={isLoading}
-                />
-                <p className="text-muted-foreground text-sm">
-                  The main attribute to analyze (histogram axis).
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {visibleSections.includes('cond') && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base font-medium">
-                <Filter className="text-primary h-5 w-5" /> Condition
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Controller
-                control={control}
-                name="configuration.cond"
-                render={({ field }) => (
-                  <CedentEditor
-                    title="Filter Condition"
-                    description="Restrict the analysis to a specific subset of data."
-                    config={
-                      (field.value as any) || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }
-                    }
-                    onChange={field.onChange}
-                    availableColumns={availableColumns}
-                  />
-                )}
-              />
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    );
-  }
+  const tabsDefaultValue = visibleSections.includes('target')
+    ? visibleSections[1]
+    : visibleSections[0];
 
   return (
     <div className={'space-y-6'}>
       {header}
       <div className="flex min-h-[500px] flex-col gap-6 md:flex-row">
-        <Tabs
-          defaultValue={visibleSections[0]}
-          orientation="vertical"
-          className="flex w-full gap-6"
-        >
+        <Tabs defaultValue={tabsDefaultValue} orientation="vertical" className="flex w-full gap-6">
           <TabsList className="flex h-auto w-48 flex-col items-start justify-start space-y-1 bg-transparent p-0">
             {visibleSections.map((section) => {
               if (section === 'target') return null;
@@ -121,11 +61,12 @@ export default function Step2LogicBuilder({
               );
             })}
           </TabsList>
-
+          {visibleSections.includes('target') && (
+            <TargetEditor availableColumns={availableColumns} isLoading={isLoading} />
+          )}
           <div className="bg-background flex-1 rounded-lg border p-6 shadow-sm">
             {visibleSections.map((section) => {
               if (section === 'target') return null;
-
               return (
                 <TabsContent key={section} value={section} className="m-0 mt-0">
                   <Controller
