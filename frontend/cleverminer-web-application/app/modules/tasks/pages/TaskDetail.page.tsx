@@ -53,7 +53,7 @@ export default function TaskDetailPage() {
         return <CFMinerDetails params={task.params} />;
       case ProceduresType.FOURFTMINER:
         return <FourFtMinerDetails params={task.params} />;
-      case ProceduresType.UCIMINER:
+      case ProceduresType.UICMINER:
         return <UICMinerDetails params={task.params} />;
       default:
         return (

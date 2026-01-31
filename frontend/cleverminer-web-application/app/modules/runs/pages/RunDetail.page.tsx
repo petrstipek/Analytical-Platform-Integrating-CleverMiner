@@ -15,5 +15,5 @@ export default function RunDetail() {
   if (isLoading) return <LoadingStatus />;
   if (!data) return <div>No run found</div>;
 
-  return <RunResultsView task={data} />;
+  return <RunResultsView runResult={data} />;
 }

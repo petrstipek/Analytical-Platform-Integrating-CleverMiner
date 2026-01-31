@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui/molecules/card';
 
 interface FourfoldTableProps {
-  data: [number, number, number, number];
+  data: number[];
 }
 
 export default function FourfoldTable({ data }: FourfoldTableProps) {
@@ -14,7 +14,7 @@ export default function FourfoldTable({ data }: FourfoldTableProps) {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-muted-foreground text-sm font-medium">
-          Contingency Table (4ft)
+          Contingency Table
         </CardTitle>
       </CardHeader>
       <CardContent>

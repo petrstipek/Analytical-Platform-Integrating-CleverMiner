@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -7,12 +7,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/components/ui/organisms/table';
-import type { RunResultRule } from '@/modules/runs/domain/runs-results.type';
+
+export type RuleListRow = {
+  id: number;
+  text: string;
+  metrics?: {
+    confidence?: number;
+    base?: number;
+  };
+};
 
 interface RulesListProps {
-  rules: RunResultRule[];
+  rules: RuleListRow[];
   selectedRuleId: number | null;
-  onSelectRule: (rule: RunResultRule) => void;
+  onSelectRule: (rule: RuleListRow) => void;
 }
 
 export default function RulesList({ rules, selectedRuleId, onSelectRule }: RulesListProps) {
@@ -31,6 +39,9 @@ export default function RulesList({ rules, selectedRuleId, onSelectRule }: Rules
     );
   };
 
+  const showConfidence = rules.some((r) => r.metrics?.confidence != null);
+  const showBase = rules.some((r) => r.metrics?.base != null);
+
   return (
     <div className="overflow-hidden rounded-md border bg-white shadow-sm">
       <Table>
@@ -38,25 +49,37 @@ export default function RulesList({ rules, selectedRuleId, onSelectRule }: Rules
           <TableRow>
             <TableHead className="w-[50px]">ID</TableHead>
             <TableHead>Rule Logic</TableHead>
-            <TableHead className="text-right">Confidence</TableHead>
-            <TableHead className="text-right">Base</TableHead>
+            {showConfidence && <TableHead className="text-right">Confidence</TableHead>}
+            {showBase && <TableHead className="text-right">Base</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
           {rules.map((rule) => (
             <TableRow
               key={rule.id}
-              className={`cursor-pointer transition-colors ${selectedRuleId === rule.id ? 'bg-indigo-50 hover:bg-indigo-100' : 'hover:bg-slate-50'}`}
+              className={`cursor-pointer transition-colors ${
+                selectedRuleId === rule.id
+                  ? 'bg-indigo-50 hover:bg-indigo-100'
+                  : 'hover:bg-slate-50'
+              }`}
               onClick={() => onSelectRule(rule)}
             >
               <TableCell className="text-muted-foreground font-mono text-xs">{rule.id}</TableCell>
               <TableCell className="text-sm">{formatRule(rule.text)}</TableCell>
-              <TableCell className="text-right font-mono text-xs">
-                {(rule.quantifiers.conf * 100).toFixed(1)}%
-              </TableCell>
-              <TableCell className="text-right font-mono text-xs">
-                {rule.quantifiers.base.toLocaleString()}
-              </TableCell>
+
+              {showConfidence && (
+                <TableCell className="text-right font-mono text-xs">
+                  {rule.metrics?.confidence != null
+                    ? `${(rule.metrics.confidence * 100).toFixed(1)}%`
+                    : '—'}
+                </TableCell>
+              )}
+
+              {showBase && (
+                <TableCell className="text-right font-mono text-xs">
+                  {rule.metrics?.base != null ? rule.metrics.base.toLocaleString() : '—'}
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
