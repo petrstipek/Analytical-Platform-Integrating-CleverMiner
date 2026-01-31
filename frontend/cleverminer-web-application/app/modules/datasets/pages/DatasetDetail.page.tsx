@@ -47,7 +47,7 @@ export default function DatasetDetailPage() {
         </div>
 
         <TabsContent value="ColumnsAnalysis" className="mt-4">
-          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} />
+          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} datasetId={datasetId!} />
         </TabsContent>
 
         <TabsContent value="clmGuidance" className="mt-4">

@@ -14,14 +14,20 @@ import {
   DrawerTitle,
 } from '@/shared/components/ui/organisms/drawer';
 import {
+  DiscretizeStrategiesOptions,
+  type DiscretizeStrategy,
+  FillnaStrategiesOptions,
+  type FillnaStrategy,
   TransformOptions,
   type TransformStep,
 } from '@/modules/datasets/domain/datasetTransformations.type';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Input } from '@/shared/components/ui/atoms/input';
 import { Label } from '@/shared/components/ui/atoms/label';
 import { useColumnTransformConfig } from '@/modules/datasets/hooks/columnTransformConfig.hook';
 import { parseConstant, stepLabel } from '@/modules/datasets/utils/transformUi';
+import { Checkbox } from '@/shared/components/ui/atoms/checkbox';
+import type { CheckedState } from '@radix-ui/react-checkbox';
 
 type ColumnDetailsDrawerProps = {
   column: DatasetColumnStats | null;
@@ -44,6 +50,14 @@ export default function ColumnDetailsDrawer({
 
   const { config, updateConfig, derived } = useColumnTransformConfig(column.name);
   const addStep = useCallback((step: TransformStep) => onAddStep(step), [onAddStep]);
+  const strategies = Object.values(FillnaStrategiesOptions) as FillnaStrategy[];
+  const [fillNaStrategy, setFillnaStrategy] = useState<FillnaStrategy>(
+    FillnaStrategiesOptions.mean,
+  );
+  const discretizationStrategies = Object.values(
+    DiscretizeStrategiesOptions,
+  ) as DiscretizeStrategy[];
+  const [discretizationStrategy, setDiscretizationStrategy] = useState<DiscretizeStrategy>();
 
   const addColumnStep = useCallback(
     <T extends Extract<TransformStep, { column: string }>>(
@@ -58,6 +72,23 @@ export default function ColumnDetailsDrawer({
     },
     [onAddStep, column.name],
   );
+
+  const applyDiscretize = () => {
+    if (discretizationStrategy === DiscretizeStrategiesOptions.explicit) {
+      addColumnStep(TransformOptions.discretize, {
+        method: 'explicit',
+        bins: config.explicitBins,
+        output_column: config.outputColumn,
+      });
+      return;
+    }
+
+    addColumnStep(TransformOptions.discretize, {
+      discretizationStrategy,
+      k: config.binK,
+      output_column: config.outputColumn,
+    });
+  };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="right">
@@ -123,42 +154,51 @@ export default function ColumnDetailsDrawer({
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {(['mean', 'median', 'mode'] as const).map((strategy) => (
+                    {strategies.map((strategy) => (
                       <Button
                         key={strategy}
-                        variant="outline"
+                        variant={fillNaStrategy === strategy ? 'default' : 'outline'}
                         size="sm"
-                        onClick={() =>
-                          addColumnStep(TransformOptions.fillMissingNumbers, { strategy })
-                        }
+                        onClick={() => {
+                          setFillnaStrategy(strategy);
+                          if (strategy !== FillnaStrategiesOptions.constant) {
+                            addColumnStep(TransformOptions.fillMissingNumbers, { strategy });
+                          }
+                        }}
                       >
                         Fill with {strategy}
                       </Button>
                     ))}
                   </div>
 
-                  <div className="grid gap-2">
-                    <Label className="text-xs text-gray-600">Fill with constant</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        value={config.constantValue}
-                        onChange={(e) => updateConfig({ constantValue: e.target.value })}
-                        placeholder="e.g. 0 or Unknown"
-                      />
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          addColumnStep(TransformOptions.fillMissingNumbers, {
-                            strategy: 'constant',
-                            value: parseConstant,
-                          })
-                        }
-                        disabled={config.constantValue.trim() === ''}
-                      >
-                        Apply
-                      </Button>
+                  {fillNaStrategy === FillnaStrategiesOptions.constant && (
+                    <div className="grid gap-2">
+                      <Label className="text-xs text-gray-600">Fill with constant</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={config.constantValue}
+                          onChange={(e) => updateConfig({ constantValue: e.target.value })}
+                          placeholder="e.g. 0 or Unknown"
+                        />
+                        <Button
+                          variant={
+                            fillNaStrategy === FillnaStrategiesOptions.constant
+                              ? 'default'
+                              : 'outline'
+                          }
+                          onClick={() =>
+                            addColumnStep(TransformOptions.fillMissingNumbers, {
+                              strategy: 'constant',
+                              value: parseConstant,
+                            })
+                          }
+                          disabled={config.constantValue.trim() === ''}
+                        >
+                          Apply
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </section>
 
                 <section className="space-y-4">
@@ -168,16 +208,31 @@ export default function ColumnDetailsDrawer({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <input
+                    <Checkbox
                       id="overwrite"
-                      type="checkbox"
                       checked={config.overwriteOriginal}
-                      onChange={(e) => updateConfig({ overwriteOriginal: e.target.checked })}
+                      onCheckedChange={(checked: CheckedState) =>
+                        updateConfig({ overwriteOriginal: checked === true })
+                      }
                     />
                     <Label htmlFor="overwrite" className="text-xs text-gray-700">
                       Overwrite original column
                     </Label>
                   </div>
+                  {config.overwriteOriginal && (
+                    <div className="grid gap-2">
+                      <Label className="text-xs text-gray-600">Output column</Label>
+                      <Input
+                        value={config.outputColumn}
+                        onChange={(e) => updateConfig({ outputColumn: e.target.value })}
+                        placeholder={derived.defaultOutputCol}
+                      />
+                      <p className="text-[11px] text-gray-500">
+                        Leave empty to use{' '}
+                        <span className="font-mono">{derived.defaultOutputCol}</span>
+                      </p>
+                    </div>
+                  )}
 
                   <div className="grid gap-2">
                     <Label className="text-xs text-gray-600">Number of bins (k)</Label>
@@ -191,95 +246,107 @@ export default function ColumnDetailsDrawer({
 
                   <div className="grid grid-cols-2 gap-3">
                     <Button
-                      variant="outline"
-                      onClick={() =>
+                      variant={
+                        discretizationStrategy === DiscretizeStrategiesOptions.quantile
+                          ? 'default'
+                          : 'outline'
+                      }
+                      onClick={() => {
+                        setDiscretizationStrategy(DiscretizeStrategiesOptions.quantile);
                         addColumnStep(TransformOptions.discretize, {
                           method: 'quantile',
                           k: config.binK,
                           output_column: config.overwriteOriginal
                             ? column.name
                             : `${column.name}_bin`,
-                        })
-                      }
+                        });
+                      }}
                     >
                       Quantiles ({config.binK} bins)
                     </Button>
 
                     <Button
-                      variant="outline"
-                      onClick={() =>
+                      variant={
+                        discretizationStrategy === DiscretizeStrategiesOptions.equal_width
+                          ? 'default'
+                          : 'outline'
+                      }
+                      onClick={() => {
+                        setDiscretizationStrategy(DiscretizeStrategiesOptions.equal_width);
                         addColumnStep(TransformOptions.discretize, {
                           method: 'equal_width',
                           k: config.binK,
                           output_column: config.overwriteOriginal
                             ? column.name
                             : `${column.name}_bin`,
-                        })
-                      }
+                        });
+                      }}
                     >
                       Equal Width ({config.binK} bins)
                     </Button>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label className="text-xs text-gray-600">Output column</Label>
-                    <Input
-                      value={config.outputColumn}
-                      onChange={(e) => updateConfig({ outputColumn: e.target.value })}
-                      placeholder={derived.defaultOutputCol}
-                    />
-                    <p className="text-[11px] text-gray-500">
-                      Leave empty to use{' '}
-                      <span className="font-mono">{derived.defaultOutputCol}</span>
-                    </p>
-                  </div>
-
-                  <div className="mt-4 space-y-2 rounded-md border bg-white p-3">
-                    <div className="text-sm font-semibold text-gray-900">Explicit bins</div>
-
-                    <div className="grid gap-2">
-                      <Label className="text-xs text-gray-600">
-                        Bins (comma or space separated)
-                      </Label>
-                      <Input
-                        value={config.explicitBins}
-                        onChange={(e) => updateConfig({ explicitBins: e.target.value })}
-                        placeholder="e.g. 0, 10, 20, 50"
-                      />
-                      <p className="text-[11px] text-gray-500">
-                        Must be strictly increasing. Needs at least 2 numbers.
-                      </p>
-                    </div>
-
-                    <div className="grid gap-2">
-                      <Label className="text-xs text-gray-600">Labels (optional)</Label>
-                      <Input
-                        value={config.explicitLabels}
-                        onChange={(e) => updateConfig({ explicitLabels: e.target.value })}
-                        placeholder="e.g. low, mid, high"
-                      />
-                      {!derived.labelsOk && (
-                        <p className="text-[11px] text-red-600">
-                          Labels count must equal bins.length - 1.
-                        </p>
-                      )}
-                    </div>
-
                     <Button
-                      variant="outline"
-                      className="w-full"
-                      disabled={!derived.binsArray || !derived.labelsOk}
+                      variant={
+                        discretizationStrategy === DiscretizeStrategiesOptions.explicit
+                          ? 'default'
+                          : 'outline'
+                      }
                       onClick={() =>
-                        addColumnStep(TransformOptions.discretize, {
-                          method: 'explicit',
-                          bins: derived.binsArray!,
-                          labels: derived.labelsArray,
-                          output_column: derived.resolvedOutputCol,
-                        })
+                        setDiscretizationStrategy(DiscretizeStrategiesOptions.explicit)
                       }
                     >
-                      Apply Explicit Binning
+                      Explicit
                     </Button>
                   </div>
+
+                  {discretizationStrategy === DiscretizeStrategiesOptions.explicit && (
+                    <div className="mt-4 space-y-2 rounded-md border bg-white p-3">
+                      <div className="text-sm font-semibold text-gray-900">Explicit bins</div>
+
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-gray-600">
+                          Bins (comma or space separated)
+                        </Label>
+                        <Input
+                          value={config.explicitBins}
+                          onChange={(e) => updateConfig({ explicitBins: e.target.value })}
+                          placeholder="e.g. 0, 10, 20, 50"
+                        />
+                        <p className="text-[11px] text-gray-500">
+                          Must be strictly increasing. Needs at least 2 numbers.
+                        </p>
+                      </div>
+
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-gray-600">Labels (optional)</Label>
+                        <Input
+                          value={config.explicitLabels}
+                          onChange={(e) => updateConfig({ explicitLabels: e.target.value })}
+                          placeholder="e.g. low, mid, high"
+                        />
+                        {!derived.labelsOk && (
+                          <p className="text-[11px] text-red-600">
+                            Labels count must equal bins.length - 1.
+                          </p>
+                        )}
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        disabled={!derived.binsArray || !derived.labelsOk}
+                        onClick={() =>
+                          addColumnStep(TransformOptions.discretize, {
+                            method: 'explicit',
+                            bins: derived.binsArray!,
+                            labels: derived.labelsArray,
+                            output_column: derived.resolvedOutputCol,
+                          })
+                        }
+                      >
+                        Apply Explicit Binning
+                      </Button>
+                    </div>
+                  )}
                 </section>
 
                 <section className="space-y-3">
@@ -289,9 +356,9 @@ export default function ColumnDetailsDrawer({
                   <Button
                     variant="outline"
                     className="w-full border-dashed border-red-200 text-red-600 hover:bg-red-50"
-                    onClick={() =>
-                      addStep({ op: TransformOptions.dropColumns, columns: [column.name] })
-                    }
+                    onClick={() => {
+                      addStep({ op: TransformOptions.dropColumns, columns: [column.name] });
+                    }}
                   >
                     Drop Entire Column
                   </Button>

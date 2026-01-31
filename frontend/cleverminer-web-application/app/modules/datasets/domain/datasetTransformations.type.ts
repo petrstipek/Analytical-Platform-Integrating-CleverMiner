@@ -5,8 +5,22 @@ export enum TransformOptions {
   discretize = 'bin',
 }
 
-export const FillnaStrategies = ['mean', 'median', 'mode', 'constant'] as const;
-export type FillnaStrategy = (typeof FillnaStrategies)[number];
+export enum FillnaStrategiesOptions {
+  mean = 'mean',
+  median = 'median',
+  mode = 'mode',
+  constant = 'constant',
+}
+
+export type FillnaStrategy = FillnaStrategiesOptions;
+
+export enum DiscretizeStrategiesOptions {
+  quantile = 'quantile',
+  equal_width = 'equal_width',
+  explicit = 'explicit',
+}
+
+export type DiscretizeStrategy = DiscretizeStrategiesOptions;
 
 export type TransformFillnaStep = {
   op: TransformOptions.fillMissingNumbers;
@@ -35,14 +49,14 @@ export type TransformBinStep =
   | {
       op: TransformOptions.discretize;
       column: string;
-      method: 'quantile' | 'equal_width';
+      method: DiscretizeStrategiesOptions.quantile | DiscretizeStrategiesOptions.equal_width;
       k: number;
       output_column?: string;
     }
   | {
       op: TransformOptions.discretize;
       column: string;
-      method: 'explicit';
+      method: DiscretizeStrategiesOptions.explicit;
       bins: number[];
       labels?: string[];
       output_column?: string;

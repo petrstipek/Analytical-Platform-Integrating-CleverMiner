@@ -16,12 +16,15 @@ import {
   TransformOptions,
   type TransformStep,
 } from '@/modules/datasets/domain/datasetTransformations.type';
+import { createDerivedDataset } from '@/modules/datasets/api/dataset-analysis.api';
 
 type DatasetColumnsAnalysisView = {
   columnsAnalysis: DatasetStats;
+  datasetId: string;
 };
 export default function DatasetColumnsAnalysisView({
   columnsAnalysis,
+  datasetId,
 }: DatasetColumnsAnalysisView) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedColumn, setSelectedColumn] = useState<DatasetColumnStats | null>(null);
@@ -78,6 +81,22 @@ export default function DatasetColumnsAnalysisView({
     return [];
   }
 
+  async function handleTransformation() {
+    if (steps.length === 0) return;
+
+    //TODO - needs refactor, loading and error states
+
+    const payload = {
+      name: `Derived_${new Date().toISOString()}`,
+      transform_spec: { steps },
+      output_format: 'csv' as const,
+    };
+
+    console.log(payload);
+    const derived = await createDerivedDataset(datasetId, payload);
+    console.log(derived);
+  }
+
   return (
     <div className="flex flex-col gap-4">
       {steps.length > 0 && (
@@ -93,11 +112,7 @@ export default function DatasetColumnsAnalysisView({
 
                 return (
                   <>
-                    <Badge
-                      key={`${s.op}-${idx}`} // ✅ no need for s.column
-                      variant="secondary"
-                      className="bg-blue-100"
-                    >
+                    <Badge key={`${s.op}-${idx}`} variant="secondary" className="bg-blue-100">
                       {label}: {s.op}
                       <button
                         onClick={() => removeStepAtGlobalIndex(idx)}
@@ -116,12 +131,7 @@ export default function DatasetColumnsAnalysisView({
             <Button variant="ghost" size="sm" onClick={clearAll} className="text-gray-600">
               <Trash2 className="mr-2 h-4 w-4" /> Clear All
             </Button>
-            <Button
-              size="sm"
-              onClick={() => {
-                /* api call to create derived */
-              }}
-            >
+            <Button size="sm" onClick={handleTransformation}>
               <Play className="mr-2 h-4 w-4 fill-current" /> Apply All
             </Button>
           </div>
