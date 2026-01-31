@@ -109,6 +109,7 @@ class RunSummarySerializer(serializers.ModelSerializer):
 
 class RunDetailSerializer(serializers.ModelSerializer):
     result_summary = serializers.SerializerMethodField()
+    task = TaskSerializer(read_only=True)
 
     class Meta:
         model = Run
@@ -122,6 +123,7 @@ class RunDetailSerializer(serializers.ModelSerializer):
             "started_at",
             "finished_at",
             "result_summary",
+            "task",
         ]
         read_only_fields = fields
 
