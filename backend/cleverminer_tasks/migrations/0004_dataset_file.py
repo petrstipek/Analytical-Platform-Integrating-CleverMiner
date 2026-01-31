@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("cleverminer_tasks", "0003_project_dataset_projects_task_project_and_more"),
     ]
