@@ -82,14 +82,18 @@ class DatasetViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def preview(self, request, pk=None):
+        print("starting preview")
         dataset = self.get_object()
+        print("dataset got")
         rows = int(request.query_params.get("rows", 50))
         rows = max(1, min(rows, 500))
-
+        print("dataset preparing to load")
         df = load_dataset(dataset, nrows=rows)
-
+        print("dataset loaded")
         df.replace([float("inf"), float("-inf"), float("nan")], None, inplace=True)
         preview_records = df.where(pd.notnull(df), None).to_dict(orient="records")
+
+        print("finished preview")
 
         return Response(
             {
@@ -102,6 +106,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def stats(self, request, pk=None):
+        print("starting stats")
         dataset = self.get_object()
 
         df = load_dataset(dataset, nrows=None)
@@ -148,6 +153,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
                 }
                 for k, v in vc.items()
             ]
+        print("finished stats")
 
         return Response(
             {
@@ -160,6 +166,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"], url_path="clm-candidates")
     def clm_candidates(self, request, pk=None):
+        print("starting clm candidates")
         dataset = self.get_object()
 
         max_categories_default = int(
@@ -178,6 +185,8 @@ class DatasetViewSet(viewsets.ModelViewSet):
             target_max_unique=target_max_unique,
             ignore_columns=ignore_columns,
         )
+
+        print("finished clm candidates")
 
         return Response(
             {

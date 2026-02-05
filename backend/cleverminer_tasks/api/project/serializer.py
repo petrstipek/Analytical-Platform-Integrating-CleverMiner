@@ -5,16 +5,18 @@ from cleverminer_tasks.models import ProjectRole, ProjectMembership, Project
 
 User = get_user_model()
 
+
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = "__all__"
         read_only_fields = ("owner",)
 
+
 class ProjectMembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectMembership
-        fields = '__all__'
+        fields = "__all__"
 
 
 class AddMemberSerializer(serializers.Serializer):
@@ -44,9 +46,12 @@ class AddMemberSerializer(serializers.Serializer):
 
         return data
 
+
 class MemberActionSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
-    role = serializers.ChoiceField(choices=[ProjectRole.VIEWER, ProjectRole.EDITOR], required=False)
+    role = serializers.ChoiceField(
+        choices=[ProjectRole.VIEWER, ProjectRole.EDITOR], required=False
+    )
 
     @staticmethod
     def validate_user_id(user_id):
@@ -60,7 +65,9 @@ class MemberActionSerializer(serializers.Serializer):
         target_user = data.pop("user_id")
 
         try:
-            membership = ProjectMembership.objects.get(project=project, user=target_user)
+            membership = ProjectMembership.objects.get(
+                project=project, user=target_user
+            )
         except ProjectMembership.DoesNotExist:
             raise serializers.ValidationError("User is not a member of the project.")
 

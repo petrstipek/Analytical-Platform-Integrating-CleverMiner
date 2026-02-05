@@ -3,6 +3,7 @@ import { columns } from '@/modules/tasks/components/organisms/table/columns';
 import { useQuery } from '@tanstack/react-query';
 import { getTasks } from '@/modules/tasks/api/tasks.api';
 import { useNavigate } from 'react-router';
+import { LoadingStatus } from '@/shared/components/molecules';
 
 export default function TasksPage() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function TasksPage() {
     queryKey: ['tasks'],
     queryFn: getTasks,
   });
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingStatus />;
   if (!data) return <div>No tasks found</div>;
 
   return (

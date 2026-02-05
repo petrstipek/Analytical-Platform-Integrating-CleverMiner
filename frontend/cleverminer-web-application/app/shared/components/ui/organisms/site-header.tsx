@@ -1,6 +1,3 @@
-import { SidebarIcon } from 'lucide-react';
-
-import { SearchForm } from '@/shared/components/molecules/search-form';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,11 +6,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/shared/components/ui/atoms/breadcrumb';
-import { Button } from '@/shared/components/ui/atoms/button';
 import { Separator } from '@/shared/components/ui/atoms/separator';
-import { SidebarTrigger, useSidebar } from '@/shared/components/ui/organisms/sidebar';
+import { SidebarTrigger } from '@/shared/components/ui/organisms/sidebar';
+import { Link, useLocation } from 'react-router';
+import React from 'react';
 
 export function PlatformSiteHeader() {
+  const location = useLocation();
+
+  const pathNames = location.pathname.split('/').filter((x) => x);
+
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
       <SidebarTrigger className="-ml-1" />
@@ -21,12 +23,33 @@ export function PlatformSiteHeader() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbLink href="#">Building Your Application</BreadcrumbLink>
+            <BreadcrumbLink asChild>
+              <Link invaders-link="true" to="/">
+                Dashboard
+              </Link>
+            </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator className="hidden md:block" />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-          </BreadcrumbItem>
+
+          {pathNames.map((value, index) => {
+            const last = index === pathNames.length - 1;
+            const to = `/${pathNames.slice(0, index + 1).join('/')}`;
+            const label = value.charAt(0).toUpperCase() + value.slice(1).replace(/-/g, ' ');
+
+            return (
+              <React.Fragment key={to}>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  {last ? (
+                    <BreadcrumbPage>{label}</BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild className="hidden md:block">
+                      <Link to={to}>{label}</Link>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </React.Fragment>
+            );
+          })}
         </BreadcrumbList>
       </Breadcrumb>
     </header>

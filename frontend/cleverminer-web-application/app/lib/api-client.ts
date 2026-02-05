@@ -35,7 +35,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await apiClient.post('/auth/refresh/', {});
+        await apiClient.post('/auth/token/refresh/', {});
         return apiClient(originalRequest);
       } catch {
         if (!isRedirectingToLogin && window.location.pathname !== '/login') {

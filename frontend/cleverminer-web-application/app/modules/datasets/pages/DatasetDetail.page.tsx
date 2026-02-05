@@ -11,6 +11,7 @@ import {
 } from '@/modules/datasets/hooks/datasetAnalysis.hook';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/components/ui/molecules/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
+import { LoadingStatus } from '@/shared/components/molecules';
 
 export default function DatasetDetailPage() {
   const { datasetId } = useParams();
@@ -27,7 +28,7 @@ export default function DatasetDetailPage() {
   const loading = isAnalysing || previewLoading;
   const mainError = error || previewError;
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingStatus />;
   if (mainError) return <div>Error loading dataset analysis.</div>;
 
   console.log(columnStatsData);
@@ -46,7 +47,7 @@ export default function DatasetDetailPage() {
         </div>
 
         <TabsContent value="ColumnsAnalysis" className="mt-4">
-          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} />
+          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} datasetId={datasetId!} />
         </TabsContent>
 
         <TabsContent value="clmGuidance" className="mt-4">

@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("cleverminer_tasks", "0002_run_celery_task_id"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

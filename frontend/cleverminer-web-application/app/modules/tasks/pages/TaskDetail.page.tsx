@@ -14,6 +14,7 @@ import { Button } from '@/shared/components/ui/atoms/button';
 import { TaskRunsColumns } from '@/modules/tasks/components/organisms/table/taskRuns.columns';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { useCreateAndExecuteRunMutation } from '@/modules/tasks/hooks/tasks.hook';
+import { LoadingStatus } from '@/shared/components/molecules';
 
 export default function TaskDetailPage() {
   const { taskId } = useParams();
@@ -41,7 +42,7 @@ export default function TaskDetailPage() {
   const { mutate: createAndExecuteRun } = useCreateAndExecuteRunMutation();
 
   if (!isValidId) return <div>Invalid Task ID</div>;
-  if (isLoading) return <div className="p-10 text-center">Loading task details...</div>;
+  if (isLoading) return <LoadingStatus title={'Loading task detail...'} />;
   if (error || !task) return <div>Error loading task.</div>;
 
   const renderProcedureDetails = () => {
@@ -52,7 +53,7 @@ export default function TaskDetailPage() {
         return <CFMinerDetails params={task.params} />;
       case ProceduresType.FOURFTMINER:
         return <FourFtMinerDetails params={task.params} />;
-      case ProceduresType.UCIMINER:
+      case ProceduresType.UICMINER:
         return <UICMinerDetails params={task.params} />;
       default:
         return (

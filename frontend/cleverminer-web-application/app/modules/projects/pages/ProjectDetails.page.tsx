@@ -14,6 +14,7 @@ import { getTasksForProject } from '@/modules/projects/api/queries/tasks.query';
 import { useUploadDatasetMutation } from '@/modules/datasets/hooks/datasets.hook';
 import type { UploadPayload } from '@/modules/datasets/domain/uploadDataset.type';
 import { getProjectDatasets } from '@/modules/projects/api/queries/datasets.query';
+import { LoadingStatus } from '@/shared/components/molecules';
 
 const projectTabs: TabsNavItem[] = [
   { value: 'overview', label: 'Overview' },
@@ -57,7 +58,7 @@ export default function ProjectDetailsPage() {
     baseProjectLoading || projectTasksLoading || runsDataLoading || projectDatasetsLoading;
   const error = !baseProjectLoading || !baseProjectData || !runsData || !projectDatasets;
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingStatus />;
   if (!error) return <div>No project data found</div>;
 
   return (

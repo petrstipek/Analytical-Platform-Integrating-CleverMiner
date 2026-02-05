@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getDatasets, getTask } from '@/modules/tasks/api/tasks.api';
 import { Loader2 } from 'lucide-react';
 import { useParams } from 'react-router';
+import { LoadingStatus } from '@/shared/components/molecules';
 
 export default function EditTaskPage() {
   const { taskId } = useParams();
@@ -23,12 +24,7 @@ export default function EditTaskPage() {
   });
 
   if (taskId && isLoadingTask) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="text-primary h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading task configuration...</span>
-      </div>
-    );
+    return <LoadingStatus title={'Loading task configuration...'} />;
   }
 
   if (taskId && !isLoadingTask && taskError) {

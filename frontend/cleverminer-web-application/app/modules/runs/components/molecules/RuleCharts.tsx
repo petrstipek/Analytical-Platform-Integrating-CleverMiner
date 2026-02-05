@@ -1,8 +1,8 @@
-import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Bar, BarChart, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui/molecules/card';
 
 interface RuleChartsProps {
-  fourfold: [number, number, number, number];
+  fourfold: number[];
 }
 
 export default function RuleCharts({ fourfold }: RuleChartsProps) {

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import { Search, CheckCircle2, AlertTriangle, XCircle, Play, Trash2 } from 'lucide-react';
 import { ScrollArea } from '@/shared/components/ui/molecules/scroll-area';
 import { Input } from '@/shared/components/ui/atoms/input';
 import type {
@@ -9,15 +9,26 @@ import type {
 import { ColumnCard } from '@/modules/datasets/components/molecules';
 import ColumnsSummaryCard from '@/modules/datasets/components/atoms/ColumnsSummaryCard';
 import ColumnDetailsDrawer from '@/modules/datasets/components/molecules/ColumnDetailsDrawer';
+import { useTransformations } from '@/modules/datasets/hooks/datasetTransformation.hook';
+import { Badge } from '@/shared/components/ui/atoms/badge';
+import { Button } from '@/shared/components/ui/atoms/button';
+import {
+  TransformOptions,
+  type TransformStep,
+} from '@/modules/datasets/domain/datasetTransformations.type';
+import { createDerivedDataset } from '@/modules/datasets/api/dataset-analysis.api';
 
 type DatasetColumnsAnalysisView = {
   columnsAnalysis: DatasetStats;
+  datasetId: string;
 };
 export default function DatasetColumnsAnalysisView({
   columnsAnalysis,
+  datasetId,
 }: DatasetColumnsAnalysisView) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedColumn, setSelectedColumn] = useState<DatasetColumnStats | null>(null);
+  const { steps, upsertStep, removeStepAtGlobalIndex, clearAll } = useTransformations();
 
   const processedColumns = useMemo(() => {
     if (!columnsAnalysis?.columns) return [];
@@ -56,8 +67,76 @@ export default function DatasetColumnsAnalysisView({
     };
   }, [processedColumns]);
 
+  function hasColumn(step: TransformStep): step is Extract<TransformStep, { column: string }> {
+    return 'column' in step;
+  }
+
+  const stagedStepsForColumn = steps
+    .map((step, index) => ({ step, index }))
+    .filter(({ step }) => hasColumn(step) && step.column === selectedColumn?.name);
+
+  function affectedColumns(step: TransformStep): string[] {
+    if ('column' in step) return [step.column];
+    if (step.op === TransformOptions.dropColumns) return step.columns;
+    return [];
+  }
+
+  async function handleTransformation() {
+    if (steps.length === 0) return;
+
+    //TODO - needs refactor, loading and error states
+
+    const payload = {
+      name: `Derived_${new Date().toISOString()}`,
+      transform_spec: { steps },
+      output_format: 'csv' as const,
+    };
+
+    console.log(payload);
+    const derived = await createDerivedDataset(datasetId, payload);
+    console.log(derived);
+  }
+
   return (
     <div className="flex flex-col gap-4">
+      {steps.length > 0 && (
+        <div className="animate-in fade-in slide-in-from-top-2 sticky top-0 z-10 flex items-center justify-between border-b bg-blue-50 p-4 shadow-sm">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-blue-900">
+              {steps.length} transformations staged
+            </span>
+            <div className="flex gap-2">
+              {steps.map((s, idx) => {
+                const cols = affectedColumns(s);
+                const label = cols.length > 0 ? cols.join(', ') : '(no column)';
+
+                return (
+                  <>
+                    <Badge key={`${s.op}-${idx}`} variant="secondary" className="bg-blue-100">
+                      {label}: {s.op}
+                      <button
+                        onClick={() => removeStepAtGlobalIndex(idx)}
+                        className="ml-2 hover:text-red-500"
+                        type="button"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  </>
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={clearAll} className="text-gray-600">
+              <Trash2 className="mr-2 h-4 w-4" /> Clear All
+            </Button>
+            <Button size="sm" onClick={handleTransformation}>
+              <Play className="mr-2 h-4 w-4 fill-current" /> Apply All
+            </Button>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <ColumnsSummaryCard
           title="Total Columns"
@@ -116,12 +195,18 @@ export default function DatasetColumnsAnalysisView({
             No columns found matching "{searchTerm}"
           </div>
         )}
-        <ColumnDetailsDrawer
-          open={!!selectedColumn}
-          column={selectedColumn}
-          onOpenChange={(isOpen) => !isOpen && setSelectedColumn(null)}
-        />
       </ScrollArea>
+      <ColumnDetailsDrawer
+        open={!!selectedColumn}
+        column={selectedColumn}
+        onOpenChange={(isOpen) => !isOpen && setSelectedColumn(null)}
+        stagedSteps={stagedStepsForColumn.map((s) => s.step)}
+        onAddStep={upsertStep}
+        onRemoveStep={(localIndex) => {
+          const globalIndex = stagedStepsForColumn[localIndex].index;
+          removeStepAtGlobalIndex(globalIndex);
+        }}
+      />
     </div>
   );
 }

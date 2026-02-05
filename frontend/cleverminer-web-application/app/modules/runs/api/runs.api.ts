@@ -1,8 +1,9 @@
 import { apiClient } from '@/lib/api-client';
 import type { RunResult } from '@/modules/runs/domain/runs-results.type';
 import type { RunsSummary } from '@/modules/runs/domain/runs-summary.type';
+import type { RunWithTask } from '@/modules/runs/domain/runs-main.type';
 
-export async function getRun(runId: number): Promise<RunResult> {
+export async function getRun(runId: number): Promise<RunWithTask> {
   const result = await apiClient.get(`/runs/${runId}`);
   return result.data;
 }
