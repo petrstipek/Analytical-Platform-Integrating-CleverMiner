@@ -27,7 +27,7 @@ apiClient.interceptors.response.use(
 
     const isAuthRequest =
       url.includes('/auth/login') ||
-      url.includes('/auth/refresh') ||
+      url.includes('/auth/token/refresh') ||
       url.includes('/auth/logout') ||
       url.includes('/auth/user');
 
