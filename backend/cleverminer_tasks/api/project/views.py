@@ -133,6 +133,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer = DatasetSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=["get"], url_path="members")
+    def project_members(self, request, pk=None):
+        project = self.get_object()
+        queryset = project.memberships.all()
+        serializer = ProjectMembershipSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class ProjectMembershipViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
