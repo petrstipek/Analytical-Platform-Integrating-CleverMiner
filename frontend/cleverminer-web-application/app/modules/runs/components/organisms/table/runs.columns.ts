@@ -8,7 +8,7 @@ export const RunsColumns: ColumnDef<RunResult>[] = [
     header: 'Run id',
   },
   {
-    accessorKey: 'task',
+    accessorKey: 'task_name',
     header: 'Task',
   },
   {

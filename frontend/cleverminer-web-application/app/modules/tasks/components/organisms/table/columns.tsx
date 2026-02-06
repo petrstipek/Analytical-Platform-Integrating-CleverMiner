@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { Task } from '@/modules/tasks/domain/task.type';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { ArrowUpDown } from 'lucide-react';
+import { formatDate } from '@/shared/utils/formatDate';
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -19,7 +20,7 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'dataset',
+    accessorKey: 'dataset_name',
     header: 'Dataset',
   },
   {
@@ -28,6 +29,7 @@ export const columns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: 'created_at',
+    cell: ({ getValue }) => formatDate(getValue<string>()),
     header: ({ column }) => {
       return (
         <Button

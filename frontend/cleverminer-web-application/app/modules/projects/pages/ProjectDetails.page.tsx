@@ -1,20 +1,26 @@
 import { Tabs, TabsContent } from '@/shared/components/ui/molecules/tabs';
-import { ProjectHeader, ProjectTeamMembers } from '@/modules/projects/components/molecules/';
+import { ProjectHeader } from '@/modules/projects/components/molecules/';
 import { TabsNavForPages, type TabsNavItem } from '@/shared/components/molecules/TabsNavForPages';
-import { TEAM } from '@/modules/projects/utils/mockData';
 import {
   ProjectDatasetsTab,
+  ProjectOverviewTab,
   ProjectRunsTab,
   ProjectTasksTab,
 } from '@/modules/projects/components/molecules/tabs';
 import { useQuery } from '@tanstack/react-query';
-import { getProject, getProjectRuns } from '@/modules/projects/api/queries/projects.query';
+import {
+  getProject,
+  getProjectMembers,
+  getProjectRuns,
+} from '@/modules/projects/api/queries/projects.query';
 import { useParams } from 'react-router';
 import { getTasksForProject } from '@/modules/projects/api/queries/tasks.query';
 import { useUploadDatasetMutation } from '@/modules/datasets/hooks/datasets.hook';
 import type { UploadPayload } from '@/modules/datasets/domain/uploadDataset.type';
 import { getProjectDatasets } from '@/modules/projects/api/queries/datasets.query';
 import { LoadingStatus } from '@/shared/components/molecules';
+import { useProject } from '@/modules/projects/hooks/project.hook';
+import type { AddProjectMemberType } from '@/modules/projects/api/domain/project.type';
 
 const projectTabs: TabsNavItem[] = [
   { value: 'overview', label: 'Overview' },
@@ -45,7 +51,13 @@ export default function ProjectDetailsPage() {
     queryFn: () => getProjectDatasets(Number(projectId)),
   });
 
+  const { data: projectMembers, isLoading: projectMembersLoading } = useQuery({
+    queryKey: ['project-members', projectId],
+    queryFn: () => getProjectMembers(Number(projectId)),
+  });
+
   const { mutate: uploadDataset, isPending: uploadingDataset } = useUploadDatasetMutation();
+  const { addMemberMutation } = useProject();
 
   const handleDatasetUpload = (formData: Pick<UploadPayload, 'name' | 'file'>) => {
     uploadDataset({
@@ -54,27 +66,38 @@ export default function ProjectDetailsPage() {
     });
   };
 
+  const handleAddMember = (payload: AddProjectMemberType) => {
+    addMemberMutation.mutate(payload);
+  };
+
   const loading =
-    baseProjectLoading || projectTasksLoading || runsDataLoading || projectDatasetsLoading;
-  const error = !baseProjectLoading || !baseProjectData || !runsData || !projectDatasets;
+    baseProjectLoading ||
+    projectTasksLoading ||
+    runsDataLoading ||
+    projectDatasetsLoading ||
+    projectMembersLoading;
+  const error =
+    !baseProjectLoading || !baseProjectData || !runsData || !projectDatasets || !projectMembers;
 
   if (loading) return <LoadingStatus />;
   if (!error) return <div>No project data found</div>;
 
   return (
     <div className="bg-background min-h-screen space-y-8 p-6">
-      <ProjectHeader project={baseProjectData!} />
+      <ProjectHeader project={baseProjectData!} projectId={projectId} />
 
       <Tabs defaultValue="overview" className="w-full">
         <TabsNavForPages items={projectTabs} />
 
         <div className="">
           <TabsContent value="overview" className="m-0">
-            <div className="space-y-6">
-              <ProjectTeamMembers members={TEAM} />
-              {/*TODO - project stats*/}
-              {/*<ProjectStats project={baseProjectData} />*/}
-            </div>
+            <ProjectOverviewTab
+              members={projectMembers!}
+              onAddMember={handleAddMember}
+              projectId={Number(projectId)}
+            />
+            {/*TODO - project stats*/}
+            {/*<ProjectStats project={baseProjectData} />*/}
           </TabsContent>
 
           <TabsContent value="tasks" className="m-0 space-y-4 lg:col-span-2">

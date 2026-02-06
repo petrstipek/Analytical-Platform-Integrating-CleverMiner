@@ -10,3 +10,12 @@ export type Task = {
   updated_at?: Date;
   created_at: Date;
 };
+
+export type TasksSummary = {
+  total: number;
+  queued: number;
+  running: number;
+  failed: number;
+  done: number;
+  canceled: number;
+};

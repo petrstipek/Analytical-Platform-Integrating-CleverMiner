@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
-import type { Task } from '@/modules/tasks/domain/task.type';
+import type { Task, TasksSummary } from '@/modules/tasks/domain/task.type';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
 import type { TaskRun } from '@/modules/tasks/domain/task-run.type';
@@ -62,5 +62,10 @@ export async function updateTask(
     params: payload.configuration,
   };
   const res = await apiClient.patch(`/tasks/${taskId}/`, apiPayload);
+  return res.data;
+}
+
+export async function getTasksSummary(): Promise<TasksSummary> {
+  const res = await apiClient.get('/tasks/summary/');
   return res.data;
 }
