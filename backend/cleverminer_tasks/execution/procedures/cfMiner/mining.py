@@ -38,3 +38,11 @@ class CfMiningService(BaseMiningService):
         clm = cleverminer(**params)
 
         return serialize_cf_result(clm, self.config.target)
+
+    def _required_attributes(self) -> list[str]:
+        columns = set()
+
+        self.add_cedent_columns(self.config.cond, columns)
+        columns.add(self.config.target)
+
+        return sorted(columns)

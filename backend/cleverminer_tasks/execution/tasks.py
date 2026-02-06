@@ -4,7 +4,10 @@ from celery import shared_task
 from django.core.files import File
 from django.db import transaction
 
-from cleverminer_tasks.execution.datasets.service import apply_transform_spec
+from cleverminer_tasks.execution.datasets.service import (
+    apply_transform_spec,
+    _get_required_attributes,
+)
 from cleverminer_tasks.execution.runner import run_analysis
 from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
 from cleverminer_tasks.models import (
@@ -66,6 +69,7 @@ def apply_dataset_transformation(self, transformation_id: int) -> None:
         tr.save(update_fields=["status", "started_at", "error_log"])
 
     try:
+        required_columns = _get_required_attributes(tr.transform_spec)
         df = load_dataset(in_ds, nrows=None)
         df2 = apply_transform_spec(df, tr.transform_spec)
 

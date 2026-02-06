@@ -61,7 +61,7 @@ class BaseMiningService(ABC):
         run.save(update_fields=["status", "started_at", "error_log"])
 
         try:
-            df = load_dataset(self.dataset)
+            df = load_dataset(self.dataset, columns=self._required_attributes())
             result = self._mine(df)
             run.result = result
             run.status = RunStatus.DONE
@@ -72,6 +72,17 @@ class BaseMiningService(ABC):
         run.finished_at = timezone.now()
         run.save(update_fields=["result", "status", "error_log", "finished_at"])
         return run
+
+    @staticmethod
+    def add_cedent_columns(cedent: CedentConfig, columns: set[str]):
+        if not cedent or not cedent.attributes:
+            return
+        for item in cedent.attributes:
+            columns.add(item.name)
+
+    @abstractmethod
+    def _required_attributes(self) -> list[str]:
+        raise NotImplementedError
 
     @abstractmethod
     def _mine(self, df: pd.DataFrame) -> Dict[str, Any]:
