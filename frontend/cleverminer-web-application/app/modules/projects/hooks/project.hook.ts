@@ -1,13 +1,14 @@
 import { addMember } from '@/modules/projects/api/mutatations/projects.mutations';
 import { toast } from 'sonner';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { AddProjectMember } from '@/modules/projects/api/domain/project.type';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AddProjectMemberType } from '@/modules/projects/api/domain/project.type';
+import { getProjectSummary } from '@/modules/projects/api/queries/projects.query';
 
-export const useProject = () => {
+export const useProject = (projectId?: string) => {
   const queryClient = useQueryClient();
 
   const addMemberMutation = useMutation({
-    mutationFn: (payload: AddProjectMember) => addMember(payload),
+    mutationFn: (payload: AddProjectMemberType) => addMember(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project-members'] });
       toast.success('Member added successfully!');
@@ -18,5 +19,10 @@ export const useProject = () => {
     },
   });
 
-  return { addMemberMutation };
+  const { data: projectSummary, isLoading: projectSummaryLoading } = useQuery({
+    queryKey: ['project-summary'],
+    queryFn: () => getProjectSummary(Number(projectId)),
+  });
+
+  return { addMemberMutation, projectSummary, projectSummaryLoading };
 };

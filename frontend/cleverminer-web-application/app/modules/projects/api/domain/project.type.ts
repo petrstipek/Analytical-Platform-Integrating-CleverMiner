@@ -5,3 +5,9 @@ export type AddProjectMemberType = {
   email: string;
   role: ProjectRole;
 };
+
+export type ProjectSummary = {
+  runs: number;
+  tasks: number;
+  datasets: number;
+};

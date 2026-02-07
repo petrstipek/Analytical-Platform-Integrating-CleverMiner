@@ -21,6 +21,7 @@ import { getProjectDatasets } from '@/modules/projects/api/queries/datasets.quer
 import { LoadingStatus } from '@/shared/components/molecules';
 import { useProject } from '@/modules/projects/hooks/project.hook';
 import type { AddProjectMemberType } from '@/modules/projects/api/domain/project.type';
+import ProjectStats from '@/modules/projects/components/molecules/ProjectStats';
 
 const projectTabs: TabsNavItem[] = [
   { value: 'overview', label: 'Overview' },
@@ -57,7 +58,7 @@ export default function ProjectDetailsPage() {
   });
 
   const { mutate: uploadDataset, isPending: uploadingDataset } = useUploadDatasetMutation();
-  const { addMemberMutation } = useProject();
+  const { addMemberMutation, projectSummary, projectSummaryLoading } = useProject(projectId);
 
   const handleDatasetUpload = (formData: Pick<UploadPayload, 'name' | 'file'>) => {
     uploadDataset({
@@ -75,9 +76,15 @@ export default function ProjectDetailsPage() {
     projectTasksLoading ||
     runsDataLoading ||
     projectDatasetsLoading ||
-    projectMembersLoading;
+    projectMembersLoading ||
+    projectSummaryLoading;
   const error =
-    !baseProjectLoading || !baseProjectData || !runsData || !projectDatasets || !projectMembers;
+    !baseProjectLoading ||
+    !baseProjectData ||
+    !runsData ||
+    !projectDatasets ||
+    !projectMembers ||
+    !projectSummary;
 
   if (loading) return <LoadingStatus />;
   if (!error) return <div>No project data found</div>;
@@ -88,34 +95,34 @@ export default function ProjectDetailsPage() {
 
       <Tabs defaultValue="overview" className="w-full">
         <TabsNavForPages items={projectTabs} />
-
-        <div className="">
-          <TabsContent value="overview" className="m-0">
+        <TabsContent value="overview" className="mt-4">
+          <div className="flex flex-col gap-4">
+            <ProjectStats project={projectSummary!} />
             <ProjectOverviewTab
               members={projectMembers!}
               onAddMember={handleAddMember}
               projectId={Number(projectId)}
-            />
-            {/*TODO - project stats*/}
-            {/*<ProjectStats project={baseProjectData} />*/}
-          </TabsContent>
-
-          <TabsContent value="tasks" className="m-0 space-y-4 lg:col-span-2">
-            <ProjectTasksTab tasks={projectTasks!} />
-          </TabsContent>
-
-          <TabsContent value="runs" className="m-0">
-            <ProjectRunsTab runs={runsData!} />
-          </TabsContent>
-
-          <TabsContent value="datasets" className="m-0 space-y-6 lg:col-span-2">
-            <ProjectDatasetsTab
-              isPending={uploadingDataset}
-              onSubmit={handleDatasetUpload}
+              runs={runsData!}
               datasets={projectDatasets!}
             />
-          </TabsContent>
-        </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="tasks" className="mt-4 space-y-4 lg:col-span-2">
+          <ProjectTasksTab tasks={projectTasks!} />
+        </TabsContent>
+
+        <TabsContent value="runs" className="mt-4">
+          <ProjectRunsTab runs={runsData!} />
+        </TabsContent>
+
+        <TabsContent value="datasets" className="mt-4 space-y-6 lg:col-span-2">
+          <ProjectDatasetsTab
+            isPending={uploadingDataset}
+            onSubmit={handleDatasetUpload}
+            datasets={projectDatasets!}
+          />
+        </TabsContent>
       </Tabs>
     </div>
   );

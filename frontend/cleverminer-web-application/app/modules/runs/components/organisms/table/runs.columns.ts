@@ -1,6 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { RunResult } from '@/modules/runs/domain/runs-results.type';
 import { formatDate } from '@/shared/utils/formatDate';
+import { elapsed } from '@/modules/tasks/utils/time-calculations';
 
 export const RunsColumns: ColumnDef<RunResult>[] = [
   {
@@ -30,6 +31,29 @@ export const RunsColumns: ColumnDef<RunResult>[] = [
     header: 'Finished At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
   },
+  { accessorKey: 'result_summary.has_result', header: 'Achieved Result' },
+  { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },
+];
+
+export const RunsColumnsSummarized: ColumnDef<RunResult>[] = [
+  { accessorKey: 'id', header: 'Run id' },
+  {
+    accessorKey: 'task_name',
+    header: 'Task',
+  },
+  { accessorKey: 'status', header: 'Status' },
+
+  {
+    accessorKey: 'started_at',
+    header: 'Started At',
+    cell: ({ getValue }) => formatDate(getValue<string>()),
+  },
+  {
+    id: 'elapsed',
+    header: 'Elapsed',
+    cell: ({ row }) => elapsed(row.original.started_at, row.original.finished_at),
+  },
+
   { accessorKey: 'result_summary.has_result', header: 'Achieved Result' },
   { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },
 ];
