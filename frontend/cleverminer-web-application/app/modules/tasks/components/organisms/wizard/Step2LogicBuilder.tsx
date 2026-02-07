@@ -43,8 +43,8 @@ export default function Step2LogicBuilder({
     <div className={'space-y-6'}>
       {header}
       <div className="flex min-h-[500px] flex-col gap-6 md:flex-row">
-        <Tabs defaultValue={tabsDefaultValue} orientation="vertical" className="flex w-full gap-6">
-          <TabsList className="flex h-auto w-48 flex-col items-start justify-start space-y-1 bg-transparent p-0">
+        <Tabs defaultValue={tabsDefaultValue} className="flex w-full gap-6">
+          <TabsList className="h-auto w-full justify-start rounded-none border-b bg-transparent p-0">
             {visibleSections.map((section) => {
               if (section === 'target') return null;
 
