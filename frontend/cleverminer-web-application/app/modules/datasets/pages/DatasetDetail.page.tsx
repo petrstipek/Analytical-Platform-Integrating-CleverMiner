@@ -37,7 +37,7 @@ export default function DatasetDetailPage() {
     <div className="grid w-full grid-cols-1 gap-6">
       <DatasetDetailHeader />
 
-      <Tabs defaultValue="analysis" className="w-full">
+      <Tabs defaultValue="ColumnsAnalysis" className="w-full">
         <div className="flex items-center justify-between">
           <TabsList>
             <TabsTrigger value="ColumnsAnalysis">Columns Analysis</TabsTrigger>

@@ -6,6 +6,9 @@ import type { Task } from '@/modules/tasks/domain/task.type';
 import { formatDate } from '@/shared/utils/formatDate';
 import { CedentDetail, QuantifiersDetail } from '@/modules/tasks/components/molecules';
 import { Accordion, AccordionItem } from '@radix-ui/react-accordion';
+import { Button } from '@/shared/components/ui/atoms/button';
+import { Link } from 'react-router';
+import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 
 type Props = { task: Task };
 
@@ -40,6 +43,7 @@ function pickSummary(task: Task) {
 
 export default function TasksForList({ task }: Props) {
   const summary = pickSummary(task);
+  const { bg, text } = PROCEDURE_STYLES[task.procedure];
 
   return (
     <Card className="group hover:border-primary/50 transition-colors">
@@ -49,7 +53,12 @@ export default function TasksForList({ task }: Props) {
             <div className="flex-1 space-y-1 text-left">
               <div className="flex items-center gap-2">
                 <div className="font-medium">{task.name}</div>
-                <Badge variant="secondary">{task.procedure}</Badge>
+                <Badge
+                  variant="secondary"
+                  className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${bg} ${text}`}
+                >
+                  {task.procedure}
+                </Badge>
               </div>
 
               <p className="text-muted-foreground line-clamp-1 text-sm">
@@ -57,7 +66,7 @@ export default function TasksForList({ task }: Props) {
               </p>
 
               <p className="text-muted-foreground text-xs">
-                Dataset #{task.dataset} • Updated {formatDate(task.updated_at)}
+                Dataset #{task.dataset} • Updated {formatDate(String(task.updated_at))}
               </p>
             </div>
           </div>
@@ -65,22 +74,26 @@ export default function TasksForList({ task }: Props) {
 
         <AccordionContent className="pt-4">
           <div className="space-y-3">
-            <div className="grid gap-2 text-sm md:grid-cols-2">
-              <div>
+            <div className="grid gap-2 text-sm md:grid-cols-3">
+              <div className="space-y-4">
                 <div className="text-muted-foreground text-xs">Procedure</div>
                 <div className="font-medium">{task.procedure}</div>
-              </div>
-              <div>
                 <div className="text-muted-foreground text-xs">Dataset</div>
                 <div className="font-medium">#{task.dataset}</div>
               </div>
-              <div>
+              <div className="space-y-4">
                 <div className="text-muted-foreground text-xs">Created</div>
-                <div className="font-medium">{formatDate(task.created_at)}</div>
-              </div>
-              <div>
+                <div className="font-medium">{formatDate(String(task.created_at))}</div>
                 <div className="text-muted-foreground text-xs">Updated</div>
-                <div className="font-medium">{formatDate(task.updated_at)}</div>
+                <div className="font-medium">{formatDate(String(task.updated_at))}</div>
+              </div>
+              <div className="space-y-4">
+                <Link to={`/tasks/${task.id}`} className="flex items-center gap-2" replace={true}>
+                  <Button className="flex w-full">Task Detail</Button>
+                </Link>
+                <Button className="w-full bg-red-500 text-white" variant="outline">
+                  Remove Task
+                </Button>
               </div>
             </div>
 

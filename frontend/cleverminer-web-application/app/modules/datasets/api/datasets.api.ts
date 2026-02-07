@@ -1,9 +1,10 @@
 import { apiClient } from '@/lib/api-client';
+import type { DatasetSourceType } from '@/modules/datasets/domain/dataset.type';
 
 export interface Dataset {
   id: number;
   name: string;
-  source_type: string;
+  source_type: DatasetSourceType;
   created_at: string;
 }
 

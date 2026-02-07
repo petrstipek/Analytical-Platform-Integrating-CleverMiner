@@ -11,6 +11,7 @@ import type {
   UicRule,
 } from '@/modules/runs/domain/procedures-results.type';
 import { ProceduresType } from '@/shared/domain/procedures.type';
+import type { RunAchievedResult } from '@/shared/domain/runStatus.type';
 
 export interface RunResultRule {
   id: number;
@@ -37,8 +38,9 @@ export interface TaskRunResult {
 export enum RunResultStatus {
   Done = 'done',
   Running = 'running',
-  Error = 'error',
+  Failed = 'failed',
   Queued = 'queued',
+  Canceled = 'canceled',
 }
 
 export interface RunResult {
@@ -48,8 +50,8 @@ export interface RunResult {
   started_at: Date;
   finished_at: Date;
   updated_at: Date;
-  results_summary?: {
-    has_result: boolean;
+  result_summary?: {
+    has_result: RunAchievedResult;
     rule_count: number;
     target: string | null;
   };
