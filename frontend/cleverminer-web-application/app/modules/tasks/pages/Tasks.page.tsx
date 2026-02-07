@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router';
 import { LoadingStatus } from '@/shared/components/molecules';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { Button } from '@/shared/components/ui/atoms/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
 
 export default function TasksPage() {
   const navigate = useNavigate();
@@ -51,13 +52,21 @@ export default function TasksPage() {
         />
       </div>
       <div className="space-y-5">
-        <h3 className="text-2xl font-bold tracking-tight text-gray-900">Tasks overview</h3>
-        <DataTable
-          columns={columns}
-          data={data}
-          showSearch={true}
-          onRowClick={(row) => navigate('/tasks/' + row.id)}
-        />
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-2xl font-medium">
+              Tasks overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              columns={columns}
+              data={data}
+              showSearch={true}
+              onRowClick={(row) => navigate('/tasks/' + row.id)}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
