@@ -5,8 +5,8 @@ export default function SD4ftMinerDetails({ params }: { params: any }) {
     <div className="space-y-6">
       <QuantifiersDetail data={params.quantifiers} />
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-        <div className="space-y-4 md:col-span-5">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold tracking-wider text-slate-500 uppercase">
               Left Side (If)
@@ -16,13 +16,7 @@ export default function SD4ftMinerDetails({ params }: { params: any }) {
           <CedentDetail title="Condition" data={params.cond} />
         </div>
 
-        <div className="flex items-center justify-center py-4 md:col-span-1 md:py-0">
-          <div className="rounded-full border bg-slate-100 p-2">
-            <span className="text-2xl font-bold text-slate-400">⇒</span>
-          </div>
-        </div>
-
-        <div className="space-y-4 md:col-span-6">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold tracking-wider text-slate-500 uppercase">
               Right Side (Then)

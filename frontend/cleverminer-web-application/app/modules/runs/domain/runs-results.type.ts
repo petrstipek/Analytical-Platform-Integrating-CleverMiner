@@ -51,7 +51,7 @@ export interface RunResult {
   finished_at: Date;
   updated_at: Date;
   result_summary?: {
-    has_result: RunAchievedResult;
+    has_result: boolean;
     rule_count: number;
     target: string | null;
   };

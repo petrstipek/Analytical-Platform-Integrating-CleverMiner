@@ -15,6 +15,7 @@ import { TaskRunsColumns } from '@/modules/tasks/components/organisms/table/task
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { useCreateAndExecuteRunMutation } from '@/modules/tasks/hooks/tasks.hook';
 import { LoadingStatus } from '@/shared/components/molecules';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
 
 export default function TaskDetailPage() {
   const { taskId } = useParams();
@@ -106,27 +107,42 @@ export default function TaskDetailPage() {
         </div>
       </div>
 
-      <div className="animate-in fade-in duration-500">{renderProcedureDetails()}</div>
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Runs</h1>
-        <p className="text-muted-foreground">
-          <span className="mr-2 rounded bg-slate-100 px-1 py-0.5 font-mono text-xs text-slate-600">
-            {task.procedure}
-          </span>
-          Analyze the task runs.
-        </p>
-        <div className="mt-6">
-          {isLoadingRuns ? (
-            <div className="p-10 text-center">Loading task runs...</div>
-          ) : (
-            <DataTable
-              columns={TaskRunsColumns}
-              data={tasksRuns!}
-              onRowClick={(row) => navigate(`/run/${row.id}`)}
-            />
-          )}
-        </div>
-      </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-2xl font-bold tracking-tight text-gray-900">
+            Current Task Configuration
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="animate-in fade-in duration-500">{renderProcedureDetails()}</div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-2xl font-bold tracking-tight text-gray-900">
+            Runs for the task
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            <span className="mr-2 rounded bg-slate-100 px-1 py-0.5 font-mono text-xs text-slate-600">
+              {task.procedure}
+            </span>
+            Analyze the task runs.
+          </p>
+          <div className="mt-6">
+            {isLoadingRuns ? (
+              <div className="p-10 text-center">Loading task runs...</div>
+            ) : (
+              <DataTable
+                columns={TaskRunsColumns}
+                data={tasksRuns!}
+                onRowClick={(row) => navigate(`/run/${row.id}`)}
+              />
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -23,18 +23,11 @@ export default function CFMinerDetails({ params }: { params: any }) {
 
       <QuantifiersDetail data={params.quantifiers} />
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6">
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-slate-500 uppercase">Context (Condition)</h3>
+          <h3 className="text-sm font-semibold text-slate-500 uppercase">Context</h3>
           <CedentDetail title="Condition" data={params.cond} color="amber" />
         </div>
-
-        {params.ante?.attributes?.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-slate-500 uppercase">Filters</h3>
-            <CedentDetail title="Regular Attributes" data={params.ante} />
-          </div>
-        )}
       </div>
     </div>
   );
