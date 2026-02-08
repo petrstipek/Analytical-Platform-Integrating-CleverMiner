@@ -44,9 +44,9 @@ class Sd4FtMiningService(BaseMiningService):
         columns = set()
 
         self.add_cedent_columns(self.config.ante, columns)
-        self.add_cedent_columns(self.config.suc, columns)
+        self.add_cedent_columns(self.config.succ, columns)
         self.add_cedent_columns(self.config.set1, columns)
         self.add_cedent_columns(self.config.set2, columns)
-        self.add_cedent_columns(self.config.con, columns)
+        self.add_cedent_columns(self.config.cond, columns)
 
         return sorted(columns)

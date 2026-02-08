@@ -159,6 +159,7 @@ class RunDetailSerializer(serializers.ModelSerializer):
             "finished_at",
             "result_summary",
             "task",
+            "run_snapshot",
         ]
         read_only_fields = fields
 
