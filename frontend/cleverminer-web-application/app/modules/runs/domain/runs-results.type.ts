@@ -11,7 +11,6 @@ import type {
   UicRule,
 } from '@/modules/runs/domain/procedures-results.type';
 import { ProceduresType } from '@/shared/domain/procedures.type';
-import type { RunAchievedResult } from '@/shared/domain/runStatus.type';
 
 export interface RunResultRule {
   id: number;
@@ -68,6 +67,7 @@ type RunResultBase = {
     rule_count: number;
     target: string | null;
   };
+  run_snapshot?: string;
 };
 
 export type RunResultFourft = {
@@ -80,6 +80,7 @@ export type RunResultFourft = {
 
 export type RunResultSd4ft = {
   procedure: ProceduresType.SD4FTMINER;
+  run_snapshot?: string;
   result: {
     summary: Sd4ftSummary;
     rules: Sd4ftRule[];
@@ -88,6 +89,7 @@ export type RunResultSd4ft = {
 
 export type RunResultUic = {
   procedure: ProceduresType.UICMINER;
+  run_snapshot?: string;
   result: {
     summary: UicSummary;
     rules: UicRule[];
@@ -96,6 +98,7 @@ export type RunResultUic = {
 
 export type RunResultCf = {
   procedure: ProceduresType.CFMINER;
+  run_snapshot?: string;
   result: {
     summary: CfSummary;
     rules: CfRule[];
