@@ -18,7 +18,9 @@ class RunEnqueueError(Exception):
 
 
 def create_run(*, task: Task) -> Run:
-    return Run.objects.create(task=task, status=RunStatus.QUEUED)
+    return Run.objects.create(
+        task=task, status=RunStatus.QUEUED, run_snapshot=task.params
+    )
 
 
 def enqueue_run(*, run: Run) -> EnqueueResult:

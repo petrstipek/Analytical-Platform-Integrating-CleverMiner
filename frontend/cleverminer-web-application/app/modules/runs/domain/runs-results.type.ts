@@ -37,8 +37,9 @@ export interface TaskRunResult {
 export enum RunResultStatus {
   Done = 'done',
   Running = 'running',
-  Error = 'error',
+  Failed = 'failed',
   Queued = 'queued',
+  Canceled = 'canceled',
 }
 
 export interface RunResult {
@@ -48,7 +49,7 @@ export interface RunResult {
   started_at: Date;
   finished_at: Date;
   updated_at: Date;
-  results_summary?: {
+  result_summary?: {
     has_result: boolean;
     rule_count: number;
     target: string | null;
@@ -66,6 +67,7 @@ type RunResultBase = {
     rule_count: number;
     target: string | null;
   };
+  run_snapshot?: string;
 };
 
 export type RunResultFourft = {
@@ -78,6 +80,7 @@ export type RunResultFourft = {
 
 export type RunResultSd4ft = {
   procedure: ProceduresType.SD4FTMINER;
+  run_snapshot?: string;
   result: {
     summary: Sd4ftSummary;
     rules: Sd4ftRule[];
@@ -86,6 +89,7 @@ export type RunResultSd4ft = {
 
 export type RunResultUic = {
   procedure: ProceduresType.UICMINER;
+  run_snapshot?: string;
   result: {
     summary: UicSummary;
     rules: UicRule[];
@@ -94,6 +98,7 @@ export type RunResultUic = {
 
 export type RunResultCf = {
   procedure: ProceduresType.CFMINER;
+  run_snapshot?: string;
   result: {
     summary: CfSummary;
     rules: CfRule[];

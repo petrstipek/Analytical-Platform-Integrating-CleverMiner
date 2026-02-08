@@ -18,7 +18,12 @@ from cleverminer_tasks.api.project.service import (
     create_project,
 )
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
-from cleverminer_tasks.models import Project, ProjectMembership, ProjectRole, Run
+from cleverminer_tasks.models import (
+    Project,
+    ProjectMembership,
+    ProjectRole,
+    Run,
+)
 
 
 class IsUserProjectMember(permissions.BasePermission):
@@ -132,6 +137,25 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         serializer = DatasetSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"], url_path="members")
+    def project_members(self, request, pk=None):
+        project = self.get_object()
+        queryset = project.memberships.all()
+        serializer = ProjectMembershipSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["get"], url_path="summary")
+    def summary(self, request, pk=None):
+        project = self.get_object()
+
+        runs = Run.objects.filter(task__project=project)
+        tasks = project.tasks.all()
+        datasets = project.datasets.all()
+
+        return Response(
+            {"runs": runs.count(), "tasks": tasks.count(), "datasets": datasets.count()}
+        )
 
 
 class ProjectMembershipViewSet(viewsets.ModelViewSet):

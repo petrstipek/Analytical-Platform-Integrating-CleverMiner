@@ -1,13 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
-import { Avatar, AvatarFallback } from '@/shared/components/ui/atoms/avatar';
 import { Button } from '@/shared/components/ui/atoms/button';
-import type { Member } from '@/modules/projects/domain/member.type';
+import { Avatar, AvatarFallback } from '@/shared/components/ui/atoms/avatar';
+import type { ProjectMember } from '@/modules/projects/domain/member.type';
 
 type ProjectMembersProps = {
-  members: Member[];
+  projectMembers: ProjectMember[];
 };
 
-export default function ProjectTeamMembers({ members }: ProjectMembersProps) {
+export default function ProjectMembers({ projectMembers }: ProjectMembersProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -17,16 +17,16 @@ export default function ProjectTeamMembers({ members }: ProjectMembersProps) {
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
-        {members.map((member, i) => (
-          <div key={i} className="flex items-center justify-between">
+        {projectMembers.map((member: ProjectMember) => (
+          <div key={member.userId} className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Avatar className="h-9 w-9">
-                  <AvatarFallback>{member.name[0]}</AvatarFallback>
+                  <AvatarFallback>{member.username}</AvatarFallback>
                 </Avatar>
               </div>
               <div>
-                <p className="text-sm leading-none font-medium">{member.name}</p>
+                <p className="text-sm leading-none font-medium">{member.username}</p>
                 <p className="text-muted-foreground text-xs">{member.role}</p>
               </div>
             </div>

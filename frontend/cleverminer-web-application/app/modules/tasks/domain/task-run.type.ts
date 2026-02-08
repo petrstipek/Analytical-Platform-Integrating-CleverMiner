@@ -1,7 +1,9 @@
+import type { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
+
 export type TaskRun = {
   id: number;
   task: number;
-  status: string; // TODO = should be enum
+  status: RunResultStatus;
   error_log: string | null;
   created_at: Date;
   started_at: Date | null;

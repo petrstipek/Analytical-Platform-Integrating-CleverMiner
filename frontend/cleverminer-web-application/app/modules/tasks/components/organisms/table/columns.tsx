@@ -2,6 +2,8 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { Task } from '@/modules/tasks/domain/task.type';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { ArrowUpDown } from 'lucide-react';
+import { formatDate } from '@/shared/utils/formatDate';
+import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -19,15 +21,28 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'dataset',
+    accessorKey: 'dataset_name',
     header: 'Dataset',
   },
   {
     accessorKey: 'procedure',
     header: 'Procedure',
+    cell: ({ getValue }) => {
+      const procedure = getValue<Task['procedure']>();
+      const styles = PROCEDURE_STYLES[procedure];
+
+      return (
+        <span
+          className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${styles.bg} ${styles.text}`}
+        >
+          {procedure}
+        </span>
+      );
+    },
   },
   {
     accessorKey: 'created_at',
+    cell: ({ getValue }) => formatDate(getValue<string>()),
     header: ({ column }) => {
       return (
         <Button

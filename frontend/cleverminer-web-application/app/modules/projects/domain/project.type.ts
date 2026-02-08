@@ -6,3 +6,8 @@ export type ProjectType = {
   owner: number;
   members: number[];
 };
+
+export enum ProjectRole {
+  admin = 'admin',
+  editor = 'editor',
+}

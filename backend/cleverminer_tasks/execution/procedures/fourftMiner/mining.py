@@ -38,3 +38,12 @@ class FourFtMiningService(BaseMiningService):
         clm = cleverminer(**params)
 
         return serialize_4ft_result(clm)
+
+    def _required_attributes(self) -> list[str]:
+        columns = set()
+
+        self.add_cedent_columns(self.config.ante, columns)
+        self.add_cedent_columns(self.config.succ, columns)
+        self.add_cedent_columns(self.config.cond, columns)
+
+        return sorted(columns)

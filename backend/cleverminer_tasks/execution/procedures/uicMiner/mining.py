@@ -41,3 +41,14 @@ class UICMiningService(BaseMiningService):
         clm = cleverminer(**params)
 
         return serialize_uic_result(clm, self.config.target)
+
+    def _required_attributes(self) -> list[str]:
+        columns = set()
+
+        self.add_cedent_columns(self.config.ante, columns)
+        self.add_cedent_columns(self.config.cond, columns)
+        columns.add(self.config.target)
+
+        if not columns:
+            raise ValueError("No required attributes resolved from task config.")
+        return sorted(columns)

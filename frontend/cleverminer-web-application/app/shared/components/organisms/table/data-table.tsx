@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -20,13 +20,23 @@ import {
 } from '@/shared/components/ui/organisms/table';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { Input } from '@/shared/components/ui/atoms/input';
-import { Search, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Inbox, Download } from 'lucide-react';
+import { ProceduresType } from '@/shared/domain/procedures.type';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/atoms/select';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   showSearch?: boolean;
   onRowClick?: (row: TData) => void;
+  exportData?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -34,9 +44,10 @@ export function DataTable<TData, TValue>({
   data,
   showSearch = false,
   onRowClick,
+  exportData,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
     data,
@@ -53,30 +64,71 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const procedureColumn = table.getColumn('procedure');
+  const showProcedureFilter = !!procedureColumn;
+  const procedureOptions = useMemo(() => Object.values(ProceduresType), []);
+  const selectedProcedure =
+    (procedureColumn?.getFilterValue() as ProceduresType | undefined) ?? 'all';
+
   return (
     <div className="space-y-4">
-      {showSearch && (
-        <div className="flex items-center justify-between">
-          <div className="relative w-full max-w-sm">
-            <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
-            <Input
-              placeholder="Filter tasks by name..."
-              value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-              onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
-              className="bg-white pl-9"
-            />
-          </div>
-        </div>
+      {(showSearch || showProcedureFilter || exportData) && (
+        <Card>
+          <CardContent className="flex items-center px-5">
+            <div className="flex flex-1 flex-row gap-3">
+              {showSearch && (
+                <div className="relative w-full sm:max-w-sm">
+                  <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+                  <Input
+                    placeholder="Filter tasks by name..."
+                    value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+                    onChange={(event) =>
+                      table.getColumn('name')?.setFilterValue(event.target.value)
+                    }
+                    className="bg-white pl-9"
+                  />
+                </div>
+              )}
+
+              {showProcedureFilter && (
+                <div className="w-full sm:w-[260px]">
+                  <Select
+                    value={selectedProcedure}
+                    onValueChange={(value) => {
+                      if (value === 'all') procedureColumn.setFilterValue(undefined);
+                      else procedureColumn!.setFilterValue(value);
+                    }}
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Filter by procedure" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="all">All procedures</SelectItem>
+                      {procedureOptions.map((procedure) => (
+                        <SelectItem key={procedure} value={procedure}>
+                          {procedure}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+            {exportData && (
+              <Button variant="secondary" onClick={exportData}>
+                Export data <Download />
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       )}
 
       <div className="overflow-hidden rounded-md border bg-white shadow-sm">
         <Table>
           <TableHeader className="bg-cleverminer-three">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className="border-b border-slate-200 hover:bg-slate-50/50"
-              >
+              <TableRow key={headerGroup.id} className="border-b border-slate-200">
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
@@ -98,7 +150,7 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   onClick={() => onRowClick && onRowClick(row.original)}
                   data-state={row.getIsSelected() && 'selected'}
-                  className="transition-colors hover:bg-slate-50/60"
+                  className="cursor-pointer transition-colors hover:bg-slate-200"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-3">

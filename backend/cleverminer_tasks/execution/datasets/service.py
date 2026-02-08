@@ -1,6 +1,16 @@
 import pandas as pd
 
 
+def _get_required_attributes(spec: dict) -> list[str]:
+    columns = set()
+    steps = spec.get("steps", [])
+
+    for step in steps:
+        columns.add(step.get("column"))
+
+    return sorted(columns)
+
+
 def apply_transform_spec(df: pd.DataFrame, spec: dict) -> pd.DataFrame:
     steps = spec.get("steps", [])
     out = df.copy(deep=True)

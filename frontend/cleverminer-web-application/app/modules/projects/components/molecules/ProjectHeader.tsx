@@ -5,9 +5,10 @@ import type { ProjectType } from '@/modules/projects/domain/project.type';
 
 type ProjectHeaderProps = {
   project: ProjectType;
+  projectId?: string;
 };
 
-export default function ProjectHeader({ project }: ProjectHeaderProps) {
+export default function ProjectHeader({ project, projectId }: ProjectHeaderProps) {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
       <div className="space-y-1">
@@ -36,9 +37,11 @@ export default function ProjectHeader({ project }: ProjectHeaderProps) {
         <Button variant="outline" size="icon">
           <MoreHorizontal className="h-4 w-4" />
         </Button>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" /> New Task
-        </Button>
+        <Link to={`/tasks/new-task?project_id=${projectId}`} className="flex items-center gap-2">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> New Task
+          </Button>
+        </Link>
       </div>
     </div>
   );

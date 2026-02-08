@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from cleverminer_tasks.models import Task, Run
+from cleverminer_tasks.models import Task, Run, Project
 from cleverminer_tasks.registry.procedureConfigsRegistry import (
     PROCEDURE_CONFIG_REGISTRY,
 )
@@ -8,6 +8,12 @@ from cleverminer_tasks.registry.procedureConfigsRegistry import (
 
 class TaskSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner_id")
+    dataset_name = serializers.CharField(source="dataset.name", read_only=True)
+
+    project_id = serializers.IntegerField(
+        write_only=True, required=False, allow_null=True
+    )
+    project_name = serializers.CharField(source="project.name", read_only=True)
 
     class Meta:
         model = Task
@@ -16,10 +22,14 @@ class TaskSerializer(serializers.ModelSerializer):
             "name",
             "owner",
             "dataset",
+            "dataset_name",
             "procedure",
             "params",
             "created_at",
             "updated_at",
+            "project_id",
+            "project",
+            "project_name",
         ]
         read_only_fields = ["id", "owner", "created_at", "updated_at"]
 
@@ -49,6 +59,29 @@ class TaskSerializer(serializers.ModelSerializer):
 
         return attrs
 
+    def validate_project_id(self, project_id):
+        if not project_id:
+            return None
+        user = self.context["request"].user
+        is_member = Project.objects.filter(
+            id=project_id, memberships__user=user
+        ).exists()
+        if not is_member:
+            raise serializers.ValidationError("User is not a member of the project.")
+        return project_id
+
+    def create(self, validated_data):
+        project_id = validated_data.pop("project_id", None)
+        if project_id is not None:
+            validated_data["project_id"] = project_id
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        project_id = validated_data.pop("project_id", None)
+        if project_id is not None:
+            instance.project_id = project_id
+        return super().update(instance, validated_data)
+
 
 class RunSerializer(serializers.ModelSerializer):
     class Meta:
@@ -68,12 +101,14 @@ class RunSerializer(serializers.ModelSerializer):
 
 class RunSummarySerializer(serializers.ModelSerializer):
     result_summary = serializers.SerializerMethodField()
+    task_name = serializers.CharField(source="task.name", read_only=True)
 
     class Meta:
         model = Run
         fields = [
             "id",
             "task",
+            "task_name",
             "status",
             "error_log",
             "created_at",
@@ -124,6 +159,7 @@ class RunDetailSerializer(serializers.ModelSerializer):
             "finished_at",
             "result_summary",
             "task",
+            "run_snapshot",
         ]
         read_only_fields = fields
 

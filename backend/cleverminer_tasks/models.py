@@ -208,6 +208,7 @@ class Run(models.Model):
         max_length=16, choices=RunStatus.choices, default=RunStatus.QUEUED
     )
 
+    run_snapshot = models.JSONField(null=True, blank=True)
     result = models.JSONField(null=True, blank=True)
     error_log = models.TextField(null=True, blank=True)
 

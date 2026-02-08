@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getRuns, getRunsSummary } from '@/modules/runs/api/runs.api';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
-import { RunsColumns } from '@/modules/runs/components/organisms/table/runs.columns';
+import { RunsColumnsSummarized } from '@/modules/runs/components/organisms/table/runs.columns';
 import { useNavigate } from 'react-router';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { LoadingStatus } from '@/shared/components/molecules';
@@ -46,13 +46,13 @@ export default function RunsPage() {
       <div className="space-y-5">
         <h3 className="text-2xl font-bold tracking-tight text-gray-900">Running Runs</h3>
         <DataTable
-          columns={RunsColumns}
+          columns={RunsColumnsSummarized}
           data={runningRuns}
           onRowClick={(row) => navigate(`/run/${row.id}`)}
         />
         <h3 className="text-2xl font-bold tracking-tight text-gray-900">All Runs</h3>
         <DataTable
-          columns={RunsColumns}
+          columns={RunsColumnsSummarized}
           data={runsData}
           onRowClick={(row) => navigate(`/run/${row.id}`)}
         />

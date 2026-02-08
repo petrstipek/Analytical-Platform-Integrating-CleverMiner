@@ -39,6 +39,7 @@ export const createTaskSchema = z.object({
   name: z.string().min(3, 'Task name must be at least 3 characters'),
   dataset: z.number().min(1, { message: 'Please select a dataset' }),
   procedure: z.string(),
+  project: z.number().min(1).optional(),
   configuration: z.object({
     ante: cedentSchema.optional(),
     succ: cedentSchema.optional(),

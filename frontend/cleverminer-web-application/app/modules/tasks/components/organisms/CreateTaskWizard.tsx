@@ -18,6 +18,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'react-router';
 import type { Task } from '@/modules/tasks/domain/task.type';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { getBaseProjects } from '@/modules/projects/api/queries/projects.query';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -29,12 +30,14 @@ type CreateTaskWizardProps = {
   datasets?: DatasetType[];
   datasetsLoading: boolean;
   existingTask?: Task;
+  projectId: string | null;
 };
 
 export default function CreateTaskWizard({
   datasets,
   datasetsLoading,
   existingTask,
+  projectId,
 }: CreateTaskWizardProps) {
   const location = useLocation();
   const [step, setStep] = useState(1);
@@ -54,6 +57,7 @@ export default function CreateTaskWizard({
       name: '',
       dataset: 0,
       procedure: 'SD4ftMiner',
+      project: Number(projectId) ?? undefined,
       configuration: {
         ante: { type: 'con', attributes: [], minlen: 1, maxlen: 5 },
         succ: { type: 'con', attributes: [], minlen: 1, maxlen: 5 },
@@ -87,6 +91,11 @@ export default function CreateTaskWizard({
     queryKey: ['dataset-columns', selectedDatasetId],
     queryFn: () => getDatasetsColumns(Number(selectedDatasetId)),
     enabled: !!selectedDatasetId && Number(selectedDatasetId) !== 0,
+  });
+
+  const { data: projectsData, isLoading: isLoadingProjectsData } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => getBaseProjects(),
   });
 
   const validateAndMove = async (targetStep: number) => {
@@ -147,7 +156,11 @@ export default function CreateTaskWizard({
             <CardContent className="p-6">
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 {step === 1 && (
-                  <Step1TaskSetup datasets={datasets} isLoadingDataset={datasetsLoading} />
+                  <Step1TaskSetup
+                    datasets={datasets}
+                    isLoadingDataset={datasetsLoading}
+                    projects={projectsData}
+                  />
                 )}
                 {step === 2 && (
                   <Step2LogicBuilder

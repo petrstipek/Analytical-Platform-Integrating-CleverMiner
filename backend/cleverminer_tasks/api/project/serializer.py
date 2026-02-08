@@ -14,9 +14,16 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ProjectMembershipSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(source="user.id", read_only=True)
+    email = serializers.EmailField(source="user.email", read_only=True)
+    username = serializers.SerializerMethodField()
+
     class Meta:
         model = ProjectMembership
-        fields = "__all__"
+        fields = ("user_id", "email", "username", "role", "created_at")
+
+    def get_username(self, obj):
+        return obj.user.username or obj.user.email
 
 
 class AddMemberSerializer(serializers.Serializer):

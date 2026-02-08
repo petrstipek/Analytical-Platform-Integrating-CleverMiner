@@ -1,6 +1,11 @@
+import os
+import tempfile
+
+import pandas as pd
+from django.core.files import File
 from rest_framework import serializers
 
-from cleverminer_tasks.models import Dataset, Project
+from cleverminer_tasks.models import Dataset, Project, DatasetFormat
 
 
 class DatasetSerializer(serializers.ModelSerializer):
@@ -81,11 +86,44 @@ class DatasetSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         project_id = validated_data.pop("project_id", None)
+        uploaded = validated_data.get("file")
         dataset = super().create(validated_data)
 
         if project_id:
             project = Project.objects.get(id=project_id)
             dataset.projects.add(project)
+
+        if uploaded:
+            original_name = dataset.file.name
+            storage = dataset.file.storage
+
+            name = uploaded.name.lower()
+            if name.endswith(".csv"):
+                df = pd.read_csv(
+                    dataset.file.open("rb"),
+                    delimiter=dataset.delimiter,
+                    encoding=dataset.encoding,
+                )  # reading a binary file based on the file pointer
+            else:
+                # currently supporting only csv files
+                raise serializers.ValidationError("Unsupported file format.")
+
+            base = os.path.splitext(os.path.basename(uploaded.name))[0]
+            parquet_filename = f"datasets/{dataset.id}/{base}.parquet"
+
+            with tempfile.NamedTemporaryFile(suffix=".parquet") as tmp:
+                df.to_parquet(tmp.name, index=False)
+                tmp.seek(0)  # file pointer to the beginning of the file
+                dataset.file.save(parquet_filename, File(tmp), save=False)
+
+            if original_name and original_name != dataset.file.name:
+                storage.delete(original_name)
+
+        dataset.file_format = DatasetFormat.PARQUET
+        dataset.source_type = "storage_file"
+        dataset.source = dataset.file.name
+        dataset.delimiter = ";"
+        dataset.save()
 
         return dataset
 
