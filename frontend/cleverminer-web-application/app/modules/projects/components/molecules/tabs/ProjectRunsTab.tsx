@@ -1,5 +1,5 @@
 import { DataTable } from '@/shared/components/organisms/table/data-table';
-import { RunsColumns } from '@/modules/runs/components/organisms/table/runs.columns';
+import { RunsColumnsSummarized } from '@/modules/runs/components/organisms/table/runs.columns';
 import type { RunResult } from '@/modules/runs/domain/runs-results.type';
 import { useNavigate } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
@@ -17,7 +17,7 @@ export default function ProjectRunsTab({ runs }: ProjectRunsTabProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <DataTable
-          columns={RunsColumns}
+          columns={RunsColumnsSummarized}
           data={runs}
           onRowClick={(row) => navigate(`/run/${row.id}`)}
         />

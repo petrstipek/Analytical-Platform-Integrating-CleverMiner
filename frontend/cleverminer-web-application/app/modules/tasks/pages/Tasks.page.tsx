@@ -1,12 +1,13 @@
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { columns } from '@/modules/tasks/components/organisms/table/columns';
-import { useQuery } from '@tanstack/react-query';
-import { getTasks, getTasksSummary } from '@/modules/tasks/api/tasks.api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { exportTasks, getTasks, getTasksSummary } from '@/modules/tasks/api/tasks.api';
 import { Link, useNavigate } from 'react-router';
 import { LoadingStatus } from '@/shared/components/molecules';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
+import { toast } from 'sonner';
 
 export default function TasksPage() {
   const navigate = useNavigate();
@@ -18,6 +19,13 @@ export default function TasksPage() {
   const { data: tasksSummaryData, isLoading: tasksSummaryLoading } = useQuery({
     queryKey: ['tasks-summary'],
     queryFn: () => getTasksSummary(),
+  });
+
+  const exportTaskMutation = useMutation({
+    mutationFn: () => exportTasks(),
+    onError: (error: any) => {
+      toast.error('Export failed:', error.message);
+    },
   });
 
   if (isLoading || tasksSummaryLoading) return <LoadingStatus />;
@@ -62,6 +70,7 @@ export default function TasksPage() {
               data={data}
               showSearch={true}
               onRowClick={(row) => navigate('/tasks/' + row.id)}
+              exportData={exportTaskMutation.mutate}
             />
           </CardContent>
         </Card>

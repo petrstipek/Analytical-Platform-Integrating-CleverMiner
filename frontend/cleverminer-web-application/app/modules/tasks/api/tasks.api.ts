@@ -69,3 +69,19 @@ export async function getTasksSummary(): Promise<TasksSummary> {
   const res = await apiClient.get('/tasks/summary/');
   return res.data;
 }
+
+export async function exportTasks(): Promise<void> {
+  const res = await apiClient.get('/tasks/export/', {
+    responseType: 'blob',
+  });
+
+  const blob = res.data as Blob;
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tasks.csv';
+  a.click();
+
+  window.URL.revokeObjectURL(url);
+}
