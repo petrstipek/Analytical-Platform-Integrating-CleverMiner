@@ -16,6 +16,7 @@ import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { useCreateAndExecuteRunMutation } from '@/modules/tasks/hooks/tasks.hook';
 import { LoadingStatus } from '@/shared/components/molecules';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
+import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
 
 export default function TaskDetailPage() {
   const { taskId } = useParams();
@@ -78,8 +79,8 @@ export default function TaskDetailPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">{task.name}</h1>
           <p className="text-muted-foreground">
-            <span className="mr-2 rounded bg-slate-100 px-1 py-0.5 font-mono text-xs text-slate-600">
-              {task.procedure}
+            <span className="0 mr-2 rounded px-1 py-0.5 font-mono text-xs text-slate-600">
+              <ProcedureBadge procedure={task.procedure} />
             </span>
             Analyze the task set up.
           </p>

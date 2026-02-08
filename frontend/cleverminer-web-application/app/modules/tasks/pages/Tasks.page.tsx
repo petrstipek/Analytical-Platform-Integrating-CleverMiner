@@ -6,7 +6,13 @@ import { Link, useNavigate } from 'react-router';
 import { LoadingStatus } from '@/shared/components/molecules';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { Button } from '@/shared/components/ui/atoms/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/molecules/card';
 import { toast } from 'sonner';
 
 export default function TasksPage() {
@@ -63,6 +69,7 @@ export default function TasksPage() {
         <Card className="bg-background/80 rounded-2xl border shadow-sm ring-1 ring-black/5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-xl font-semibold">Tasks</CardTitle>
+            <CardDescription>Explore all the tasks available.</CardDescription>
           </CardHeader>
           <CardContent>
             <DataTable

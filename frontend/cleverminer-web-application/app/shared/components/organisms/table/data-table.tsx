@@ -20,7 +20,7 @@ import {
 } from '@/shared/components/ui/organisms/table';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { Input } from '@/shared/components/ui/atoms/input';
-import { Search, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Inbox, Download } from 'lucide-react';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import {
   Select,
@@ -74,7 +74,7 @@ export function DataTable<TData, TValue>({
     <div className="space-y-4">
       {(showSearch || showProcedureFilter || exportData) && (
         <Card>
-          <CardContent className="flex items-center px-2">
+          <CardContent className="flex items-center px-5">
             <div className="flex flex-1 flex-row gap-3">
               {showSearch && (
                 <div className="relative w-full sm:max-w-sm">
@@ -117,7 +117,7 @@ export function DataTable<TData, TValue>({
             </div>
             {exportData && (
               <Button variant="secondary" onClick={exportData}>
-                Export data
+                Export data <Download />
               </Button>
             )}
           </CardContent>
