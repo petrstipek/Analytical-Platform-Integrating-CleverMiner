@@ -1,4 +1,7 @@
+import csv
+
 from celery.result import AsyncResult
+from django.http import HttpResponse
 from django.utils import timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
@@ -85,6 +88,39 @@ class TaskViewSet(viewsets.ModelViewSet):
         data = get_run_status_summary(user=request.user)
         serializer = RunStatusSummarySerializer(data)
         return Response(serializer.data)
+
+    @action(detail=False, methods=["get"], url_path="export")
+    def export(self, request):
+        qs = self.get_queryset().select_related("dataset")
+
+        response = HttpResponse(content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = 'attachment; filename="tasks.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(
+            [
+                "id",
+                "name",
+                "procedure",
+                "project_id",
+                "dataset",
+                "created_at",
+            ]
+        )
+
+        for task in qs.iterator(chunk_size=2000):
+            writer.writerow(
+                [
+                    task.id,
+                    task.name,
+                    task.procedure,
+                    task.project_id,
+                    task.dataset.name if task.dataset else "",
+                    task.created_at.isoformat(),
+                ]
+            )
+
+        return response
 
 
 class RunViewSet(viewsets.ReadOnlyModelViewSet):
