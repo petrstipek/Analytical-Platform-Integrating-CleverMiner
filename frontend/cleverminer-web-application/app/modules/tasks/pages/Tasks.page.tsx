@@ -69,7 +69,7 @@ export default function TasksPage() {
         <Card className="bg-background/80 rounded-2xl border shadow-sm ring-1 ring-black/5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-xl font-semibold">Tasks</CardTitle>
-            <CardDescription>Explore all the tasks available.</CardDescription>
+            <CardDescription>Explore all the available tasks.</CardDescription>
           </CardHeader>
           <CardContent>
             <DataTable

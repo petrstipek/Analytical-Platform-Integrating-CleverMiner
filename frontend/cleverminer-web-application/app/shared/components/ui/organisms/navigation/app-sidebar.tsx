@@ -85,7 +85,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [me]);
 
   return (
-    <Sidebar {...props}>
+    <Sidebar
+      {...props}
+      variant="floating"
+      collapsible="icon"
+      className="shadow-cleverminer-one p-1 shadow-2xl"
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

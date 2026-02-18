@@ -4,6 +4,13 @@ import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { ProjectColumns } from '@/modules/projects/components/organisms/table/projects.columns';
 import { useNavigate } from 'react-router';
 import { LoadingStatus } from '@/shared/components/molecules';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/molecules/card';
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
@@ -21,11 +28,23 @@ export default function ProjectsPage() {
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">Projects</h1>
         <p className="text-muted-foreground">See all created projects on this platform.</p>
       </div>
-      <DataTable
-        columns={ProjectColumns}
-        data={projectsData}
-        onRowClick={(row) => navigate(`/projects/${row.id}`)}
-      />
+      <div className="space-y-5">
+        <Card className="bg-background/80 rounded-2xl border shadow-sm ring-1 ring-black/5">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-xl font-semibold">Projects</CardTitle>
+            <CardDescription>Explore all the available projects.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              columns={ProjectColumns}
+              data={projectsData}
+              onRowClick={(row) => navigate(`/projects/${row.id}`)}
+              showSearch={true}
+              mainSearchColumn={'name'}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

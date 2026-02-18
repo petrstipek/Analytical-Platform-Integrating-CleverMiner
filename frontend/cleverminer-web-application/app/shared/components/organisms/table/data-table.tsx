@@ -30,6 +30,8 @@ import {
   SelectValue,
 } from '@/shared/components/ui/atoms/select';
 import { Card, CardContent } from '@/shared/components/ui/molecules/card';
+import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
+import { DatasetSourceType } from '@/modules/datasets/domain/dataset.type';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,6 +39,7 @@ interface DataTableProps<TData, TValue> {
   showSearch?: boolean;
   onRowClick?: (row: TData) => void;
   exportData?: () => void;
+  mainSearchColumn?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -45,6 +48,7 @@ export function DataTable<TData, TValue>({
   showSearch = false,
   onRowClick,
   exportData,
+  mainSearchColumn = 'name',
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -70,6 +74,17 @@ export function DataTable<TData, TValue>({
   const selectedProcedure =
     (procedureColumn?.getFilterValue() as ProceduresType | undefined) ?? 'all';
 
+  const statusColumn = table.getColumn('status');
+  const showStatusFilter = !!statusColumn;
+  const statusOptions = useMemo(() => Object.values(RunResultStatus), []);
+  const selectedStatus = (statusColumn?.getFilterValue() as RunResultStatus | undefined) ?? 'all';
+
+  const datasetTypeColumn = table.getColumn('source_type');
+  const showDatasetTypeFilter = !!datasetTypeColumn;
+  const datasetTypeOptions = useMemo(() => Object.values(DatasetSourceType), []);
+  const selectedDatasetType =
+    (datasetTypeColumn?.getFilterValue() as DatasetSourceType | undefined) ?? 'all';
+
   return (
     <div className="space-y-4">
       {(showSearch || showProcedureFilter || exportData) && (
@@ -80,10 +95,10 @@ export function DataTable<TData, TValue>({
                 <div className="relative w-full sm:max-w-sm">
                   <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
                   <Input
-                    placeholder="Filter tasks by name..."
-                    value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+                    placeholder="Filter table ..."
+                    value={(table.getColumn(mainSearchColumn)?.getFilterValue() as string) ?? ''}
                     onChange={(event) =>
-                      table.getColumn('name')?.setFilterValue(event.target.value)
+                      table.getColumn(mainSearchColumn)?.setFilterValue(event.target.value)
                     }
                     className="bg-white pl-9"
                   />
@@ -108,6 +123,54 @@ export function DataTable<TData, TValue>({
                       {procedureOptions.map((procedure) => (
                         <SelectItem key={procedure} value={procedure}>
                           {procedure}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {showStatusFilter && (
+                <div className="w-full sm:w-[260px]">
+                  <Select
+                    value={selectedStatus}
+                    onValueChange={(value) => {
+                      if (value === 'all') statusColumn.setFilterValue(undefined);
+                      else statusColumn!.setFilterValue(value);
+                    }}
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="all">All states</SelectItem>
+                      {statusOptions.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {showDatasetTypeFilter && (
+                <div className="w-full sm:w-[260px]">
+                  <Select
+                    value={selectedDatasetType}
+                    onValueChange={(value) => {
+                      if (value === 'all') datasetTypeColumn.setFilterValue(undefined);
+                      else datasetTypeColumn!.setFilterValue(value);
+                    }}
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Filter by dataset type" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="all">All types</SelectItem>
+                      {datasetTypeOptions.map((datasetType) => (
+                        <SelectItem key={datasetType} value={datasetType}>
+                          {datasetType}
                         </SelectItem>
                       ))}
                     </SelectContent>

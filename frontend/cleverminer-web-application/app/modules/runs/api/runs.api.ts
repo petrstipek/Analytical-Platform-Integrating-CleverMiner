@@ -17,3 +17,18 @@ export async function getRunsSummary(): Promise<RunsSummary> {
   const result = await apiClient.get('/runs/summary/');
   return result.data;
 }
+
+export async function exportRuns(): Promise<void> {
+  const result = await apiClient.get('/runs/export/', {
+    responseType: 'blob',
+  });
+  const blob = result.data as Blob;
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'runs.csv';
+  a.click();
+
+  window.URL.revokeObjectURL(url);
+}
