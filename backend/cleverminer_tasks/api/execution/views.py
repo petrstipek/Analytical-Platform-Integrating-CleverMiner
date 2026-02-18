@@ -181,3 +181,18 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
         data = get_run_status_summary(user=request.user)
         serializer = RunStatusSummarySerializer(data)
         return Response(serializer.data)
+
+    @action(detail=False, methods=["get"], url_path="export")
+    def export(self, request):
+        qs = self.get_queryset().select_related("task")
+
+        response = HttpResponse(content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = 'attachment; filename="runs.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(["id", "task", "status", "started_at", "result"])
+
+        for run in qs.iterator(chunk_size=2000):
+            writer.writerow([run.id, run.task, run.status, run.started_at, run.result])
+
+        return response
