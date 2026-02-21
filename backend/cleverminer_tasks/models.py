@@ -135,6 +135,9 @@ class Dataset(models.Model):
 
     is_ready = models.BooleanField(default=True)
 
+    dataset_stats = models.JSONField(null=True, blank=True)
+    dataset_clm_guidance = models.JSONField(null=True, blank=True)
+
     def save(self, *args, **kwargs):
         if self.file:
             if self.source_type != DatasetSourceType.GENERATED:
