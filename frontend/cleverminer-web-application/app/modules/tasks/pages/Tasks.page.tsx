@@ -66,7 +66,7 @@ export default function TasksPage() {
         />
       </div>
       <div className="space-y-5">
-        <Card className="bg-background/80 rounded-2xl border shadow-sm ring-1 ring-black/5">
+        <Card className="bg-background/80 rounded-4xl border shadow-xl ring-1 ring-black/5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-xl font-semibold">Tasks</CardTitle>
             <CardDescription>Explore all the available tasks.</CardDescription>

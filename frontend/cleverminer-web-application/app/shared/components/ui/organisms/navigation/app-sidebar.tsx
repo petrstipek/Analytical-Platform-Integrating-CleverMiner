@@ -89,14 +89,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {...props}
       variant="floating"
       collapsible="icon"
-      className="shadow-cleverminer-one p-1 shadow-2xl"
+      className="shadow-cleverminer-one rounded-xl p-0 shadow-2xl"
     >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a>
-                <div className="ring-border bg-cleverminer-one relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl ring-1">
+                <div className="ring-border bg-cleverminer-one relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl">
                   <div className="from-primary/90 to-primary/40 absolute inset-0 bg-gradient-to-br" />
                   <span className="text-primary-foreground relative text-xs font-semibold">CM</span>
                 </div>

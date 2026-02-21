@@ -7,7 +7,7 @@ export default function PlatformLayout() {
   return (
     <div className="[--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">
-        <div className="flex flex-1">
+        <div className="flex flex-1 rounded-xl">
           <AppSidebar />
           <SidebarInset className="flex flex-col">
             <PlatformSiteHeader />
