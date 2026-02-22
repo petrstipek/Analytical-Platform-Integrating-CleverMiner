@@ -4,6 +4,7 @@ import type {
   DatasetPreviewResponse,
   DatasetStats,
 } from '@/modules/datasets/api/types/clmGuidance.type';
+import type { DatasetStatsOverview } from '@/modules/datasets/api/types/datasetStatsOverview.type';
 
 export async function getDatasetPreview(id: number) {
   const res = await apiClient.get<DatasetPreviewResponse>(`/datasets/${id}/preview/?rows=20`);
@@ -37,5 +38,12 @@ export async function createDerivedDataset(
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 
+  return res.data;
+}
+
+export async function getDatasetStatsOverview(datasetId: number) {
+  const res = await apiClient.get<DatasetStatsOverview>(
+    `/datasets/${datasetId}/dataset-stats-overview/`,
+  );
   return res.data;
 }

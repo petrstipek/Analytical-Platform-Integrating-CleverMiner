@@ -3,6 +3,7 @@ import {
   getDatasetAnalysis,
   getDatasetAnalysisStats,
   getDatasetPreview,
+  getDatasetStatsOverview,
 } from '../api/dataset-analysis.api';
 import { toast } from 'sonner';
 
@@ -35,13 +36,23 @@ export function useDatasetAnalysis(id: number | null) {
     enabled: !!id,
   });
 
-  const error = clmCandidatesError || columnStatsError;
-  const isAnalysing = clmCandidatesLoading || columnStatsLoading;
+  const {
+    data: datasetStatsOverview,
+    isLoading: datasetStatsOverviewLoading,
+    error: datasetStatsOverviewError,
+  } = useQuery({
+    queryKey: ['dataset-stats-overview', id],
+    queryFn: () => getDatasetStatsOverview(id!),
+    enabled: !!id,
+  });
+
+  const error = clmCandidatesError || columnStatsError || datasetStatsOverviewError;
+  const isAnalysing = clmCandidatesLoading || columnStatsLoading || datasetStatsOverviewLoading;
 
   if (error) {
     console.error('Failed to fetch dataset analysis:', clmCandidatesError, columnStatsError);
     toast.error('Failed to fetch dataset analysis' + columnStatsData + columnStatsError);
   }
 
-  return { clmCandidatesData, columnStatsData, isAnalysing, error };
+  return { clmCandidatesData, columnStatsData, datasetStatsOverview, isAnalysing, error };
 }

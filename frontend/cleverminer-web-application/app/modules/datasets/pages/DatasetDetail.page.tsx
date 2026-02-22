@@ -16,9 +16,8 @@ import { LoadingStatus } from '@/shared/components/molecules';
 export default function DatasetDetailPage() {
   const { datasetId } = useParams();
 
-  const { clmCandidatesData, columnStatsData, isAnalysing, error } = useDatasetAnalysis(
-    Number(datasetId),
-  );
+  const { clmCandidatesData, columnStatsData, datasetStatsOverview, isAnalysing, error } =
+    useDatasetAnalysis(Number(datasetId));
   const {
     data: preview,
     isLoading: previewLoading,
@@ -31,11 +30,9 @@ export default function DatasetDetailPage() {
   if (loading) return <LoadingStatus />;
   if (mainError) return <div>Error loading dataset analysis.</div>;
 
-  console.log(columnStatsData);
-
   return (
     <div className="grid w-full grid-cols-1 gap-6">
-      <DatasetDetailHeader />
+      <DatasetDetailHeader datasetStatsOverview={datasetStatsOverview!} />
 
       <Tabs defaultValue="ColumnsAnalysis" className="w-full">
         <div className="flex items-center justify-between">

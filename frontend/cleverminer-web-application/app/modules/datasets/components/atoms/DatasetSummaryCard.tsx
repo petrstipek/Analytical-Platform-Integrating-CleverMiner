@@ -5,7 +5,7 @@ import React from 'react';
 interface DatasetSummaryCardProps {
   title: string;
   value: string | number;
-  variant?: 'default' | 'success' | 'warning';
+  variant?: 'default' | 'success' | 'warning' | 'info';
   icon?: React.ReactNode;
 }
 
@@ -27,6 +27,10 @@ export default function DatasetSummaryCard({
     warning: {
       card: 'border-l-4 border-l-amber-500',
       text: 'text-amber-600',
+    },
+    info: {
+      card: 'border-l-4 border-l-blue-500',
+      text: 'text-blue-600',
     },
   };
 
