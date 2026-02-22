@@ -188,3 +188,11 @@ class DatasetViewSet(viewsets.ModelViewSet):
                 "finished_at": tr.finished_at,
             }
         )
+
+    @action(detail=True, methods=["get"], url_path="dataset-main-stats")
+    def dataset_main_stats(self, request, pk=None):
+        dataset = self.get_object()
+
+
+
+        return Response(build_stats(dataset))

@@ -1,9 +1,7 @@
 from rest_framework.routers import DefaultRouter
-
-from .views import TaskViewSet, RunViewSet
+from cleverminer_tasks.api.tasks.views import TaskViewSet
 
 router = DefaultRouter()
 router.register(r"tasks", TaskViewSet, basename="task")
-router.register(r"runs", RunViewSet, basename="run")
 
 urlpatterns = router.urls

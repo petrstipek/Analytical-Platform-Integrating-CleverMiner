@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from cleverminer_tasks.api.dataset.serializers import DatasetSerializer
-from cleverminer_tasks.api.execution.serializers import (
+from cleverminer_tasks.api.runs.serializers import (
     RunSerializer,
     RunSummarySerializer,
 )

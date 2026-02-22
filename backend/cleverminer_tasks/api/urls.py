@@ -7,8 +7,9 @@ main_router = DefaultRouter()
 
 urlpatterns = [
     path("health/", HealthView.as_view(), name="api-health"),
-    path("", include("cleverminer_tasks.api.execution.urls")),
     path("", include("cleverminer_tasks.api.procedures.urls")),
     path("", include("cleverminer_tasks.api.dataset.urls")),
     path("", include("cleverminer_tasks.api.project.urls")),
+    path("", include("cleverminer_tasks.api.tasks.urls")),
+    path("", include("cleverminer_tasks.api.runs.urls")),
 ]
