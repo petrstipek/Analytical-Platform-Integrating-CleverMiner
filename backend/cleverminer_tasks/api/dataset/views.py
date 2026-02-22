@@ -10,12 +10,16 @@ from cleverminer_tasks.api.dataset.serializers import (
     DatasetSerializer,
     CreateDerivedDatasetSerializer,
 )
-from cleverminer_tasks.api.dataset.service import create_derived_dataset
+from cleverminer_tasks.api.dataset.service import (
+    create_derived_dataset,
+    create_dataset_profile,
+)
 from cleverminer_tasks.api.dataset.utils.clmTargetCandidates import build_clm_candidates
+from cleverminer_tasks.api.dataset.utils.datasetColumns import create_dataset_columns
 from cleverminer_tasks.api.dataset.utils.datasetStats import build_stats
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
-from cleverminer_tasks.models import Dataset
+from cleverminer_tasks.models import Dataset, DatasetProfile
 
 
 class DatasetViewSet(viewsets.ModelViewSet):
@@ -54,34 +58,26 @@ class DatasetViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         dataset = serializer.save(owner=self.request.user)
 
-        dataset_stats = build_stats(dataset)
-        dataset_clm_guidance = build_clm_candidates(load_dataset(dataset))
-
-        dataset.dataset_stats = dataset_stats
-        dataset.dataset_clm_guidance = dataset_clm_guidance
-        dataset.save()
+        dataset_profile = DatasetProfile.objects.create(dataset=dataset)
+        create_dataset_profile(dataset=dataset, dataset_profile=dataset_profile)
 
     @action(detail=True, methods=["get"])
     def columns(self, request, pk=None):
         dataset = self.get_object()
 
-        df = load_dataset(dataset, nrows=50)
+        dataset_profile = dataset.profile
 
-        cols = []
-        for c in df.columns:
-            cols.append(
-                {
-                    "name": str(c),
-                    "dtype": str(df[c].dtype),
-                    "null_sample": int(df[c].isnull().sum()),
-                    "non_null_sample": int(df[c].notna().sum()),
-                }
-            )
+        if not dataset_profile.dataset_columns:
+            dataset_profile_columns = create_dataset_columns(dataset)
+            dataset_profile.dataset_columns = dataset_profile_columns
+            dataset_profile.save()
+        else:
+            dataset_profile_columns = dataset.profile.dataset_columns
 
         return Response(
             {
                 "dataset_id": dataset.id,
-                "columns": cols,
+                "columns": dataset_profile_columns,
             }
         )
 
@@ -107,11 +103,12 @@ class DatasetViewSet(viewsets.ModelViewSet):
     def stats(self, request, pk=None):
         dataset = self.get_object()
 
-        if not dataset.dataset_stats:
+        if not dataset.profile.dataset_stats:
             dataset_stats = build_stats(dataset)
-            dataset.dataset_stats = dataset_stats
+            dataset.profile.dataset_stats = dataset_stats
+            dataset.profile.save()
         else:
-            dataset_stats = dataset.dataset_stats
+            dataset_stats = dataset.profile.dataset_stats
         return Response(
             {
                 **dataset_stats,
@@ -122,11 +119,12 @@ class DatasetViewSet(viewsets.ModelViewSet):
     def clm_candidates(self, request, pk=None):
         dataset = self.get_object()
 
-        if not dataset.dataset_clm_guidance:
+        if not dataset.profile.dataset_clm_guidance:
             dataset_clm_guidance = build_clm_candidates(load_dataset(dataset))
-            dataset.dataset_clm_guidance = dataset_clm_guidance
+            dataset.profile.dataset_clm_guidance = dataset_clm_guidance
+            dataset.profile.save()
         else:
-            dataset_clm_guidance = dataset.dataset_clm_guidance
+            dataset_clm_guidance = dataset.profile.dataset_clm_guidance
         return Response(
             {
                 "dataset_id": dataset.id,
@@ -192,7 +190,5 @@ class DatasetViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"], url_path="dataset-main-stats")
     def dataset_main_stats(self, request, pk=None):
         dataset = self.get_object()
-
-
 
         return Response(build_stats(dataset))
