@@ -2,8 +2,10 @@ import { Outlet } from 'react-router';
 import { SidebarInset, SidebarProvider } from '@/shared/components/ui/organisms/sidebar';
 import { PlatformSiteHeader } from '@/shared/components/ui/organisms/site-header';
 import { AppSidebar } from '@/shared/components/ui/organisms/navigation/app-sidebar';
+import { useActiveRuns } from '@/shared/hooks/useActiveRuns';
 
 export default function PlatformLayout() {
+  useActiveRuns();
   return (
     <div className="[--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">

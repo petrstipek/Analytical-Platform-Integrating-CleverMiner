@@ -2,6 +2,7 @@ import { apiClient } from '@/lib/api-client';
 import type { RunResult } from '@/modules/runs/domain/runs-results.type';
 import type { RunsSummary } from '@/modules/runs/domain/runs-summary.type';
 import type { RunWithTask } from '@/modules/runs/domain/runs-main.type';
+import type { ActiveRun } from '@/modules/runs/domain/active-runs.type';
 
 export async function getRun(runId: number): Promise<RunWithTask> {
   const result = await apiClient.get(`/runs/${runId}`);
@@ -31,4 +32,9 @@ export async function exportRuns(): Promise<void> {
   a.click();
 
   window.URL.revokeObjectURL(url);
+}
+
+export async function getActiveRuns(): Promise<{ runs: ActiveRun[] }> {
+  const res = await apiClient.get('/runs/active/');
+  return res.data;
 }
