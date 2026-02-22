@@ -192,3 +192,31 @@ class DatasetViewSet(viewsets.ModelViewSet):
         dataset = self.get_object()
 
         return Response(build_stats(dataset))
+
+    @action(detail=True, methods=["get"], url_path="dataset-stats-overview")
+    def dataset_stats_overview(self, request, pk=None):
+        dataset = self.get_object()
+        dataset_profile = dataset.profile
+
+        stats_data = dataset_profile.dataset_stats or {}
+        dataset_columns = stats_data.get("columns", [])
+
+        total_columns = len(dataset_columns)
+        usable_as_is = 0
+
+        for col in dataset_columns:
+            guidance = col.get("clm_guidance", {})
+
+            if guidance.get("clm_usable_as_is") is True:
+                usable_as_is += 1
+
+        not_usable_as_is = total_columns - usable_as_is
+
+        return Response(
+            {
+                "total_columns": total_columns,
+                "usable_as_is": usable_as_is,
+                "not_usable_as_is": not_usable_as_is,
+                "row_count": stats_data.get("row_count", 0),
+            }
+        )
