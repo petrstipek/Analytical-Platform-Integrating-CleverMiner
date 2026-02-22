@@ -94,3 +94,41 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
             writer.writerow([run.id, run.task, run.status, run.started_at, run.result])
 
         return response
+
+    @action(detail=True, methods=["get"], url_path="status")
+    def status(self, request, pk=None):
+        run = self.get_object()
+        return Response(
+            {
+                "id": run.id,
+                "status": run.status,
+                "started_at": run.started_at,
+                "finished_at": run.finished_at,
+                "error_log": run.error_log if run.status == RunStatus.FAILED else None,
+            }
+        )
+
+    @action(detail=False, methods=["get"], url_path="active")
+    def active(self, request):
+        active_statuses = [RunStatus.QUEUED, RunStatus.RUNNING]
+
+        qs = (
+            self.get_queryset()
+            .filter(status__in=active_statuses)
+            .only("id", "status", "started_at", "finished_at", "error_log", "task_id")
+            .order_by("-started_at", "-id")
+        )
+
+        data = [
+            {
+                "id": run.id,
+                "task_id": run.task_id,
+                "status": run.status,
+                "started_at": run.started_at,
+                "finished_at": run.finished_at,
+                "error_log": run.error_log if run.status == RunStatus.FAILED else None,
+            }
+            for run in qs
+        ]
+
+        return Response({"runs": data})
