@@ -228,6 +228,13 @@ class DatasetViewSet(viewsets.ModelViewSet):
     def get_dataset_profile(self, request, pk=None):
         dataset = self.get_object()
 
-        response = build_dataset_profile(load_dataset(dataset))
+        dataset_profile = dataset.profile
 
-        return Response({**response})
+        if not dataset_profile.dataset_eda_profile:
+            dataset_profile_eda = build_dataset_profile(load_dataset(dataset))
+            dataset_profile.dataset_eda_profile = dataset_profile_eda
+            dataset_profile.save()
+        else:
+            dataset_profile_eda = dataset.profile.dataset_eda_profile
+
+        return Response({**dataset_profile_eda})

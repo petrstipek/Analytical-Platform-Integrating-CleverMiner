@@ -157,9 +157,9 @@ class DatasetProfile(models.Model):
     dataset_stats = models.JSONField(null=True, blank=True)
     dataset_clm_guidance = models.JSONField(null=True, blank=True)
     dataset_columns = models.JSONField(null=True, blank=True)
+    dataset_eda_profile = models.JSONField(null=True, blank=True)
 
     schema_version = models.PositiveSmallIntegerField(default=1)
-
 
     def __str__(self):
         return f"Profile for {self.dataset.name}"
