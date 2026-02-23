@@ -14,6 +14,9 @@ from cleverminer_tasks.api.dataset.service import (
     create_derived_dataset,
     create_dataset_profile,
 )
+from cleverminer_tasks.api.dataset.utils.buildDatasetProfile import (
+    build_dataset_profile,
+)
 from cleverminer_tasks.api.dataset.utils.clmTargetCandidates import build_clm_candidates
 from cleverminer_tasks.api.dataset.utils.datasetColumns import create_dataset_columns
 from cleverminer_tasks.api.dataset.utils.datasetStats import build_stats
@@ -220,3 +223,11 @@ class DatasetViewSet(viewsets.ModelViewSet):
                 "row_count": stats_data.get("row_count", 0),
             }
         )
+
+    @action(detail=True, methods=["get"], url_path="dataset-profile")
+    def get_dataset_profile(self, request, pk=None):
+        dataset = self.get_object()
+
+        response = build_dataset_profile(load_dataset(dataset))
+
+        return Response({**response})
