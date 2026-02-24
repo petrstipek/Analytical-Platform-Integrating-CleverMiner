@@ -74,20 +74,6 @@ export default function ColumnCard({
           )}
         </div>
       </div>
-
-      <div className="text-right">
-        <Badge
-          className={
-            status === 'good'
-              ? 'bg-green-600 hover:bg-green-700'
-              : status === 'warning'
-                ? 'bg-amber-500 hover:bg-amber-600'
-                : 'bg-gray-400 hover:bg-gray-500'
-          }
-        >
-          {badgeText}
-        </Badge>
-      </div>
     </div>
   );
 }

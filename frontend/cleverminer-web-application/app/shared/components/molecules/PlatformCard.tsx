@@ -9,7 +9,7 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 type PlatformCardProps = {
-  cardTitle: string;
+  cardTitle: ReactNode;
   cardDescription?: string;
   children: ReactNode;
   className?: string;
