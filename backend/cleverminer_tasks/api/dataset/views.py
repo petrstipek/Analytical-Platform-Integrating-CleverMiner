@@ -217,6 +217,8 @@ class DatasetViewSet(viewsets.ModelViewSet):
 
         return Response(
             {
+                "dataset_id": dataset.id,
+                "dataset_name": dataset.name,
                 "total_columns": total_columns,
                 "usable_as_is": usable_as_is,
                 "not_usable_as_is": not_usable_as_is,
