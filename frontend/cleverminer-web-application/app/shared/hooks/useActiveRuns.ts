@@ -16,7 +16,7 @@ export function useActiveRuns() {
   const query = useQuery({
     queryKey: ['activeRuns'],
     queryFn: getActiveRuns,
-    refetchInterval: 10000,
+    refetchInterval: 1000000,
     refetchIntervalInBackground: true,
     staleTime: 0,
     enabled: !!user,
