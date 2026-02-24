@@ -23,7 +23,7 @@ export default function PlatformCard({
 }: PlatformCardProps) {
   return (
     <Card
-      className={cn('bg-background/80 rounded-4xl border shadow-xl ring-1 ring-black/5', className)}
+      className={cn('bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5', className)}
     >
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl font-semibold">{cardTitle}</CardTitle>

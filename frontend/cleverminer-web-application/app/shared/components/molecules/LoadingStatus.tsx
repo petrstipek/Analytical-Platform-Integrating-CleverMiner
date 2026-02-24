@@ -10,20 +10,23 @@ import {
 type LoadingStatusProps = {
   title?: string;
   description?: string;
+  hint?: string;
 };
 
 export default function LoadingStatus({
   title = 'Processing your request',
-  description = 'Please wait while we process your request. Do not refresh the page.',
+  description = 'Please wait while we process your request.',
+  hint = 'Do not refresh the page.',
 }: LoadingStatusProps = {}) {
   return (
-    <Empty className="w-full">
+    <Empty className="animate-pulse-subtle w-full">
       <EmptyHeader>
-        <EmptyMedia variant="icon">
+        <EmptyMedia variant="icon" className="mb-2">
           <Spinner />
         </EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>
+        {hint && <p className="text-muted-foreground/50 mt-1 text-xs">{hint}</p>}
       </EmptyHeader>
     </Empty>
   );
