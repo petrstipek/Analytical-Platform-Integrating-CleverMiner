@@ -50,11 +50,11 @@ export default function DatasetDetailPage() {
             <TabsTrigger value="preview" className="flex-1">
               Data Preview
             </TabsTrigger>
-            <TabsTrigger value="ColumnsAnalysis" className="flex-1">
-              Columns Analysis
-            </TabsTrigger>
             <TabsTrigger value="clmGuidance" className="flex-1">
               CleverMiner Guidance
+            </TabsTrigger>
+            <TabsTrigger value="ColumnsAnalysis" className="flex-1">
+              Columns Analysis and Preprocessing
             </TabsTrigger>
           </TabsList>
         </div>
