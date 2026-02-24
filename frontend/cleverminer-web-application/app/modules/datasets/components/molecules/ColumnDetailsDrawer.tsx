@@ -92,7 +92,7 @@ export default function ColumnDetailsDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="right">
-      <DrawerContent className="mt-0 h-full w-[90vw] rounded-none sm:w-[900px]">
+      <DrawerContent className="mt-0 h-full w-[95vw] max-w-[1000px] rounded-none">
         <div className="mx-auto flex h-full w-full flex-col">
           <DrawerHeader className="text-left">
             <div className="flex items-center gap-3">

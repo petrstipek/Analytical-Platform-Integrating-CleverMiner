@@ -74,17 +74,17 @@ export default function DatasetDetailPage() {
         </TabsContent>
 
         <TabsContent
-          value="ColumnsAnalysis"
-          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
-        >
-          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} datasetId={datasetId!} />
-        </TabsContent>
-
-        <TabsContent
           value="clmGuidance"
           className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
         >
           <DatasetAnalysisView datasetId={Number(datasetId)} clmGuidance={clmCandidatesData!} />
+        </TabsContent>
+
+        <TabsContent
+          value="ColumnsAnalysis"
+          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
+        >
+          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} datasetId={datasetId!} />
         </TabsContent>
       </Tabs>
     </div>
