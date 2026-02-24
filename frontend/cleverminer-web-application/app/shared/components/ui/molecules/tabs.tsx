@@ -31,17 +31,11 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        'relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold whitespace-nowrap',
+        'relative inline-flex flex-1 items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold whitespace-nowrap',
         'tracking-tight transition-all duration-200 ease-out',
-        'rounded-none border-0 bg-transparent outline-none',
+        'rounded-2xl border-0 bg-transparent outline-none',
         'text-muted-foreground/60 hover:text-foreground',
-        'after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2px]',
-        'after:bg-foreground after:scale-x-0 after:rounded-full',
-        'after:transition-transform after:duration-200 after:ease-out',
-        'data-[state=active]:text-foreground',
-        'data-[state=active]:after:scale-x-100',
-        'data-[state=active]:bg-foreground/5',
-        'rounded-md',
+        'data-[state=active]:bg-cleverminer-two/30 data-[state=active]:text-foreground data-[state=active]:shadow-sm',
         'focus-visible:ring-ring/50 focus-visible:ring-2 focus-visible:outline-none',
         'disabled:pointer-events-none disabled:opacity-30',
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
