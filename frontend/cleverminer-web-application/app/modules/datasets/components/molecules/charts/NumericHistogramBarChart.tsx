@@ -50,8 +50,8 @@ export default function NumericHistogramBarChart({ attributeName, histogram }: P
   } satisfies ChartConfig;
 
   const descParts = [
-    `Strategy: ${histogram.strategy_used}`,
-    `Bins: ${histogram.bins_used}`,
+    `Strategy: ${histogram.strategy}`,
+    `Bins: ${histogram.bins}`,
     typeof histogram.skew === 'number' ? `Skew: ${histogram.skew.toFixed(2)}` : null,
   ].filter(Boolean);
 
