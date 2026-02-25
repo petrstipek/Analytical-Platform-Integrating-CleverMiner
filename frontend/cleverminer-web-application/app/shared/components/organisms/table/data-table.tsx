@@ -232,7 +232,9 @@ export function DataTable<TData, TValue>({
                       style={
                         cell.column.id === 'expander'
                           ? { paddingLeft: `${row.depth * 1.5 + 0.75}rem` }
-                          : undefined
+                          : row.depth > 0
+                            ? { paddingLeft: '0.5rem' }
+                            : undefined
                       }
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

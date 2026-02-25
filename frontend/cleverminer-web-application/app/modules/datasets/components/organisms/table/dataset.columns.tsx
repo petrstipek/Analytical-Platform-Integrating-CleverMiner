@@ -2,6 +2,8 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { formatDate } from '@/shared/utils/formatDate';
 import { DatasetSourceTypeBadge } from '@/modules/datasets/components/atoms/DatasetSourceTypeBadge';
 import type { DatasetNode } from '@/modules/datasets/pages/Datasets.page';
+import { ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export const DatasetColumns: ColumnDef<DatasetNode>[] = [
   {
@@ -14,12 +16,17 @@ export const DatasetColumns: ColumnDef<DatasetNode>[] = [
             e.stopPropagation();
             row.getToggleExpandedHandler()();
           }}
-          className="cursor-pointer"
+          className="flex items-center justify-center rounded p-1 transition-colors hover:bg-slate-200"
         >
-          {row.getIsExpanded() ? '▼' : '▶'}
+          <ChevronRight
+            className={cn(
+              'h-5 w-5 text-slate-500 transition-transform duration-300',
+              row.getIsExpanded() && 'rotate-90',
+            )}
+          />
         </button>
       ) : (
-        <span className="pl-4" />
+        <span className="block w-6" />
       ),
   },
   {
