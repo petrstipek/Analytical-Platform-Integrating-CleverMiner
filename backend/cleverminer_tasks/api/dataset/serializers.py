@@ -27,6 +27,7 @@ class DatasetSerializer(serializers.ModelSerializer):
             "created_at",
             "file",
             "project_id",
+            "parent_id",
         ]
         read_only_fields = ["id", "owner", "created_at"]
 
