@@ -54,14 +54,7 @@ export default function AttributeDetails({
         </Card>
 
         {profile.histogram && (
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">Histogram</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <NumericHistogramBarChart attributeName={name} histogram={profile.histogram} />
-            </CardContent>
-          </Card>
+          <NumericHistogramBarChart attributeName={name} histogram={profile.histogram} />
         )}
 
         {profile.boxplot && (

@@ -1,4 +1,4 @@
-import { Bar, BarChart, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, LabelList, XAxis, YAxis } from 'recharts';
 import {
   Card,
   CardContent,
@@ -45,8 +45,20 @@ export default function BarChartHorizontal({ title, description, topValues }: Pr
 
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: -20 }}>
-            <XAxis type="number" dataKey="count" hide />
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            layout="vertical"
+            margin={{ left: -20, right: 48, top: 4, bottom: 20 }}
+          >
+            <XAxis
+              type="number"
+              dataKey="count"
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(v) => v.toLocaleString()}
+              label={{ value: 'Count', position: 'insideBottom', offset: -5, fontSize: 12 }}
+            />
             <YAxis
               dataKey="name"
               type="category"
@@ -55,6 +67,7 @@ export default function BarChartHorizontal({ title, description, topValues }: Pr
               axisLine={false}
               width={140}
               tickFormatter={(value) => String(value).slice(0, 24)}
+              label={{ value: 'Category', angle: -90, position: 'insideLeft', fontSize: 12 }}
             />
 
             <ChartTooltip
@@ -70,7 +83,14 @@ export default function BarChartHorizontal({ title, description, topValues }: Pr
               }
             />
 
-            <Bar dataKey="count" fill="var(--color-cleverminer-two)" radius={5} />
+            <Bar dataKey="count" fill="var(--color-cleverminer-two)" radius={5}>
+              <LabelList
+                dataKey="count"
+                position="right"
+                fontSize={11}
+                formatter={(v: number) => v.toLocaleString()}
+              />
+            </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>
