@@ -12,6 +12,7 @@ import type { FourftRule } from '@/modules/runs/domain/procedures-results.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
 import { FourFtMinerDetails } from '@/modules/tasks/components/organisms/procedures';
 import { ProceduresType } from '@/shared/domain/procedures.type';
+import { PlatformCard } from '@/shared/components/molecules';
 
 export default function FourFtMinerResultsPanel({ task }: { task: any }) {
   const rules: FourftRule[] = task.result.rules;
@@ -36,19 +37,16 @@ export default function FourFtMinerResultsPanel({ task }: { task: any }) {
       </RunConfigurationDetails>
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-xl font-semibold">Discovered Rules</CardTitle>
-              <CardDescription>Explore all discovered rules.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RulesList
-                rules={listRules}
-                selectedRuleId={selectedId}
-                onSelectRule={(row) => setSelectedId(row.id)}
-              />
-            </CardContent>
-          </Card>
+          <PlatformCard
+            cardTitle={'Discovered Rules'}
+            cardDescription={'Explore all discovered rules.'}
+          >
+            <RulesList
+              rules={listRules}
+              selectedRuleId={selectedId}
+              onSelectRule={(row) => setSelectedId(row.id)}
+            />
+          </PlatformCard>
         </div>
 
         <div className="space-y-4">

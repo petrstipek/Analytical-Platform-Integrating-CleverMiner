@@ -1,4 +1,4 @@
-import { Bar, BarChart, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Bar, BarChart, XAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui/molecules/card';
 
 interface RuleChartsProps {
@@ -42,20 +42,36 @@ export default function RuleCharts({ fourfold }: RuleChartsProps) {
         <CardHeader className="pb-2">
           <CardTitle className="text-center text-sm font-medium">Within Antecedent</CardTitle>
         </CardHeader>
-        <CardContent className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={anteData}>
-              <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                <Cell fill="#a5b4fc" />
-                <Cell fill="#94a3b8" />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="pointer-events-none text-center text-xs font-bold">
-            <span className="mr-12">{anteData[0].percent}%</span>
-            <span className="ml-12">{anteData[1].percent}%</span>
+        <CardContent>
+          <div className="h-[180px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={anteData}>
+                <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                  <LabelList
+                    dataKey="percent"
+                    position="top"
+                    formatter={(value: string) => `${value}%`}
+                    style={{ fontSize: 11, fontWeight: 600, fill: '#475569' }}
+                  />
+                  <Cell fill="#a5b4fc" />
+                  <Cell fill="#94a3b8" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-2 flex flex-col gap-1">
+            {anteData.map((entry, i) => (
+              <div key={entry.name} className="flex items-center gap-1.5 text-xs text-slate-600">
+                <span
+                  className="inline-block h-2.5 w-2.5 shrink-0 rounded-sm"
+                  style={{ background: i === 0 ? '#a5b4fc' : '#94a3b8' }}
+                />
+                <span>{entry.name}:</span>
+                <span className="font-semibold">{entry.percent}%</span>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -64,20 +80,36 @@ export default function RuleCharts({ fourfold }: RuleChartsProps) {
         <CardHeader className="pb-2">
           <CardTitle className="text-center text-sm font-medium">Entire Dataset</CardTitle>
         </CardHeader>
-        <CardContent className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={globalData}>
-              <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                <Cell fill="#475569" />
-                <Cell fill="#cbd5e1" />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="pointer-events-none relative z-10 mt-[-30px] text-center text-xs font-bold">
-            <span className="mr-12">{globalData[0].percent}%</span>
-            <span className="ml-12">{globalData[1].percent}%</span>
+        <CardContent>
+          <div className="h-[180px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={globalData}>
+                <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                  <LabelList
+                    dataKey="percent"
+                    position="top"
+                    formatter={(value: string) => `${value}%`}
+                    style={{ fontSize: 11, fontWeight: 600, fill: '#475569' }}
+                  />
+                  <Cell fill="#475569" />
+                  <Cell fill="#cbd5e1" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-2 flex flex-col gap-1">
+            {globalData.map((entry, i) => (
+              <div key={entry.name} className="flex items-center gap-1.5 text-xs text-slate-600">
+                <span
+                  className="inline-block h-2.5 w-2.5 shrink-0 rounded-sm"
+                  style={{ background: i === 0 ? '#a5b4fc' : '#94a3b8' }}
+                />
+                <span>{entry.name}:</span>
+                <span className="font-semibold">{entry.percent}%</span>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
