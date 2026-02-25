@@ -1,18 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import type { DatasetSourceType } from '@/modules/datasets/domain/dataset.type';
-
-export interface Dataset {
-  id: number;
-  name: string;
-  source_type: DatasetSourceType;
-  created_at: string;
-}
-
-export interface UploadDatasetPayload {
-  name: string;
-  file: File;
-  projectId?: number;
-}
+import type { Dataset, UploadDatasetPayload } from '@/modules/datasets/api/types/datasetBase.type';
 
 export async function uploadDataset(payload: UploadDatasetPayload): Promise<Dataset> {
   const formData = new FormData();

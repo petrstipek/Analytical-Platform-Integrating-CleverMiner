@@ -4,6 +4,7 @@ import {
   type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -32,6 +33,7 @@ import {
 import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import { DatasetSourceType } from '@/modules/datasets/domain/dataset.type';
+import { cn } from '@/lib/utils';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -40,6 +42,7 @@ interface DataTableProps<TData, TValue> {
   onRowClick?: (row: TData) => void;
   exportData?: () => void;
   mainSearchColumn?: string;
+  getSubRows?: (row: TData) => TData[] | undefined;
 }
 
 export function DataTable<TData, TValue>({
@@ -49,6 +52,7 @@ export function DataTable<TData, TValue>({
   onRowClick,
   exportData,
   mainSearchColumn = 'name',
+  getSubRows,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -56,6 +60,8 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    ...(getSubRows && { getSubRows }),
+    getExpandedRowModel: getExpandedRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -213,10 +219,22 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   onClick={() => onRowClick && onRowClick(row.original)}
                   data-state={row.getIsSelected() && 'selected'}
-                  className="cursor-pointer transition-colors hover:bg-slate-200"
+                  className={cn(
+                    'cursor-pointer transition-colors hover:bg-slate-200',
+                    row.depth > 0 &&
+                      'text-muted-foreground border-l-2 border-l-blue-200 bg-gray-100 text-sm',
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-3">
+                    <TableCell
+                      key={cell.id}
+                      className="py-3"
+                      style={
+                        cell.column.id === 'expander'
+                          ? { paddingLeft: `${row.depth * 1.5 + 0.75}rem` }
+                          : undefined
+                      }
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

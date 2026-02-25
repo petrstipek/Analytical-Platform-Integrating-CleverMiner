@@ -1,27 +1,9 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { formatDate } from '@/shared/utils/formatDate';
 import { DatasetSourceTypeBadge } from '@/modules/datasets/components/atoms/DatasetSourceTypeBadge';
-import type { DatasetNode } from '@/modules/datasets/pages/Datasets.page';
+import type { Dataset } from '@/modules/datasets/api/types/datasetBase.type';
 
-export const DatasetColumns: ColumnDef<DatasetNode>[] = [
-  {
-    id: 'expander',
-    header: () => null,
-    cell: ({ row }) =>
-      row.getCanExpand() ? (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            row.getToggleExpandedHandler()();
-          }}
-          className="cursor-pointer"
-        >
-          {row.getIsExpanded() ? '▼' : '▶'}
-        </button>
-      ) : (
-        <span className="pl-4" />
-      ),
-  },
+export const DatasetBaseColumns: ColumnDef<Dataset>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
