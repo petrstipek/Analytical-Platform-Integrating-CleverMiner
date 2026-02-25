@@ -4,7 +4,7 @@ import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { RunsColumnsSummarized } from '@/modules/runs/components/organisms/table/runs.columns';
 import { useNavigate } from 'react-router';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
-import { LoadingStatus } from '@/shared/components/molecules';
+import { LoadingStatus, PlatformCard } from '@/shared/components/molecules';
 import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import {
   Card,
@@ -57,12 +57,11 @@ export default function RunsPage() {
         />
       </div>
       <div className="space-y-5">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-xl font-semibold">Running Runs</CardTitle>
-            <CardDescription>Explore currently running runs.</CardDescription>
-          </CardHeader>
-          <CardContent>
+        {runningRuns.length > 0 && (
+          <PlatformCard
+            cardTitle={'Running Runs'}
+            cardDescription={'Explore currently running runs.'}
+          >
             <DataTable
               columns={RunsColumnsSummarized}
               data={runningRuns}
@@ -70,24 +69,18 @@ export default function RunsPage() {
               showSearch={true}
               mainSearchColumn={'task_name'}
             />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-xl font-semibold">All runs</CardTitle>
-            <CardDescription>Explore all the runs available.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DataTable
-              columns={RunsColumnsSummarized}
-              data={runsData}
-              onRowClick={(row) => navigate(`/run/${row.id}`)}
-              showSearch={true}
-              mainSearchColumn={'task_name'}
-              exportData={exportRunsMutation.mutate}
-            />
-          </CardContent>
-        </Card>
+          </PlatformCard>
+        )}
+        <PlatformCard cardTitle={'All runs'} cardDescription={'Explore all the runs available.'}>
+          <DataTable
+            columns={RunsColumnsSummarized}
+            data={runsData}
+            onRowClick={(row) => navigate(`/run/${row.id}`)}
+            showSearch={true}
+            mainSearchColumn={'task_name'}
+            exportData={exportRunsMutation.mutate}
+          />
+        </PlatformCard>
       </div>
     </div>
   );

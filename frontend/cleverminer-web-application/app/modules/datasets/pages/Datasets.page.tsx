@@ -3,7 +3,7 @@ import { getDatasets } from '@/modules/datasets/api/datasets.api';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { DatasetColumns } from '@/modules/datasets/components/organisms/table/dataset.columns';
 import { Link, useNavigate } from 'react-router';
-import { LoadingStatus } from '@/shared/components/molecules';
+import { LoadingStatus, PlatformCard } from '@/shared/components/molecules';
 import { Button } from '@/shared/components/ui/atoms/button';
 import {
   Card,
@@ -57,37 +57,31 @@ export default function DatasetsPage() {
         </Link>
       </div>
       <div className="space-y-5">
-        <Card className="bg-background/80 rounded-2xl border shadow-sm ring-1 ring-black/5">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-xl font-semibold">Pre-processed Datasets</CardTitle>
-            <CardDescription>Explore all the available tasks.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DataTable
-              columns={DatasetBaseColumns}
-              data={generatedDatasets}
-              onRowClick={(row) => navigate(`/datasets/${row.id}`)}
-              showSearch={true}
-              mainSearchColumn={'name'}
-            />
-          </CardContent>
-        </Card>
-        <Card className="bg-background/80 rounded-2xl border shadow-sm ring-1 ring-black/5">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-xl font-semibold">All Datasets</CardTitle>
-            <CardDescription>Explore all the available tasks.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DataTable
-              columns={DatasetColumns}
-              data={treeData}
-              getSubRows={(row) => row.children}
-              onRowClick={(row) => navigate(`/datasets/${row.id}`)}
-              showSearch={true}
-              mainSearchColumn={'name'}
-            />
-          </CardContent>
-        </Card>
+        <PlatformCard
+          cardTitle={'Pre-processed datasets'}
+          cardDescription={'Explore pre-processed datasets.'}
+        >
+          <DataTable
+            columns={DatasetBaseColumns}
+            data={generatedDatasets}
+            onRowClick={(row) => navigate(`/datasets/${row.id}`)}
+            showSearch={true}
+            mainSearchColumn={'name'}
+          />
+        </PlatformCard>
+        <PlatformCard
+          cardTitle={'All Datasets'}
+          cardDescription={'Explore all the available datasets.'}
+        >
+          <DataTable
+            columns={DatasetColumns}
+            data={treeData}
+            getSubRows={(row) => row.children}
+            onRowClick={(row) => navigate(`/datasets/${row.id}`)}
+            showSearch={true}
+            mainSearchColumn={'name'}
+          />
+        </PlatformCard>
       </div>
     </div>
   );
