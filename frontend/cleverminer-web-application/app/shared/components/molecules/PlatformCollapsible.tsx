@@ -15,9 +15,9 @@ import type { ReactNode } from 'react';
 
 type PlatformCollapsibleProps = {
   children: ReactNode;
-  collapsedTitle?: string;
-  collapsedDescription?: string;
-  revealedTitle?: string;
+  collapsedTitle?: ReactNode;
+  collapsedDescription?: ReactNode;
+  revealedTitle?: ReactNode;
 };
 
 export default function PlatformCollapsible({

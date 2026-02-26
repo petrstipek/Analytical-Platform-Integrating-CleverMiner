@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/molecules/card';
-import { HistogramBars, RulesList } from '@/modules/runs/components/molecules';
+import { DiscoveredRulesContainer, HistogramBars } from '@/modules/runs/components/molecules';
 import type { RunResultCf } from '@/modules/runs/domain/runs-results.type';
 import type { RuleListRow } from '@/modules/runs/components/molecules/RulesList';
 import { CFMinerDetails } from '@/modules/tasks/components/organisms/procedures';
@@ -36,22 +36,11 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
         <CFMinerDetails params={task.run_snapshot} />
       </RunConfigurationDetails>
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-xl font-semibold">Discovered Rules</CardTitle>
-              <CardDescription>Explore all discovered rules.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RulesList
-                rules={listRules}
-                selectedRuleId={selectedId}
-                onSelectRule={(row) => setSelectedId(row.id)}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
+        <DiscoveredRulesContainer
+          rules={listRules}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
+        />
         <div className="space-y-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">

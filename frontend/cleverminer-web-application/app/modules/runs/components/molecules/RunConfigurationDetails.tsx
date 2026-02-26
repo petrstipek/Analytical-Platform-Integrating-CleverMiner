@@ -27,7 +27,7 @@ export default function RunConfigurationDetails({
   return (
     <Collapsible>
       <CollapsibleTrigger asChild>
-        <Card className="w-full cursor-pointer select-none">
+        <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
           <CardHeader className="flex flex-row items-center justify-between">
             <div className="flex flex-row space-x-4">
               <CardTitle>Run Configuration details</CardTitle>
@@ -40,10 +40,10 @@ export default function RunConfigurationDetails({
           </CardHeader>
         </Card>
       </CollapsibleTrigger>
-      <CollapsibleContent className="mt-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Run configuration</CardTitle>
+      <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up mt-2 overflow-hidden">
+        <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-xl font-semibold">Run Configuration</CardTitle>
           </CardHeader>
           <CardContent>{children}</CardContent>
         </Card>
