@@ -9,7 +9,7 @@ export default function FourFtMinerDetails({ params }: { params: any }) {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold tracking-wider text-slate-500 uppercase">
-              Left Side (If)
+              Antecedent Attributes - Left Side (If)
             </h3>
           </div>
           <CedentDetail title="Antecedent" data={params.ante} color="blue" />
@@ -19,7 +19,7 @@ export default function FourFtMinerDetails({ params }: { params: any }) {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold tracking-wider text-slate-500 uppercase">
-              Right Side (Then)
+              Succedent Attributes - Right Side (Then)
             </h3>
           </div>
           <CedentDetail title="Succedent" data={params.succ} color="green" />

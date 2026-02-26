@@ -1,20 +1,12 @@
 import { useNavigate, useParams } from 'react-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  SD4ftMinerDetails,
-  CFMinerDetails,
-  FourFtMinerDetails,
-  UICMinerDetails,
-} from '../components/organisms/procedures';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/atoms/alert';
-import { Pencil, Play, Terminal } from 'lucide-react';
-import { ProceduresType } from '@/shared/domain/procedures.type';
+import { Pencil, Play } from 'lucide-react';
 import { getRunsForTask, getTask } from '@/modules/tasks/api/tasks.api';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { TaskRunsColumns } from '@/modules/tasks/components/organisms/table/taskRuns.columns';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { useCreateAndExecuteRunMutation } from '@/modules/tasks/hooks/tasks.hook';
-import { LoadingStatus, PlatformCard } from '@/shared/components/molecules';
+import { LoadingStatus, PlatformCard, renderProcedureDetails } from '@/shared/components/molecules';
 import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
 import { ActionContainer } from '@/shared/components/atoms';
 
@@ -51,32 +43,6 @@ export default function TaskDetailPage() {
   if (!isValidId) return <div>Invalid Task ID</div>;
   if (isLoading) return <LoadingStatus title={'Loading task detail...'} />;
   if (error || !task) return <div>Error loading task.</div>;
-
-  const renderProcedureDetails = () => {
-    switch (task.procedure) {
-      case ProceduresType.SD4FTMINER:
-        return <SD4ftMinerDetails params={task.params} />;
-      case ProceduresType.CFMINER:
-        return <CFMinerDetails params={task.params} />;
-      case ProceduresType.FOURFTMINER:
-        return <FourFtMinerDetails params={task.params} />;
-      case ProceduresType.UICMINER:
-        return <UICMinerDetails params={task.params} />;
-      default:
-        return (
-          <Alert>
-            <Terminal className="h-4 w-4" />
-            <AlertTitle>Unknown Procedure</AlertTitle>
-            <AlertDescription>
-              We don't have a specialized view for <b>{task.procedure}</b> yet.
-              <pre className="mt-2 w-full overflow-x-auto rounded bg-slate-950 p-4 text-xs text-slate-50">
-                {JSON.stringify(task.params, null, 2)}
-              </pre>
-            </AlertDescription>
-          </Alert>
-        );
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -117,7 +83,7 @@ export default function TaskDetailPage() {
         cardDescription={'Explore the current task configuration.'}
         titleClassName={'text-2xl font-bold tracking-tight text-gray-900'}
       >
-        <div className="animate-in fade-in duration-500">{renderProcedureDetails()}</div>
+        <div className="animate-in fade-in duration-500">{renderProcedureDetails(task)}</div>
       </PlatformCard>
       <PlatformCard
         cardTitle={'Runs for the Task'}
