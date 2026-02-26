@@ -4,7 +4,7 @@ import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { RunsColumnsSummarized } from '@/modules/runs/components/organisms/table/runs.columns';
 import { useNavigate } from 'react-router';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
-import { LoadingStatus, PlatformCard } from '@/shared/components/molecules';
+import { LoadingStatus, ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
 import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import {
   Card,
@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/molecules/card';
 import { toast } from 'sonner';
+import { ActionContainer } from '@/shared/components/atoms';
 
 export default function RunsPage() {
   const navigate = useNavigate();
@@ -39,10 +40,7 @@ export default function RunsPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Runs</h1>
-        <p className="text-muted-foreground">See all runs performed on this platform.</p>
-      </div>
+      <ModulePagesHeader title={'Runs'} description={'See all runs performed on this platform.'} />
       <div className="mb-6 grid gap-4 md:grid-cols-3">
         <BaseSummaryCard
           title={'Overall Count'}
@@ -61,6 +59,7 @@ export default function RunsPage() {
           <PlatformCard
             cardTitle={'Running Runs'}
             cardDescription={'Explore currently running runs.'}
+            titleClassName={''}
           >
             <DataTable
               columns={RunsColumnsSummarized}
@@ -71,7 +70,11 @@ export default function RunsPage() {
             />
           </PlatformCard>
         )}
-        <PlatformCard cardTitle={'All runs'} cardDescription={'Explore all the runs available.'}>
+        <PlatformCard
+          cardTitle={'All runs'}
+          cardDescription={'Explore all the runs available.'}
+          titleClassName={'text-2xl font-bold tracking-tight text-gray-900'}
+        >
           <DataTable
             columns={RunsColumnsSummarized}
             data={runsData}

@@ -3,7 +3,7 @@ import { getDatasets } from '@/modules/datasets/api/datasets.api';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { DatasetColumns } from '@/modules/datasets/components/organisms/table/dataset.columns';
 import { Link, useNavigate } from 'react-router';
-import { LoadingStatus, PlatformCard } from '@/shared/components/molecules';
+import { LoadingStatus, ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
 import { Button } from '@/shared/components/ui/atoms/button';
 import {
   Card,
@@ -14,6 +14,7 @@ import {
 } from '@/shared/components/ui/molecules/card';
 import type { Dataset } from '@/modules/datasets/api/types/datasetBase.type';
 import { DatasetBaseColumns } from '@/modules/datasets/components/organisms/table/datasetBase.columns';
+import { ActionContainer } from '@/shared/components/atoms';
 
 export type DatasetNode = Dataset & { children: DatasetNode[] };
 
@@ -47,15 +48,11 @@ export default function DatasetsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Datasets</h1>
-          <p className="text-muted-foreground">See all uploaded datasets.</p>
-        </div>
+      <ModulePagesHeader title={'Datasets'} description={'See all uploaded datasets'}>
         <Link to={'/datasets/upload'}>
           <Button>Upload New Dataset</Button>
         </Link>
-      </div>
+      </ModulePagesHeader>
       <div className="space-y-5">
         <PlatformCard
           cardTitle={'Pre-processed datasets'}

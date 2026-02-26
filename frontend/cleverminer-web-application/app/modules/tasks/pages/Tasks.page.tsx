@@ -3,7 +3,7 @@ import { columns } from '@/modules/tasks/components/organisms/table/columns';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { exportTasks, getTasks, getTasksSummary } from '@/modules/tasks/api/tasks.api';
 import { Link, useNavigate } from 'react-router';
-import { LoadingStatus, PlatformCard } from '@/shared/components/molecules';
+import { LoadingStatus, ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { Button } from '@/shared/components/ui/atoms/button';
 import {
@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/molecules/card';
 import { toast } from 'sonner';
+import { ActionContainer } from '@/shared/components/atoms';
 
 export default function TasksPage() {
   const navigate = useNavigate();
@@ -39,15 +40,11 @@ export default function TasksPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Tasks Overview</h1>
-          <p className="text-muted-foreground">View all defined tasks.</p>
-        </div>
+      <ModulePagesHeader title={'Tasks'} description={'See all defined tasks'}>
         <Link to={'/tasks/new-task'}>
           <Button>Create New Task</Button>
         </Link>
-      </div>
+      </ModulePagesHeader>
       <div className="mb-6 grid gap-4 md:grid-cols-3">
         <BaseSummaryCard
           title={'Overall Count'}
