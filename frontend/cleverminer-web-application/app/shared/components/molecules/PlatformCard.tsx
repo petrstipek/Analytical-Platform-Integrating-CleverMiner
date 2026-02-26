@@ -13,6 +13,7 @@ type PlatformCardProps = {
   cardDescription?: string;
   children: ReactNode;
   className?: string;
+  titleClassName?: string;
 };
 
 export default function PlatformCard({
@@ -20,13 +21,14 @@ export default function PlatformCard({
   cardDescription,
   children,
   className,
+  titleClassName,
 }: PlatformCardProps) {
   return (
     <Card
       className={cn('bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5', className)}
     >
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-xl font-semibold">{cardTitle}</CardTitle>
+        <CardTitle className={cn('text-xl font-semibold', titleClassName)}>{cardTitle}</CardTitle>
         <CardDescription>{cardDescription}</CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>

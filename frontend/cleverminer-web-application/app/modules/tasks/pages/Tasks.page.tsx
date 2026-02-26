@@ -3,7 +3,7 @@ import { columns } from '@/modules/tasks/components/organisms/table/columns';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { exportTasks, getTasks, getTasksSummary } from '@/modules/tasks/api/tasks.api';
 import { Link, useNavigate } from 'react-router';
-import { LoadingStatus } from '@/shared/components/molecules';
+import { LoadingStatus, PlatformCard } from '@/shared/components/molecules';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { Button } from '@/shared/components/ui/atoms/button';
 import {
@@ -66,21 +66,19 @@ export default function TasksPage() {
         />
       </div>
       <div className="space-y-5">
-        <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-xl font-semibold">Tasks</CardTitle>
-            <CardDescription>Explore all the available tasks.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DataTable
-              columns={columns}
-              data={data}
-              showSearch={true}
-              onRowClick={(row) => navigate('/tasks/' + row.id)}
-              exportData={exportTaskMutation.mutate}
-            />
-          </CardContent>
-        </Card>
+        <PlatformCard
+          cardTitle={'Tasks'}
+          cardDescription={'Explore all the available tasks.'}
+          titleClassName={'text-2xl font-bold tracking-tight text-gray-900'}
+        >
+          <DataTable
+            columns={columns}
+            data={data}
+            showSearch={true}
+            onRowClick={(row) => navigate('/tasks/' + row.id)}
+            exportData={exportTaskMutation.mutate}
+          />
+        </PlatformCard>
       </div>
     </div>
   );
