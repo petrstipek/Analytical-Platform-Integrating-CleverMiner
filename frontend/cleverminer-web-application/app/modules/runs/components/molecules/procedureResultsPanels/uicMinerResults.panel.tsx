@@ -35,6 +35,7 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
           rules={listRules}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
+          procedure={ProceduresType.UICMINER}
         />
 
         <div className="space-y-4">

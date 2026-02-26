@@ -38,6 +38,7 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
           rules={listRules}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
+          procedure={ProceduresType.SD4FTMINER}
         />
         <div className="space-y-4">
           <Card>

@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/components/ui/organisms/table';
-import type { ProceduresType } from '@/shared/domain/procedures.type';
+import { ProceduresType } from '@/shared/domain/procedures.type';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 
 export type RuleListRow = {
@@ -35,6 +35,42 @@ export default function RulesList({
   const formatRule = (text: string) => {
     const [logic] = text.split(' | ');
     const parts = logic.split('=>');
+
+    if (procedure === ProceduresType.CFMINER) {
+      const { bg_light, text: textColour } = PROCEDURE_STYLES[procedure];
+      const conditions = logic
+        .split('&')
+        .map((c) => c.trim())
+        .filter(Boolean);
+
+      return (
+        <div className="flex flex-wrap items-center gap-2">
+          {conditions.map((condition, i) => {
+            const match = condition.match(/^(.+?)\((.+)\)$/);
+            const field = match ? match[1].replace(/_/g, ' ') : condition;
+            const values = match ? match[2].split(/\s+/).filter(Boolean) : [];
+
+            return (
+              <div key={i} className="flex flex-wrap items-center gap-1">
+                {i > 0 && <span className="text-xs font-semibold text-slate-400">&amp;</span>}
+                <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
+                  {field}
+                </span>
+                {values.map((v) => (
+                  <span
+                    key={v}
+                    className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
+                  >
+                    {v}
+                  </span>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
     if (parts.length !== 2) return <span className="font-mono text-xs">{text}</span>;
 
     const parseChunk = (chunk: string) => {

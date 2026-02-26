@@ -7,12 +7,14 @@ type DiscoveredRulesContainerProps = {
   rules: RuleListRow[];
   selectedId: number | null;
   setSelectedId: (id: number) => void;
+  procedure: ProceduresType;
 };
 
 export default function DiscoveredRulesContainer({
   rules,
   selectedId,
   setSelectedId,
+  procedure,
 }: DiscoveredRulesContainerProps) {
   return (
     <div className="space-y-4 lg:col-span-2">
@@ -24,7 +26,7 @@ export default function DiscoveredRulesContainer({
           rules={rules}
           selectedRuleId={selectedId}
           onSelectRule={(row) => setSelectedId(row.id)}
-          procedure={ProceduresType.UICMINER}
+          procedure={procedure}
         />
       </PlatformCard>
     </div>

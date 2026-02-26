@@ -38,6 +38,7 @@ export default function FourFtMinerResultsPanel({ task }: { task: any }) {
           rules={listRules}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
+          procedure={ProceduresType.FOURFTMINER}
         />
 
         <div className="space-y-4">

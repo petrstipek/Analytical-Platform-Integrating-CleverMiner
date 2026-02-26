@@ -30,6 +30,8 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
   const selectedRule = task.result.rules.find((r) => r.id === selectedId) ?? null;
 
+  console.log('rules:', listRules);
+
   return (
     <div>
       <RunConfigurationDetails procedure={ProceduresType.CFMINER}>
@@ -40,6 +42,7 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
           rules={listRules}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
+          procedure={ProceduresType.CFMINER}
         />
         <div className="space-y-4">
           <Card>
