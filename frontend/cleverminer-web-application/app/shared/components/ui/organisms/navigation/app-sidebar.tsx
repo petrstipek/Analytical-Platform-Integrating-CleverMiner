@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { LifeBuoy, Send, Database, FolderDot, SquareCheckBig, CirclePlay } from 'lucide-react';
+import {
+  LifeBuoy,
+  Send,
+  Database,
+  FolderDot,
+  SquareCheckBig,
+  CirclePlay,
+  Github,
+} from 'lucide-react';
 
 import { NavMain } from '@/shared/components/ui/organisms/navigation/nav-main';
 import { NavSecondary } from '@/shared/components/ui/organisms/navigation/nav-secondary';
@@ -60,14 +68,14 @@ const data = {
   ],
   navSecondary: [
     {
-      title: 'Support',
-      url: '#',
+      title: 'Docs',
+      url: 'https://www.cleverminer.org/doc/index.html',
       icon: LifeBuoy,
     },
     {
-      title: 'Feedback',
-      url: '#',
-      icon: Send,
+      title: 'Support',
+      url: 'https://github.com/petrstipek/Analytical-Platform-Integrating-CleverMiner/issues',
+      icon: Github,
     },
   ],
 };
