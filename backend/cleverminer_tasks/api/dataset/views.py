@@ -67,6 +67,16 @@ class DatasetViewSet(viewsets.ModelViewSet):
         dataset_profile = DatasetProfile.objects.create(dataset=dataset)
         create_dataset_profile(dataset=dataset, dataset_profile=dataset_profile)
 
+    def perform_destroy(self, instance):
+        if instance.tasks.exists():
+            from rest_framework.exceptions import ValidationError
+
+            raise ValidationError("Cannot delete a dataset that is used in tasks.")
+
+        if instance.file:
+            instance.file.delete(save=False)
+        instance.delete()
+
     @action(detail=True, methods=["get"])
     def columns(self, request, pk=None):
         dataset = self.get_object()
