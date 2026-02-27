@@ -31,8 +31,8 @@ export default function Step1TaskSetup({ datasets, projects }: Step1TaskSetupPro
   const projectWatch = watch('project');
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div>
+      <div className={'mb-4'}>
         <h2 className="text-2xl font-bold tracking-tight text-gray-900">Analysis Base Setup</h2>
         <p className="text-muted-foreground">Define name, procedure, and used dataset.</p>
       </div>
