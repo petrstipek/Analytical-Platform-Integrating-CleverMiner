@@ -3,9 +3,9 @@ import { DatasetUploadCard } from '@/modules/datasets/components/molecules';
 import type { UploadPayload } from '@/modules/datasets/domain/uploadDataset.type';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { useNavigate } from 'react-router';
-import { DatasetColumns } from '@/modules/datasets/components/organisms/table/dataset.columns';
-import type { Dataset } from '@/modules/datasets/api/datasets.api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
+import { getDatasetBaseColumns } from '@/modules/datasets/components/organisms/table/datasetBase.columns';
+import type { Dataset } from '@/modules/datasets/api/types/datasetBase.type';
 
 type ProjectDatasetsTabProps = {
   isPending: boolean;
@@ -19,6 +19,9 @@ export default function ProjectDatasetsTab({
   datasets,
 }: ProjectDatasetsTabProps) {
   const navigate = useNavigate();
+
+  const DatasetBaseColumns = getDatasetBaseColumns((id) => {});
+
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card className={'col-span-2'}>
@@ -27,7 +30,7 @@ export default function ProjectDatasetsTab({
         </CardHeader>
         <CardContent>
           <DataTable
-            columns={DatasetColumns}
+            columns={DatasetBaseColumns}
             data={datasets}
             onRowClick={(row) => navigate(`/datasets/${row.id}`)}
           />

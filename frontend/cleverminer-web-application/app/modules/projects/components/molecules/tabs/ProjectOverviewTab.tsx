@@ -13,9 +13,9 @@ import AddProjectMember from '@/modules/projects/components/molecules/AddProject
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { useNavigate } from 'react-router';
 import type { RunResult } from '@/modules/runs/domain/runs-results.type';
-import type { Dataset } from '@/modules/datasets/api/datasets.api';
-import { DatasetColumns } from '@/modules/datasets/components/organisms/table/dataset.columns';
-import { RunsColumnsSummarized } from '@/modules/runs/components/organisms/table/runs.columns';
+import { getBaseRunColumns } from '@/modules/runs/components/organisms/table/runs.columns';
+import { getDatasetBaseColumns } from '@/modules/datasets/components/organisms/table/datasetBase.columns';
+import type { Dataset } from '@/modules/datasets/api/types/datasetBase.type';
 
 type ProjectOverviewTabProps = {
   members: ProjectMember[];
@@ -50,6 +50,9 @@ export default function ProjectOverviewTab({
     methods.reset({ email: '', role: values.role });
   });
 
+  const RunsBaseColumns = getBaseRunColumns((runId: number) => {});
+  const DatasetBaseColumns = getDatasetBaseColumns((id) => {});
+
   return (
     <div className="grid gap-6 md:grid-cols-3">
       <Card className={'col-span-2'}>
@@ -63,7 +66,7 @@ export default function ProjectOverviewTab({
             </div>
 
             <DataTable
-              columns={RunsColumnsSummarized}
+              columns={RunsBaseColumns}
               data={runs}
               onRowClick={(row) => navigate(`/run/${row.id}`)}
             />
@@ -73,7 +76,7 @@ export default function ProjectOverviewTab({
               <h3 className="text-lg font-semibold">Datasets</h3>
             </div>
             <DataTable
-              columns={DatasetColumns}
+              columns={DatasetBaseColumns}
               data={datasets}
               onRowClick={(row) => navigate(`/datasets/${row.id}`)}
             />
