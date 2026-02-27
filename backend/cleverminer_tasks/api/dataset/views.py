@@ -1,4 +1,7 @@
+import csv
+
 import pandas as pd
+from django.http import HttpResponse
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import permissions, viewsets, status
@@ -46,7 +49,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = Dataset.objects.all()
+        qs = Dataset.objects.prefetch_related("tasks")
         user = self.request.user
         project_id = self.request.query_params.get("project")
 
@@ -240,3 +243,30 @@ class DatasetViewSet(viewsets.ModelViewSet):
             dataset_profile_eda = dataset.profile.dataset_eda_profile
 
         return Response({**dataset_profile_eda})
+
+    @action(detail=False, methods=["GET"], url_path="export")
+    def export(self, request):
+        datasets = self.get_queryset()
+
+        response = HttpResponse(content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = 'attachment; filename="datasets.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(
+            ["id", "name", "source", "delimiter", "created_at", "parent", "is_ready"]
+        )
+
+        for dataset in datasets.iterator():
+            writer.writerow(
+                [
+                    dataset.id,
+                    dataset.name,
+                    dataset.source,
+                    dataset.delimiter,
+                    dataset.created_at,
+                    dataset.parent,
+                    dataset.is_ready,
+                ]
+            )
+
+        return response
