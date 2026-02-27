@@ -64,6 +64,8 @@ export default function DatasetsPage() {
             onRowClick={(row) => navigate(`/datasets/${row.id}`)}
             showSearch={true}
             mainSearchColumn={'name'}
+            showBooleanFilter={true}
+            booleanFilterColumn={'used_in_tasks'}
           />
         </PlatformCard>
         <PlatformCard
@@ -78,6 +80,8 @@ export default function DatasetsPage() {
             showSearch={true}
             mainSearchColumn={'name'}
             exportData={exportDatasetsMutation.mutate}
+            showBooleanFilter={true}
+            booleanFilterColumn={'used_in_tasks'}
           />
         </PlatformCard>
       </div>

@@ -34,6 +34,7 @@ import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import { DatasetSourceType } from '@/modules/datasets/domain/dataset.type';
 import { cn } from '@/lib/utils';
+import { Switch } from '@/shared/components/ui/atoms/switch';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -43,6 +44,8 @@ interface DataTableProps<TData, TValue> {
   exportData?: () => void;
   mainSearchColumn?: string;
   getSubRows?: (row: TData) => TData[] | undefined;
+  showBooleanFilter?: boolean;
+  booleanFilterColumn?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -53,6 +56,8 @@ export function DataTable<TData, TValue>({
   exportData,
   mainSearchColumn = 'name',
   getSubRows,
+  showBooleanFilter,
+  booleanFilterColumn,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -91,9 +96,21 @@ export function DataTable<TData, TValue>({
   const selectedDatasetType =
     (datasetTypeColumn?.getFilterValue() as DatasetSourceType | undefined) ?? 'all';
 
+  const [booleanFilterValue, setBooleanFilterValue] = useState(false);
+
+  const booleanFilterColumnInTable = booleanFilterColumn
+    ? table.getColumn(booleanFilterColumn)
+    : null;
+
+  const handleBooleanFilter = (checked: boolean) => {
+    setBooleanFilterValue(checked);
+    if (checked) booleanFilterColumnInTable?.setFilterValue(true);
+    else booleanFilterColumnInTable?.setFilterValue(undefined);
+  };
+
   return (
     <div className="space-y-4">
-      {(showSearch || showProcedureFilter || exportData) && (
+      {(showSearch || showProcedureFilter || exportData || showBooleanFilter) && (
         <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
           <CardContent className="flex items-center px-5">
             <div className="flex flex-1 flex-row gap-3">
@@ -160,7 +177,7 @@ export function DataTable<TData, TValue>({
                 </div>
               )}
               {showDatasetTypeFilter && (
-                <div className="w-full sm:w-[260px]">
+                <div className="w-full sm:w-[120px]">
                   <Select
                     value={selectedDatasetType}
                     onValueChange={(value) => {
@@ -181,6 +198,12 @@ export function DataTable<TData, TValue>({
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              )}
+              {showBooleanFilter && (
+                <div className="flex items-center gap-2">
+                  <Switch checked={booleanFilterValue} onCheckedChange={handleBooleanFilter} />
+                  <span className="text-muted-foreground text-sm">Used in tasks</span>
                 </div>
               )}
             </div>

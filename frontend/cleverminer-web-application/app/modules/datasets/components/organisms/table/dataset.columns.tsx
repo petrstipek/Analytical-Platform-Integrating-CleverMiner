@@ -52,5 +52,9 @@ export const DatasetColumns: ColumnDef<DatasetNode>[] = [
     accessorKey: 'used_in_tasks',
     header: 'Used in Task',
     cell: ({ row }) => <BaseBooleanStatusBadge status={row.original?.used_in_tasks!} />,
+    filterFn: (row, columnId, filterValue) => {
+      if (filterValue === undefined) return true;
+      return row.getValue(columnId) === filterValue;
+    },
   },
 ];
