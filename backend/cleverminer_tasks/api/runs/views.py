@@ -50,6 +50,12 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(RunSerializer(run).data, status=status.HTTP_202_ACCEPTED)
 
+    # exposing only delete since runs are crated internally
+    def destroy(self, request, pk=None):
+        run = self.get_object()
+        run.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     @action(detail=True, methods=["post"])
     def stop_task_execution(self, request, pk=None):
         run = self.get_object()
