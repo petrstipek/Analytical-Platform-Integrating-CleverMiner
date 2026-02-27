@@ -125,9 +125,9 @@ export default function RulesList({
   const showBase = rules.some((r) => r.metrics?.base != null);
 
   return (
-    <div className="overflow-hidden rounded-md border bg-white shadow-sm">
+    <div className="h-full min-h-0 overflow-auto rounded-md border bg-white shadow-sm">
       <Table>
-        <TableHeader className="bg-slate-50">
+        <TableHeader className="sticky top-0 z-10 bg-slate-50">
           <TableRow>
             <TableHead className="w-[50px]">ID</TableHead>
             <TableHead>Rule Logic</TableHead>

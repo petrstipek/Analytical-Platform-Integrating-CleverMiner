@@ -33,7 +33,7 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
       <RunConfigurationDetails procedure={ProceduresType.SD4FTMINER}>
         <SD4ftMinerDetails params={task.run_snapshot} />
       </RunConfigurationDetails>
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="my-6 grid grid-cols-1 items-stretch gap-6 lg:h-[90vh] lg:grid-cols-3">
         <DiscoveredRulesContainer
           rules={listRules}
           selectedId={selectedId}

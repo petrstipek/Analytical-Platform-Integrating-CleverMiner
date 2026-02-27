@@ -17,10 +17,12 @@ export default function DiscoveredRulesContainer({
   procedure,
 }: DiscoveredRulesContainerProps) {
   return (
-    <div className="space-y-4 lg:col-span-2">
+    <div className="h-full min-h-0 lg:col-span-2">
       <PlatformCard
         cardTitle={'Discovered Rules'}
         cardDescription={'Explore all discovered rules.'}
+        className="flex h-full flex-col"
+        contentClassName="flex-1 min-h-0"
       >
         <RulesList
           rules={rules}

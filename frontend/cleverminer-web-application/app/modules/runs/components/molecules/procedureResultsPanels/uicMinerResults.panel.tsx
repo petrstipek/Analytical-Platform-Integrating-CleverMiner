@@ -12,6 +12,8 @@ import type { RuleListRow } from '@/modules/runs/components/molecules/RulesList'
 import { UICMinerDetails } from '@/modules/tasks/components/organisms/procedures';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
+import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { PlatformCard } from '@/shared/components/molecules';
 
 export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
   const categories = task.result.summary.categories ?? [];
@@ -30,7 +32,7 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
       <RunConfigurationDetails procedure={ProceduresType.UICMINER}>
         <UICMinerDetails params={task.run_snapshot} />
       </RunConfigurationDetails>
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 items-stretch gap-6 lg:h-[70vh] lg:min-h-0 lg:grid-cols-3">
         <DiscoveredRulesContainer
           rules={listRules}
           selectedId={selectedId}
@@ -38,8 +40,8 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
           procedure={ProceduresType.UICMINER}
         />
 
-        <div className="space-y-4">
-          <Card>
+        <div className="h-full min-h-0 space-y-4 overflow-y-auto">
+          <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-xl font-semibold">Rule Detail</CardTitle>
               <CardDescription>Find more about selected rule.</CardDescription>
@@ -47,7 +49,9 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
             <CardContent>
               {selectedRule ? (
                 <div className="sticky top-6 space-y-4">
-                  <Card>
+                  <Card
+                    className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}
+                  >
                     <CardContent className="space-y-2 pt-6 text-sm">
                       <div className="flex justify-between border-b pb-2">
                         <span className="text-muted-foreground">Target</span>
@@ -64,12 +68,14 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
                     title="Histogram (Rule)"
                     categories={categories}
                     values={selectedRule.histogram_rule}
+                    colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
                   />
 
                   <HistogramBars
                     title="Histogram (Background)"
                     categories={categories}
                     values={selectedRule.histogram_background}
+                    colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
                   />
                 </div>
               ) : (

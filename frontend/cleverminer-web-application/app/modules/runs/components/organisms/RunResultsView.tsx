@@ -10,25 +10,26 @@ import {
 } from '@/modules/runs/components/molecules/procedureResultsPanels';
 import React from 'react';
 import type { RunWithTask } from '@/modules/runs/domain/runs-main.type';
+import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 
 export default function RunResultsView({ runResult }: { runResult: RunWithTask }) {
   if (!runResult.result) return <div>No results found.</div>;
 
   const header = (
     <div className="grid gap-4 md:grid-cols-3">
-      <DatasetSummaryCard
+      <BaseSummaryCard
         title="Status"
-        value="Completed"
+        value="Successfuly Completed"
         variant="success"
         icon={<CheckCheck className="h-4 w-4" />}
       />
-      <DatasetSummaryCard
+      <BaseSummaryCard
         title="Rules Found"
         value={runResult.result.summary.rule_count}
         variant="default"
         icon={<List className="h-4 w-4" />}
       />
-      <DatasetSummaryCard
+      <BaseSummaryCard
         title="Execution Time"
         value={formatDistance(new Date(runResult.finished_at), new Date(runResult.started_at))}
         variant="default"

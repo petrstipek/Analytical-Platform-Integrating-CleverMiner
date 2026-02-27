@@ -1,12 +1,9 @@
-import { Scale } from 'lucide-react';
 import { CedentDetail, QuantifiersDetail } from '@/modules/tasks/components/molecules';
 
 export default function UICMinerDetails({ params }: { params: any }) {
-  console.log(params);
   return (
     <div className="space-y-6">
-      <QuantifiersDetail data={params.quantifiers} />
-
+      <QuantifiersDetail data={params.quantifiers} />f
       <div className="relative grid grid-cols-1 gap-6 md:grid-cols-2">
         {params.ante?.attributes?.length > 0 && (
           <div className="md:col-span-2">

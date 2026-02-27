@@ -10,10 +10,11 @@ import { cn } from '@/lib/utils';
 
 type PlatformCardProps = {
   cardTitle: ReactNode;
-  cardDescription?: string;
+  cardDescription?: ReactNode;
   children: ReactNode;
   className?: string;
   titleClassName?: string;
+  contentClassName?: string;
 };
 
 export default function PlatformCard({
@@ -22,16 +23,17 @@ export default function PlatformCard({
   children,
   className,
   titleClassName,
+  contentClassName,
 }: PlatformCardProps) {
   return (
     <Card
       className={cn('bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5', className)}
     >
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className={cn('flex flex-row items-center justify-between')}>
         <CardTitle className={cn('text-xl font-semibold', titleClassName)}>{cardTitle}</CardTitle>
         <CardDescription>{cardDescription}</CardDescription>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className={contentClassName}>{children}</CardContent>
     </Card>
   );
 }

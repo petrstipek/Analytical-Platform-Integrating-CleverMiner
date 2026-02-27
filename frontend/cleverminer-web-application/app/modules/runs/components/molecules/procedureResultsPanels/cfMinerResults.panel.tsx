@@ -12,6 +12,7 @@ import type { RuleListRow } from '@/modules/runs/components/molecules/RulesList'
 import { CFMinerDetails } from '@/modules/tasks/components/organisms/procedures';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
+import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 
 export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
   const categories = task.result.summary.categories ?? [];
@@ -37,7 +38,7 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
       <RunConfigurationDetails procedure={ProceduresType.CFMINER}>
         <CFMinerDetails params={task.run_snapshot} />
       </RunConfigurationDetails>
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
         <DiscoveredRulesContainer
           rules={listRules}
           selectedId={selectedId}
@@ -45,7 +46,7 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
           procedure={ProceduresType.CFMINER}
         />
         <div className="space-y-4">
-          <Card>
+          <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-xl font-semibold">Rule Detail</CardTitle>
               <CardDescription>Find more about selected rule.</CardDescription>
@@ -53,7 +54,9 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
             <CardContent>
               {selectedRule ? (
                 <div className="sticky top-6 space-y-4">
-                  <Card>
+                  <Card
+                    className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}
+                  >
                     <CardContent className="space-y-2 pt-6 text-sm">
                       <div className="flex justify-between border-b pb-2">
                         <span className="text-muted-foreground">Target</span>
@@ -70,6 +73,7 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
                     title="Histogram (Rule)"
                     categories={categories}
                     values={selectedRule.quantifiers.hist}
+                    colorClass={PROCEDURE_STYLES[ProceduresType.CFMINER].bg_histogram}
                   />
 
                   <Card>
