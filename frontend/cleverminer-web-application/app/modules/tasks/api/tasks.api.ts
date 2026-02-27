@@ -85,3 +85,8 @@ export async function exportTasks(): Promise<void> {
 
   window.URL.revokeObjectURL(url);
 }
+
+export async function deleteTask(id: number) {
+  const response = await apiClient.delete(`/tasks/${id}/`);
+  return response.data;
+}

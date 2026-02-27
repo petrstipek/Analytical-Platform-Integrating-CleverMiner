@@ -1,23 +1,17 @@
 import { DataTable } from '@/shared/components/organisms/table/data-table';
-import { columns } from '@/modules/tasks/components/organisms/table/columns';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { exportTasks, getTasks, getTasksSummary } from '@/modules/tasks/api/tasks.api';
+import { getTasksBaseColumns } from '@/modules/tasks/components/organisms/table/columns';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deleteTask, exportTasks, getTasks, getTasksSummary } from '@/modules/tasks/api/tasks.api';
 import { Link, useNavigate } from 'react-router';
 import { LoadingStatus, ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { Button } from '@/shared/components/ui/atoms/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/shared/components/ui/molecules/card';
 import { toast } from 'sonner';
-import { ActionContainer } from '@/shared/components/atoms';
 
 export default function TasksPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const { data, isLoading } = useQuery({
     queryKey: ['tasks'],
     queryFn: getTasks,
@@ -35,8 +29,23 @@ export default function TasksPage() {
     },
   });
 
+  const deleteTaskMutation = useMutation({
+    mutationFn: (taskId: number) => deleteTask(taskId),
+    onError: (error: any) => {
+      toast.error('Delete failed:', error.message);
+    },
+    onSuccess: () => {
+      toast.success('Task deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
+
   if (isLoading || tasksSummaryLoading) return <LoadingStatus />;
   if (!data || !tasksSummaryData) return <div>No tasks found</div>;
+
+  const TaskColumns = getTasksBaseColumns((taskId: number) => {
+    deleteTaskMutation.mutate(taskId);
+  });
 
   return (
     <div>
@@ -69,7 +78,7 @@ export default function TasksPage() {
           titleClassName={'text-2xl font-bold tracking-tight text-gray-900'}
         >
           <DataTable
-            columns={columns}
+            columns={TaskColumns}
             data={data}
             showSearch={true}
             onRowClick={(row) => navigate('/tasks/' + row.id)}
