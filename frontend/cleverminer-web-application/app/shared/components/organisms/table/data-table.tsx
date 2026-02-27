@@ -94,7 +94,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       {(showSearch || showProcedureFilter || exportData) && (
-        <Card>
+        <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
           <CardContent className="flex items-center px-5">
             <div className="flex flex-1 flex-row gap-3">
               {showSearch && (
@@ -193,7 +193,7 @@ export function DataTable<TData, TValue>({
         </Card>
       )}
 
-      <div className="overflow-hidden rounded-md border bg-white shadow-sm">
+      <div className="bg-background/80 overflow-hidden rounded-2xl border shadow-xl ring-1 ring-black/5">
         <Table>
           <TableHeader className="bg-cleverminer-three">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -211,7 +211,6 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (

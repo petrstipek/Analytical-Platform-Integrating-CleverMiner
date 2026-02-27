@@ -4,6 +4,7 @@ import { DatasetSourceTypeBadge } from '@/modules/datasets/components/atoms/Data
 import type { DatasetNode } from '@/modules/datasets/pages/Datasets.page';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BaseBooleanStatusBadge } from '@/shared/components/atoms';
 
 export const DatasetColumns: ColumnDef<DatasetNode>[] = [
   {
@@ -46,5 +47,10 @@ export const DatasetColumns: ColumnDef<DatasetNode>[] = [
     accessorKey: 'created_at',
     header: 'Created At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
+  },
+  {
+    accessorKey: 'used_in_tasks',
+    header: 'Used in Task',
+    cell: ({ row }) => <BaseBooleanStatusBadge status={row.original?.used_in_tasks!} />,
   },
 ];
