@@ -1,18 +1,20 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { exportDatasets, getDatasets } from '@/modules/datasets/api/datasets.api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deleteDataset, exportDatasets, getDatasets } from '@/modules/datasets/api/datasets.api';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
-import { DatasetColumns } from '@/modules/datasets/components/organisms/table/dataset.columns';
+import { getDatasetColumns } from '@/modules/datasets/components/organisms/table/dataset.columns';
 import { Link, useNavigate } from 'react-router';
 import { LoadingStatus, ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
 import { Button } from '@/shared/components/ui/atoms/button';
 import type { Dataset } from '@/modules/datasets/api/types/datasetBase.type';
-import { DatasetBaseColumns } from '@/modules/datasets/components/organisms/table/datasetBase.columns';
+import { getDatasetBaseColumns } from '@/modules/datasets/components/organisms/table/datasetBase.columns';
 import { toast } from 'sonner';
 
 export type DatasetNode = Dataset & { children: DatasetNode[] };
 
 export default function DatasetsPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const { data, isLoading } = useQuery({
     queryKey: ['datasets'],
     queryFn: () => getDatasets(),
@@ -22,6 +24,17 @@ export default function DatasetsPage() {
     mutationFn: () => exportDatasets(),
     onError: (error: any) => {
       toast.error('Export failed:', error.message);
+    },
+  });
+
+  const deleteDatasetMutation = useMutation({
+    mutationFn: (id: number) => deleteDataset(id),
+    onError: (error: any) => {
+      toast.error('Delete failed:', error.message);
+    },
+    onSuccess: () => {
+      toast.success('Dataset deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['datasets'] });
     },
   });
 
@@ -45,6 +58,14 @@ export default function DatasetsPage() {
   }
 
   const treeData = buildTree(data);
+
+  const DatasetColumns = getDatasetColumns((id) => {
+    deleteDatasetMutation.mutate(id);
+  });
+
+  const DatasetBaseColumns = getDatasetBaseColumns((id) => {
+    deleteDatasetMutation.mutate(id);
+  });
 
   return (
     <div>
