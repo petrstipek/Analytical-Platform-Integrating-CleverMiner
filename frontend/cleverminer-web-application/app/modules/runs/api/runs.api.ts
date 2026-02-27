@@ -38,3 +38,8 @@ export async function getActiveRuns(): Promise<{ runs: ActiveRun[] }> {
   const res = await apiClient.get('/runs/active/');
   return res.data;
 }
+
+export async function deleteRun(id: number) {
+  const response = await apiClient.delete(`/runs/${id}/`);
+  return response.data;
+}

@@ -64,7 +64,7 @@ export const getTasksBaseColumns = (onDelete: (id: number) => void): ColumnDef<T
         size="sm"
         className="text-red-500 hover:bg-red-50 hover:text-red-700"
         onClick={(e) => {
-          e.stopPropagation(); // prevent row click from firing
+          e.stopPropagation();
           onDelete(row.original.id);
         }}
       >
