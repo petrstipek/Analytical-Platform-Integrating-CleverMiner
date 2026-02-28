@@ -1,6 +1,5 @@
-import { CheckCheck, Clock, List } from 'lucide-react';
+import { Braces, CheckCheck, Clock, Download, List } from 'lucide-react';
 import { formatDistance } from 'date-fns';
-import { DatasetSummaryCard } from '@/modules/datasets/components/atoms';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import {
   CfMinerResultsPanel,
@@ -11,6 +10,25 @@ import {
 import React from 'react';
 import type { RunWithTask } from '@/modules/runs/domain/runs-main.type';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
+import { collapseAllNested, darkStyles, defaultStyles, JsonView } from 'react-json-view-lite';
+import type {
+  RunResultCf,
+  RunResultSd4ft,
+  RunResultUic,
+} from '@/modules/runs/domain/runs-results.type';
+import 'react-json-view-lite/dist/index.css';
+import { ModulePagesHeader } from '@/shared/components/molecules';
+import { Button } from '@/shared/components/ui/atoms/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/shared/components/ui/molecules/dialog';
+import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { cn } from '@/lib/utils';
 
 export default function RunResultsView({ runResult }: { runResult: RunWithTask }) {
   if (!runResult.result) return <div>No results found.</div>;
@@ -38,27 +56,75 @@ export default function RunResultsView({ runResult }: { runResult: RunWithTask }
     </div>
   );
 
+  const exportData = () => {
+    const json = JSON.stringify(runResult, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${runResult.task.name}-${runResult.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   function createPanel(panel: React.ReactNode) {
+    const procedure: ProceduresType = runResult.task.procedure;
     return (
-      <div className="animate-in fade-in space-y-6 duration-500">
-        {header}
-        {panel}
-      </div>
+      <Dialog>
+        <div className="animate-in fade-in space-y-6 duration-500">
+          <ModulePagesHeader
+            title={'Run for - ' + runResult.task.name}
+            description={'Explore the results of this run.'}
+          >
+            <DialogTrigger asChild>
+              <Button
+                className={cn(
+                  'text-black',
+                  PROCEDURE_STYLES[procedure].bg,
+                  PROCEDURE_STYLES[procedure].bg_hover,
+                )}
+              >
+                <Braces /> Show Raw Output
+              </Button>
+            </DialogTrigger>
+            <Button variant="secondary" onClick={exportData}>
+              <Download /> Export data
+            </Button>
+          </ModulePagesHeader>
+
+          {header}
+          {panel}
+
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Raw Output</DialogTitle>
+              <DialogDescription>Full JSON output for this run.</DialogDescription>
+            </DialogHeader>
+            <div className="text-4xs max-h-[60vh] overflow-auto rounded-md p-3">
+              <JsonView
+                data={runResult}
+                style={defaultStyles}
+                shouldExpandNode={collapseAllNested}
+              />
+            </div>
+          </DialogContent>
+        </div>
+      </Dialog>
     );
   }
 
   switch (runResult.task.procedure) {
     case ProceduresType.FOURFTMINER:
-      return createPanel(<FourFtMinerResultsPanel task={runResult as any} />);
+      return createPanel(<FourFtMinerResultsPanel task={runResult as RunWithTask} />);
 
     case ProceduresType.SD4FTMINER:
-      return createPanel(<Sd4ftMinerResultsPanel task={runResult as any} />);
+      return createPanel(<Sd4ftMinerResultsPanel task={runResult as RunResultSd4ft} />);
 
     case ProceduresType.CFMINER:
-      return createPanel(<CfMinerResultsPanel task={runResult as any} />);
+      return createPanel(<CfMinerResultsPanel task={runResult as RunResultCf} />);
 
     case ProceduresType.UICMINER:
-      return createPanel(<UicMinerResultsPanel task={runResult as any} />);
+      return createPanel(<UicMinerResultsPanel task={runResult as RunResultUic} />);
 
     default:
       return <div>Unsupported procedure</div>;

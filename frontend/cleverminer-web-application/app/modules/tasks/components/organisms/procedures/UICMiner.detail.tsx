@@ -3,7 +3,7 @@ import { CedentDetail, QuantifiersDetail } from '@/modules/tasks/components/mole
 export default function UICMinerDetails({ params }: { params: any }) {
   return (
     <div className="space-y-6">
-      <QuantifiersDetail data={params.quantifiers} />f
+      <QuantifiersDetail data={params.quantifiers} />
       <div className="relative grid grid-cols-1 gap-6 md:grid-cols-2">
         {params.ante?.attributes?.length > 0 && (
           <div className="md:col-span-2">
