@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure--5#y$r@5jmn_(@+k08$9@fwgji00pt%5-!zr#+w3)tqx#5@mlh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["django-backend-production-7c9a.up.railway.app"]
 
 # Application definition
 
@@ -198,9 +198,16 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://frontend-production-a802.up.railway.app",
+    "https://cleverminer.stipekdevs.cz",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://frontend-production-a802.up.railway.app",
+    "https://cleverminer.stipekdevs.cz",
+]
 
 # dj-rest-auth settings
 REST_AUTH = {
@@ -209,9 +216,9 @@ REST_AUTH = {
     "TOKEN_MODEL": None,
     "JWT_AUTH_COOKIE": "cleverminer-analytical-platform-auth",
     "JWT_AUTH_REFRESH_COOKIE": "cleverminer-analytical-platform-refresh",
-    "JWT_AUTH_SECURE": False,
+    "JWT_AUTH_SECURE": True,
     "JWT_AUTH_HTTPONLY": True,
-    "JWT_AUTH_SAMESITE": "Lax",
+    "JWT_AUTH_SAMESITE": "None",
 }
 
 
