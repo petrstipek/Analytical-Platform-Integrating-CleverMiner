@@ -7,8 +7,6 @@ export async function getMe(): Promise<Me> {
 }
 
 export async function login(payload: { email: string; password: string }) {
-  const baseUrl = import.meta.env.VITE_BACKEND_URL;
-  console.log('backend URl = ', baseUrl);
   const res = await apiClient.post('/auth/login/', payload);
   return res.data;
 }
