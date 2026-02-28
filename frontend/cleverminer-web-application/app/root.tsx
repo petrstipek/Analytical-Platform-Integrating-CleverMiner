@@ -59,7 +59,7 @@ export default function App() {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-50">
-        <div className="text-sm text-gray-500">Loading application...</div>
+        <div className="text-sm text-gray-500">Loading user in application...</div>
       </div>
     );
   }

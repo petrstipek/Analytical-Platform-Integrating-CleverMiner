@@ -24,7 +24,7 @@ export default [
     route('run/:runId', 'modules/runs/pages/RunDetail.page.tsx'),
     route('runs', 'modules/runs/pages/Runs.page.tsx'),
     layout('modules/dashboard/pages/Dashboard.layout.tsx', [
-      route('dashboard', 'modules/dashboard/pages/Dashboard.page.tsx'),
+      route('home', 'modules/dashboard/pages/Dashboard.page.tsx'),
     ]),
   ]),
   layout('shared/components/layout/baseLayout/BaseLayout.tsx', [

@@ -7,6 +7,7 @@ import {
   SquareCheckBig,
   CirclePlay,
   Github,
+  HomeIcon,
 } from 'lucide-react';
 
 import { NavMain } from '@/shared/components/ui/organisms/navigation/nav-main';
@@ -26,6 +27,11 @@ import { useMemo } from 'react';
 
 const data = {
   navMain: [
+    {
+      title: 'Home',
+      url: '/home',
+      icon: HomeIcon,
+    },
     {
       title: 'Tasks',
       url: '/tasks',

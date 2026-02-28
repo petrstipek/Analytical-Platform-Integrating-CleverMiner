@@ -12,7 +12,7 @@ export function useLogin() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['me'] });
       toast.success('Successfully logged in!');
-      navigate('/tasks');
+      navigate('/home');
     },
     onError: () => {
       toast.error('Invalid email or password');
