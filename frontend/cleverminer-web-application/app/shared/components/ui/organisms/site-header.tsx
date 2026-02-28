@@ -24,32 +24,33 @@ export function PlatformSiteHeader() {
         <BreadcrumbList>
           <BreadcrumbItem className="hidden md:block">
             <BreadcrumbLink asChild>
-              <Link invaders-link="true" to="/">
-                Dashboard
-              </Link>
+              <BreadcrumbLink asChild>
+                <Link to="/home">Home</Link>
+              </BreadcrumbLink>
             </BreadcrumbLink>
           </BreadcrumbItem>
 
-          {pathNames.map((value, index) => {
-            const last = index === pathNames.length - 1;
-            const to = `/${pathNames.slice(0, index + 1).join('/')}`;
-            const label = value.charAt(0).toUpperCase() + value.slice(1).replace(/-/g, ' ');
-
-            return (
-              <React.Fragment key={to}>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  {last ? (
-                    <BreadcrumbPage>{label}</BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink asChild className="hidden md:block">
-                      <Link to={to}>{label}</Link>
-                    </BreadcrumbLink>
-                  )}
-                </BreadcrumbItem>
-              </React.Fragment>
-            );
-          })}
+          {pathNames
+            .filter((value) => value !== 'home')
+            .map((value, index, filtered) => {
+              const last = index === filtered.length - 1;
+              const to = `/${pathNames.slice(0, pathNames.indexOf(value) + 1).join('/')}`;
+              const label = value.charAt(0).toUpperCase() + value.slice(1).replace(/-/g, ' ');
+              return (
+                <React.Fragment key={to}>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    {last ? (
+                      <BreadcrumbPage>{label}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink asChild className="hidden md:block">
+                        <Link to={to}>{label}</Link>
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                </React.Fragment>
+              );
+            })}
         </BreadcrumbList>
       </Breadcrumb>
     </header>

@@ -1,10 +1,9 @@
-// export function meta({}: Route.MetaArgs) {
-//   return [
-//     { title: "New React Router App" },
-//     { name: "description", content: "Welcome to React Router!" },
-//   ];
-// }
+import { redirect } from 'react-router';
+
+export function loader() {
+  return redirect('/login');
+}
 
 export default function HomePage() {
-  return <div>Main page</div>;
+  return null;
 }

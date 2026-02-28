@@ -14,6 +14,11 @@ class DatasetSerializer(serializers.ModelSerializer):
         write_only=True, required=False, allow_null=True
     )
 
+    used_in_tasks = serializers.SerializerMethodField()
+
+    def get_used_in_tasks(self, obj):  # noqa
+        return obj.tasks.exists()
+
     class Meta:
         model = Dataset
         fields = [
@@ -27,6 +32,8 @@ class DatasetSerializer(serializers.ModelSerializer):
             "created_at",
             "file",
             "project_id",
+            "parent_id",
+            "used_in_tasks",
         ]
         read_only_fields = ["id", "owner", "created_at"]
 

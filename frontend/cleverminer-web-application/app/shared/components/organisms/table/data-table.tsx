@@ -4,6 +4,7 @@ import {
   type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -30,6 +31,10 @@ import {
   SelectValue,
 } from '@/shared/components/ui/atoms/select';
 import { Card, CardContent } from '@/shared/components/ui/molecules/card';
+import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
+import { DatasetSourceType } from '@/modules/datasets/domain/dataset.type';
+import { cn } from '@/lib/utils';
+import { Switch } from '@/shared/components/ui/atoms/switch';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,6 +42,10 @@ interface DataTableProps<TData, TValue> {
   showSearch?: boolean;
   onRowClick?: (row: TData) => void;
   exportData?: () => void;
+  mainSearchColumn?: string;
+  getSubRows?: (row: TData) => TData[] | undefined;
+  showBooleanFilter?: boolean;
+  booleanFilterColumn?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -45,6 +54,10 @@ export function DataTable<TData, TValue>({
   showSearch = false,
   onRowClick,
   exportData,
+  mainSearchColumn = 'name',
+  getSubRows,
+  showBooleanFilter,
+  booleanFilterColumn,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -52,6 +65,8 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    ...(getSubRows && { getSubRows }),
+    getExpandedRowModel: getExpandedRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -70,20 +85,43 @@ export function DataTable<TData, TValue>({
   const selectedProcedure =
     (procedureColumn?.getFilterValue() as ProceduresType | undefined) ?? 'all';
 
+  const statusColumn = table.getColumn('status');
+  const showStatusFilter = !!statusColumn;
+  const statusOptions = useMemo(() => Object.values(RunResultStatus), []);
+  const selectedStatus = (statusColumn?.getFilterValue() as RunResultStatus | undefined) ?? 'all';
+
+  const datasetTypeColumn = table.getColumn('source_type');
+  const showDatasetTypeFilter = !!datasetTypeColumn;
+  const datasetTypeOptions = useMemo(() => Object.values(DatasetSourceType), []);
+  const selectedDatasetType =
+    (datasetTypeColumn?.getFilterValue() as DatasetSourceType | undefined) ?? 'all';
+
+  const [booleanFilterValue, setBooleanFilterValue] = useState(false);
+
+  const booleanFilterColumnInTable = booleanFilterColumn
+    ? table.getColumn(booleanFilterColumn)
+    : null;
+
+  const handleBooleanFilter = (checked: boolean) => {
+    setBooleanFilterValue(checked);
+    if (checked) booleanFilterColumnInTable?.setFilterValue(true);
+    else booleanFilterColumnInTable?.setFilterValue(undefined);
+  };
+
   return (
     <div className="space-y-4">
-      {(showSearch || showProcedureFilter || exportData) && (
-        <Card>
+      {(showSearch || showProcedureFilter || exportData || showBooleanFilter) && (
+        <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
           <CardContent className="flex items-center px-5">
             <div className="flex flex-1 flex-row gap-3">
               {showSearch && (
                 <div className="relative w-full sm:max-w-sm">
                   <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
                   <Input
-                    placeholder="Filter tasks by name..."
-                    value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+                    placeholder="Filter table ..."
+                    value={(table.getColumn(mainSearchColumn)?.getFilterValue() as string) ?? ''}
                     onChange={(event) =>
-                      table.getColumn('name')?.setFilterValue(event.target.value)
+                      table.getColumn(mainSearchColumn)?.setFilterValue(event.target.value)
                     }
                     className="bg-white pl-9"
                   />
@@ -114,6 +152,60 @@ export function DataTable<TData, TValue>({
                   </Select>
                 </div>
               )}
+              {showStatusFilter && (
+                <div className="w-full sm:w-[260px]">
+                  <Select
+                    value={selectedStatus}
+                    onValueChange={(value) => {
+                      if (value === 'all') statusColumn.setFilterValue(undefined);
+                      else statusColumn!.setFilterValue(value);
+                    }}
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="all">All states</SelectItem>
+                      {statusOptions.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {showDatasetTypeFilter && (
+                <div className="w-full sm:w-[120px]">
+                  <Select
+                    value={selectedDatasetType}
+                    onValueChange={(value) => {
+                      if (value === 'all') datasetTypeColumn.setFilterValue(undefined);
+                      else datasetTypeColumn!.setFilterValue(value);
+                    }}
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Filter by dataset type" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="all">All types</SelectItem>
+                      {datasetTypeOptions.map((datasetType) => (
+                        <SelectItem key={datasetType} value={datasetType}>
+                          {datasetType}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {showBooleanFilter && (
+                <div className="flex items-center gap-2">
+                  <Switch checked={booleanFilterValue} onCheckedChange={handleBooleanFilter} />
+                  <span className="text-muted-foreground text-sm">Used in tasks</span>
+                </div>
+              )}
             </div>
             {exportData && (
               <Button variant="secondary" onClick={exportData}>
@@ -124,7 +216,7 @@ export function DataTable<TData, TValue>({
         </Card>
       )}
 
-      <div className="overflow-hidden rounded-md border bg-white shadow-sm">
+      <div className="bg-background/80 overflow-hidden rounded-2xl border shadow-xl ring-1 ring-black/5">
         <Table>
           <TableHeader className="bg-cleverminer-three">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -142,7 +234,6 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -150,10 +241,24 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   onClick={() => onRowClick && onRowClick(row.original)}
                   data-state={row.getIsSelected() && 'selected'}
-                  className="cursor-pointer transition-colors hover:bg-slate-200"
+                  className={cn(
+                    'cursor-pointer transition-colors hover:bg-slate-200',
+                    row.depth > 0 &&
+                      'text-muted-foreground border-l-2 border-l-blue-200 bg-gray-100 text-sm',
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-3">
+                    <TableCell
+                      key={cell.id}
+                      className="py-3"
+                      style={
+                        cell.column.id === 'expander'
+                          ? { paddingLeft: `${row.depth * 1.5 + 0.75}rem` }
+                          : row.depth > 0
+                            ? { paddingLeft: '0.5rem' }
+                            : undefined
+                      }
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

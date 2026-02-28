@@ -5,7 +5,7 @@ import React from 'react';
 interface DatasetSummaryCardProps {
   title: string;
   value: string | number;
-  variant?: 'default' | 'success' | 'warning';
+  variant?: 'default' | 'success' | 'warning' | 'info';
   icon?: React.ReactNode;
 }
 
@@ -28,12 +28,21 @@ export default function DatasetSummaryCard({
       card: 'border-l-4 border-l-amber-500',
       text: 'text-amber-600',
     },
+    info: {
+      card: 'border-l-4 border-l-blue-500',
+      text: 'text-blue-600',
+    },
   };
 
   const activeStyle = styles[variant];
 
   return (
-    <Card className={cn('shadow-sm', activeStyle.card)}>
+    <Card
+      className={cn(
+        'bg-background/80 rounded-4xl border shadow-xl ring-1 ring-black/5',
+        activeStyle.card,
+      )}
+    >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-muted-foreground text-sm font-medium">{title}</CardTitle>

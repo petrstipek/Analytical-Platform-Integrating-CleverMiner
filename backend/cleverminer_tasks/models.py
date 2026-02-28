@@ -147,6 +147,21 @@ class Dataset(models.Model):
         return self.name
 
 
+class DatasetProfile(models.Model):
+    dataset = models.OneToOneField(
+        Dataset, on_delete=models.CASCADE, related_name="profile"
+    )
+    dataset_stats = models.JSONField(null=True, blank=True)
+    dataset_clm_guidance = models.JSONField(null=True, blank=True)
+    dataset_columns = models.JSONField(null=True, blank=True)
+    dataset_eda_profile = models.JSONField(null=True, blank=True)
+
+    schema_version = models.PositiveSmallIntegerField(default=1)
+
+    def __str__(self):
+        return f"Profile for {self.dataset.name}"
+
+
 class DatasetTransformation(models.Model):
     output_dataset = models.OneToOneField(
         Dataset,

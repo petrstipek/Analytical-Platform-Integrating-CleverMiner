@@ -4,12 +4,21 @@ import {
   type CreateProjectFormValues,
   createProjectSchema,
 } from '@/modules/projects/utils/project-validation';
-import { Card, CardContent, CardFooter } from '@/shared/components/ui/molecules/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/molecules/card';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '@/shared/components/ui/atoms/input';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { useProjects } from '@/modules/projects/hooks/projects.hook';
 import { Spinner } from '@/shared/components/ui/molecules/spinner';
+import { ModulePagesHeader } from '@/shared/components/molecules';
+import { cn } from '@/lib/utils';
 
 export default function NewProject() {
   const { mutate: createNewProject, isPending } = useProjects();
@@ -34,16 +43,18 @@ export default function NewProject() {
           onSubmit={methods.handleSubmit((data) => createNewProject(data))}
           className="max-w-8xl mx-auto space-y-8"
         >
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">New Project</h1>
-              <p className="text-muted-foreground">
-                Define new project, you can update additional information when project is created.
-              </p>
-            </div>
-          </div>
+          <ModulePagesHeader
+            title={'New Project'}
+            description={
+              'Define new project, you can update additional information when project is created.'
+            }
+          />
 
-          <Card className="border-0 shadow-lg ring-1 ring-gray-200">
+          <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
+            <CardHeader className={cn('flex flex-row items-center justify-between')}>
+              <CardTitle className={cn('text-xl font-semibold')}>New Project</CardTitle>
+              <CardDescription>Define name for the new project</CardDescription>
+            </CardHeader>
             <CardContent className="p-6">
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="space-y-2">

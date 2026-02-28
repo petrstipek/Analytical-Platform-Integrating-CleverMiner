@@ -41,13 +41,14 @@ export function useUpdateTaskMutation() {
   });
 }
 
-export function useCreateAndExecuteRunMutation() {
+export function useCreateAndExecuteRunMutation(options?: { onSuccess?: () => void }) {
   return useMutation({
     mutationFn: async (taskId: number) => {
       await createAndExecuteTask(taskId);
     },
     onSuccess: () => {
       toast.success(`Run for task created and started!`);
+      options?.onSuccess?.();
     },
     onError: (error: any) => {
       console.error(error);

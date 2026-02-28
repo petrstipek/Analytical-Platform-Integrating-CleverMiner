@@ -15,10 +15,12 @@ import { NavBarWizard } from '@/modules/tasks/components/atoms';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import { getDatasetsColumns } from '@/modules/tasks/api/tasks.api';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import type { Task } from '@/modules/tasks/domain/task.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getBaseProjects } from '@/modules/projects/api/queries/projects.query';
+import { PlatformSiteHeader } from '@/shared/components/ui/organisms/site-header';
+import { ModulePagesHeader } from '@/shared/components/molecules';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -142,17 +144,14 @@ export default function CreateTaskWizard({
     <FormProvider {...methods}>
       <div className="min-h-screen bg-gray-50/50 p-4 md:p-2">
         <form onSubmit={methods.handleSubmit(onSubmit)} className="max-w-8xl mx-auto space-y-8">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                {existingTask ? `Edit Analysis: ${existingTask?.name}` : 'New Analysis'}
-              </h1>
-              <p className="text-muted-foreground">Define your data mining task parameters.</p>
-            </div>
+          <ModulePagesHeader
+            title={existingTask ? `Edit Analysis: ${existingTask?.name}` : 'New Analysis'}
+            description={'Define your data mining task parameters.'}
+          >
             <NavBarWizard steps={STEPS} validateAndMove={validateAndMove} step={step} />
-          </div>
+          </ModulePagesHeader>
 
-          <Card className="border-0 shadow-lg ring-1 ring-gray-200">
+          <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
             <CardContent className="p-6">
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                 {step === 1 && (

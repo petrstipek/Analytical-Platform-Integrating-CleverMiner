@@ -1,5 +1,14 @@
 import * as React from 'react';
-import { LifeBuoy, Send, Database, FolderDot, SquareCheckBig, CirclePlay } from 'lucide-react';
+import {
+  LifeBuoy,
+  Send,
+  Database,
+  FolderDot,
+  SquareCheckBig,
+  CirclePlay,
+  Github,
+  HomeIcon,
+} from 'lucide-react';
 
 import { NavMain } from '@/shared/components/ui/organisms/navigation/nav-main';
 import { NavSecondary } from '@/shared/components/ui/organisms/navigation/nav-secondary';
@@ -18,6 +27,11 @@ import { useMemo } from 'react';
 
 const data = {
   navMain: [
+    {
+      title: 'Home',
+      url: '/home',
+      icon: HomeIcon,
+    },
     {
       title: 'Tasks',
       url: '/tasks',
@@ -60,14 +74,14 @@ const data = {
   ],
   navSecondary: [
     {
-      title: 'Support',
-      url: '#',
+      title: 'Docs',
+      url: 'https://www.cleverminer.org/doc/index.html',
       icon: LifeBuoy,
     },
     {
-      title: 'Feedback',
-      url: '#',
-      icon: Send,
+      title: 'Support',
+      url: 'https://github.com/petrstipek/Analytical-Platform-Integrating-CleverMiner/issues',
+      icon: Github,
     },
   ],
 };
@@ -85,13 +99,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [me]);
 
   return (
-    <Sidebar {...props}>
+    <Sidebar
+      {...props}
+      variant="floating"
+      collapsible="icon"
+      className="shadow-cleverminer-one rounded-xl p-0 shadow-2xl"
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a>
-                <div className="ring-border bg-cleverminer-one relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl ring-1">
+                <div className="ring-border bg-cleverminer-one relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl">
                   <div className="from-primary/90 to-primary/40 absolute inset-0 bg-gradient-to-br" />
                   <span className="text-primary-foreground relative text-xs font-semibold">CM</span>
                 </div>

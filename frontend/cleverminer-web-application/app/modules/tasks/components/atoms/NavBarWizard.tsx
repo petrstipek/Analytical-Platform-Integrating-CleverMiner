@@ -11,7 +11,7 @@ type NavBarWizardProps = {
 export default function NavBarWizard({ steps: STEPS, validateAndMove, step }: NavBarWizardProps) {
   return (
     <nav aria-label="Progress">
-      <ol className="flex items-center gap-2 rounded-md bg-white p-2 shadow-sm ring-1 ring-gray-200">
+      <ol className="flex items-center gap-2 rounded-md bg-white">
         {STEPS.map((s, i) => {
           const Icon = s.icon;
           const isCompleted = step > s.id;

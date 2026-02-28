@@ -31,8 +31,10 @@ def enqueue_run(*, run: Run) -> EnqueueResult:
         raise RunEnqueueError(f"Run cannot be executed from status '{run.status}'.")
 
     async_result: AsyncResult = execute_runner_for_tasks.delay(run.id)
+
     run.celery_task_id = async_result.id
-    run.save(update_fields=["celery_task_id"])
+    run.status = RunStatus.QUEUED
+    run.save(update_fields=["celery_task_id", "status"])
 
     return EnqueueResult(run=run, celery_task_id=async_result.id)
 

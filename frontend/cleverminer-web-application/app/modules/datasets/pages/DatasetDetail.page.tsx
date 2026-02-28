@@ -2,6 +2,7 @@ import {
   DatasetAnalysisView,
   DatasetColumnsAnalysisView,
   DatasetPreview,
+  DatasetProfile,
 } from '@/modules/datasets/components/organisms';
 import { useParams } from 'react-router';
 import { DatasetDetailHeader } from '@/modules/datasets/components/molecules';
@@ -16,9 +17,14 @@ import { LoadingStatus } from '@/shared/components/molecules';
 export default function DatasetDetailPage() {
   const { datasetId } = useParams();
 
-  const { clmCandidatesData, columnStatsData, isAnalysing, error } = useDatasetAnalysis(
-    Number(datasetId),
-  );
+  const {
+    clmCandidatesData,
+    columnStatsData,
+    datasetStatsOverview,
+    datasetProfile,
+    isAnalysing,
+    error,
+  } = useDatasetAnalysis(Number(datasetId));
   const {
     data: preview,
     isLoading: previewLoading,
@@ -31,33 +37,54 @@ export default function DatasetDetailPage() {
   if (loading) return <LoadingStatus />;
   if (mainError) return <div>Error loading dataset analysis.</div>;
 
-  console.log(columnStatsData);
-
   return (
     <div className="grid w-full grid-cols-1 gap-6">
-      <DatasetDetailHeader />
+      <DatasetDetailHeader datasetStatsOverview={datasetStatsOverview!} />
 
-      <Tabs defaultValue="ColumnsAnalysis" className="w-full">
-        <div className="flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="ColumnsAnalysis">Columns Analysis</TabsTrigger>
-            <TabsTrigger value="clmGuidance">CleverMiner Guidance</TabsTrigger>
-            <TabsTrigger value="preview">Data Preview</TabsTrigger>
+      <Tabs defaultValue="datasetProfile" className="w-full">
+        <div className="flex items-end justify-between">
+          <TabsList className="bg-muted w-full rounded-full p-1">
+            <TabsTrigger value="datasetProfile" className="flex-1">
+              Exploratory Data Analysis
+            </TabsTrigger>
+            <TabsTrigger value="preview" className="flex-1">
+              Data Preview
+            </TabsTrigger>
+            <TabsTrigger value="clmGuidance" className="flex-1">
+              CleverMiner Guidance
+            </TabsTrigger>
+            <TabsTrigger value="ColumnsAnalysis" className="flex-1">
+              Columns Analysis and Preprocessing
+            </TabsTrigger>
           </TabsList>
         </div>
 
-        <TabsContent value="ColumnsAnalysis" className="mt-4">
-          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} datasetId={datasetId!} />
+        <TabsContent
+          value="datasetProfile"
+          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
+        >
+          <DatasetProfile datasetProfileData={datasetProfile!} />
         </TabsContent>
 
-        <TabsContent value="clmGuidance" className="mt-4">
+        <TabsContent
+          value="preview"
+          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
+        >
+          <DatasetPreview preview={preview!} />
+        </TabsContent>
+
+        <TabsContent
+          value="clmGuidance"
+          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
+        >
           <DatasetAnalysisView datasetId={Number(datasetId)} clmGuidance={clmCandidatesData!} />
         </TabsContent>
 
-        <TabsContent value="preview" className="mt-4 w-full">
-          <div className="w-full overflow-hidden">
-            <DatasetPreview preview={preview!} />
-          </div>
+        <TabsContent
+          value="ColumnsAnalysis"
+          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
+        >
+          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} datasetId={datasetId!} />
         </TabsContent>
       </Tabs>
     </div>

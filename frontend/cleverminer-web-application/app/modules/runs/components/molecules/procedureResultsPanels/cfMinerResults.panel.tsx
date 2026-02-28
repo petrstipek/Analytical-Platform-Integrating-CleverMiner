@@ -6,12 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/molecules/card';
-import { HistogramBars, RulesList } from '@/modules/runs/components/molecules';
+import { DiscoveredRulesContainer, HistogramBars } from '@/modules/runs/components/molecules';
 import type { RunResultCf } from '@/modules/runs/domain/runs-results.type';
 import type { RuleListRow } from '@/modules/runs/components/molecules/RulesList';
 import { CFMinerDetails } from '@/modules/tasks/components/organisms/procedures';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
+import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 
 export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
   const categories = task.result.summary.categories ?? [];
@@ -30,30 +31,22 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
   const selectedRule = task.result.rules.find((r) => r.id === selectedId) ?? null;
 
+  console.log('rules:', listRules);
+
   return (
     <div>
       <RunConfigurationDetails procedure={ProceduresType.CFMINER}>
         <CFMinerDetails params={task.run_snapshot} />
       </RunConfigurationDetails>
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-xl font-semibold">Discovered Rules</CardTitle>
-              <CardDescription>Explore all discovered rules.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RulesList
-                rules={listRules}
-                selectedRuleId={selectedId}
-                onSelectRule={(row) => setSelectedId(row.id)}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
+      <div className="mt-6 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
+        <DiscoveredRulesContainer
+          rules={listRules}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
+          procedure={ProceduresType.CFMINER}
+        />
         <div className="space-y-4">
-          <Card>
+          <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-xl font-semibold">Rule Detail</CardTitle>
               <CardDescription>Find more about selected rule.</CardDescription>
@@ -61,7 +54,9 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
             <CardContent>
               {selectedRule ? (
                 <div className="sticky top-6 space-y-4">
-                  <Card>
+                  <Card
+                    className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}
+                  >
                     <CardContent className="space-y-2 pt-6 text-sm">
                       <div className="flex justify-between border-b pb-2">
                         <span className="text-muted-foreground">Target</span>
@@ -78,6 +73,7 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
                     title="Histogram (Rule)"
                     categories={categories}
                     values={selectedRule.quantifiers.hist}
+                    colorClass={PROCEDURE_STYLES[ProceduresType.CFMINER].bg_histogram}
                   />
 
                   <Card>

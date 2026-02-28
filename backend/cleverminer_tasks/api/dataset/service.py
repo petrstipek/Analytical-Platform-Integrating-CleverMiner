@@ -1,12 +1,17 @@
 from dataclasses import dataclass
 from django.db import transaction
 
+from cleverminer_tasks.api.dataset.utils.clmTargetCandidates import build_clm_candidates
+from cleverminer_tasks.api.dataset.utils.datasetColumns import create_dataset_columns
+from cleverminer_tasks.api.dataset.utils.datasetStats import build_stats
+from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
 from cleverminer_tasks.models import (
     Dataset,
     DatasetSourceType,
     DatasetFormat,
     DatasetTransformation,
     RunStatus,
+    DatasetProfile,
 )
 from cleverminer_tasks.execution.tasks import (
     apply_dataset_transformation,
@@ -51,3 +56,15 @@ def create_derived_dataset(
     transformation.save(update_fields=["celery_task_id"])
 
     return DerivedDatasetCreated(dataset=output, transformation=transformation)
+
+
+@transaction.atomic
+def create_dataset_profile(dataset: Dataset, dataset_profile: DatasetProfile):
+    dataset_stats = build_stats(dataset)
+    dataset_clm_guidance = build_clm_candidates(load_dataset(dataset))
+    dataset_columns = create_dataset_columns(dataset)
+
+    dataset_profile.dataset_stats = dataset_stats
+    dataset_profile.dataset_clm_guidance = dataset_clm_guidance
+    dataset_profile.dataset_columns = dataset_columns
+    dataset_profile.save()

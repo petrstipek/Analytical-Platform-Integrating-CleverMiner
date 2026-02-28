@@ -37,7 +37,12 @@ export default function BaseSummaryCard({
   const activeStyle = styles[variant];
 
   return (
-    <Card className={cn('shadow-sm', activeStyle.card)}>
+    <Card
+      className={cn(
+        'bg-background/80 rounded-4xl border shadow-xl ring-1 ring-black/5',
+        activeStyle.card,
+      )}
+    >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-muted-foreground text-sm font-medium">{title}</CardTitle>

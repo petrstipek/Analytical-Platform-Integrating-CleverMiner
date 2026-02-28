@@ -23,6 +23,9 @@ export default [
 
     route('run/:runId', 'modules/runs/pages/RunDetail.page.tsx'),
     route('runs', 'modules/runs/pages/Runs.page.tsx'),
+    layout('modules/dashboard/pages/Dashboard.layout.tsx', [
+      route('home', 'modules/dashboard/pages/Dashboard.page.tsx'),
+    ]),
   ]),
   layout('shared/components/layout/baseLayout/BaseLayout.tsx', [
     index('modules/homePage/pages/HomePage.tsx'),

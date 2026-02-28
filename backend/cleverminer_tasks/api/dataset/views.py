@@ -1,8 +1,9 @@
-import math
+import csv
+
 import pandas as pd
+from django.http import HttpResponse
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from pydantic import ValidationError
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -12,12 +13,19 @@ from cleverminer_tasks.api.dataset.serializers import (
     DatasetSerializer,
     CreateDerivedDatasetSerializer,
 )
-from cleverminer_tasks.api.dataset.service import create_derived_dataset
-from cleverminer_tasks.api.dataset.utils.clmDataGuidance import clm_column_data_guidance
+from cleverminer_tasks.api.dataset.service import (
+    create_derived_dataset,
+    create_dataset_profile,
+)
+from cleverminer_tasks.api.dataset.utils.buildDatasetProfile import (
+    build_dataset_profile,
+)
 from cleverminer_tasks.api.dataset.utils.clmTargetCandidates import build_clm_candidates
+from cleverminer_tasks.api.dataset.utils.datasetColumns import create_dataset_columns
+from cleverminer_tasks.api.dataset.utils.datasetStats import build_stats
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
 from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
-from cleverminer_tasks.models import Dataset
+from cleverminer_tasks.models import Dataset, DatasetProfile
 
 
 class DatasetViewSet(viewsets.ModelViewSet):
@@ -41,7 +49,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = Dataset.objects.all()
+        qs = Dataset.objects.prefetch_related("tasks")
         user = self.request.user
         project_id = self.request.query_params.get("project")
 
@@ -54,29 +62,38 @@ class DatasetViewSet(viewsets.ModelViewSet):
         return qs.none()
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        dataset = serializer.save(owner=self.request.user)
+
+        dataset_profile = DatasetProfile.objects.create(dataset=dataset)
+        create_dataset_profile(dataset=dataset, dataset_profile=dataset_profile)
+
+    def perform_destroy(self, instance):
+        if instance.tasks.exists():
+            from rest_framework.exceptions import ValidationError
+
+            raise ValidationError("Cannot delete a dataset that is used in tasks.")
+
+        if instance.file:
+            instance.file.delete(save=False)
+        instance.delete()
 
     @action(detail=True, methods=["get"])
     def columns(self, request, pk=None):
         dataset = self.get_object()
 
-        df = load_dataset(dataset, nrows=50)
+        dataset_profile = dataset.profile
 
-        cols = []
-        for c in df.columns:
-            cols.append(
-                {
-                    "name": str(c),
-                    "dtype": str(df[c].dtype),
-                    "null_sample": int(df[c].isnull().sum()),
-                    "non_null_sample": int(df[c].notna().sum()),
-                }
-            )
+        if not dataset_profile.dataset_columns:
+            dataset_profile_columns = create_dataset_columns(dataset)
+            dataset_profile.dataset_columns = dataset_profile_columns
+            dataset_profile.save()
+        else:
+            dataset_profile_columns = dataset.profile.dataset_columns
 
         return Response(
             {
                 "dataset_id": dataset.id,
-                "columns": cols,
+                "columns": dataset_profile_columns,
             }
         )
 
@@ -102,58 +119,15 @@ class DatasetViewSet(viewsets.ModelViewSet):
     def stats(self, request, pk=None):
         dataset = self.get_object()
 
-        df = load_dataset(dataset, nrows=None)
-
-        row_count = int(len(df))
-        col_stats = []
-        for c in df.columns:
-            series = df[c]
-            non_null = int(series.notna().sum())
-            nulls = int(series.isna().sum())
-            nunique = int(series.nunique(dropna=True))
-            guidance = clm_column_data_guidance(
-                series, str(c), max_categories_default=100
-            )
-
-            col_stats.append(
-                {
-                    "name": str(c),
-                    "dtype": str(series.dtype),
-                    "non_null": non_null,
-                    "nulls": nulls,
-                    "nunique": nunique,
-                    "clm_guidance": guidance,
-                }
-            )
-
-        vc_col = request.query_params.get("value_counts_col")
-        vc_top = int(request.query_params.get("value_counts_top", 20))
-        vc_top = max(1, min(vc_top, 200))
-
-        value_counts = None
-        if vc_col:
-            if vc_col not in df.columns:
-                raise ValidationError(
-                    {"value_counts_col": f"Unknown column '{vc_col}'."}
-                )
-            vc = df[vc_col].value_counts(dropna=False).head(vc_top)
-            value_counts = [
-                {
-                    "value": None
-                    if (isinstance(k, float) and math.isnan(k))
-                    else str(k),
-                    "count": int(v),
-                }
-                for k, v in vc.items()
-            ]
-        print("finished stats")
-
+        if not dataset.profile.dataset_stats:
+            dataset_stats = build_stats(dataset)
+            dataset.profile.dataset_stats = dataset_stats
+            dataset.profile.save()
+        else:
+            dataset_stats = dataset.profile.dataset_stats
         return Response(
             {
-                "dataset_id": dataset.id,
-                "row_count": row_count,
-                "columns": col_stats,
-                "value_counts": value_counts,
+                **dataset_stats,
             }
         )
 
@@ -161,29 +135,16 @@ class DatasetViewSet(viewsets.ModelViewSet):
     def clm_candidates(self, request, pk=None):
         dataset = self.get_object()
 
-        max_categories_default = int(
-            request.query_params.get("max_categories_default", 100)
-        )
-        target_max_unique = int(request.query_params.get("target_max_unique", 30))
-
-        ignore_raw = request.query_params.get("ignore", "")
-        ignore_columns = [x.strip() for x in ignore_raw.split(",") if x.strip()]
-
-        df = load_dataset(dataset, nrows=None)
-
-        payload = build_clm_candidates(
-            df,
-            max_categories_default=max_categories_default,
-            target_max_unique=target_max_unique,
-            ignore_columns=ignore_columns,
-        )
-
-        print("finished clm candidates")
-
+        if not dataset.profile.dataset_clm_guidance:
+            dataset_clm_guidance = build_clm_candidates(load_dataset(dataset))
+            dataset.profile.dataset_clm_guidance = dataset_clm_guidance
+            dataset.profile.save()
+        else:
+            dataset_clm_guidance = dataset.profile.dataset_clm_guidance
         return Response(
             {
                 "dataset_id": dataset.id,
-                **payload,
+                **dataset_clm_guidance,
             }
         )
 
@@ -241,3 +202,81 @@ class DatasetViewSet(viewsets.ModelViewSet):
                 "finished_at": tr.finished_at,
             }
         )
+
+    @action(detail=True, methods=["get"], url_path="dataset-main-stats")
+    def dataset_main_stats(self, request, pk=None):
+        dataset = self.get_object()
+
+        return Response(build_stats(dataset))
+
+    @action(detail=True, methods=["get"], url_path="dataset-stats-overview")
+    def dataset_stats_overview(self, request, pk=None):
+        dataset = self.get_object()
+        dataset_profile = dataset.profile
+
+        stats_data = dataset_profile.dataset_stats or {}
+        dataset_columns = stats_data.get("columns", [])
+
+        total_columns = len(dataset_columns)
+        usable_as_is = 0
+
+        for col in dataset_columns:
+            guidance = col.get("clm_guidance", {})
+
+            if guidance.get("clm_usable_as_is") is True:
+                usable_as_is += 1
+
+        not_usable_as_is = total_columns - usable_as_is
+
+        return Response(
+            {
+                "dataset_id": dataset.id,
+                "dataset_name": dataset.name,
+                "total_columns": total_columns,
+                "usable_as_is": usable_as_is,
+                "not_usable_as_is": not_usable_as_is,
+                "row_count": stats_data.get("row_count", 0),
+            }
+        )
+
+    @action(detail=True, methods=["get"], url_path="dataset-profile")
+    def get_dataset_profile(self, request, pk=None):
+        dataset = self.get_object()
+
+        dataset_profile = dataset.profile
+
+        if not dataset_profile.dataset_eda_profile:
+            dataset_profile_eda = build_dataset_profile(load_dataset(dataset))
+            dataset_profile.dataset_eda_profile = dataset_profile_eda
+            dataset_profile.save()
+        else:
+            dataset_profile_eda = dataset.profile.dataset_eda_profile
+
+        return Response({**dataset_profile_eda})
+
+    @action(detail=False, methods=["GET"], url_path="export")
+    def export(self, request):
+        datasets = self.get_queryset()
+
+        response = HttpResponse(content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = 'attachment; filename="datasets.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(
+            ["id", "name", "source", "delimiter", "created_at", "parent", "is_ready"]
+        )
+
+        for dataset in datasets.iterator():
+            writer.writerow(
+                [
+                    dataset.id,
+                    dataset.name,
+                    dataset.source,
+                    dataset.delimiter,
+                    dataset.created_at,
+                    dataset.parent,
+                    dataset.is_ready,
+                ]
+            )
+
+        return response
