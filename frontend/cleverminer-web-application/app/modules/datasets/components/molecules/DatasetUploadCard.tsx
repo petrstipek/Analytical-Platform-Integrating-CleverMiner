@@ -44,7 +44,7 @@ export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUpload
   };
 
   return (
-    <Card className="w-full border shadow-lg">
+    <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-3">
           <div className="bg-primary/10 rounded-lg p-2">

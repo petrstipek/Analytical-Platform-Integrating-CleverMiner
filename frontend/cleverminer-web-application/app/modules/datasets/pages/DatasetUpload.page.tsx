@@ -14,16 +14,17 @@ import {
 } from '@/shared/components/ui/molecules/card';
 import { useUploadDatasetMutation } from '../hooks/datasets.hook';
 import { DatasetUploadCard } from '@/modules/datasets/components/molecules';
+import { ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
 
 export default function DatasetUploadPage() {
   const { mutate, isPending } = useUploadDatasetMutation();
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dataset Upload</h1>
-        <p className="text-muted-foreground">Upload new dataset to the platform</p>
-      </div>
+      <ModulePagesHeader
+        title={'Dataset Upload'}
+        description={'Upload new dataset to the platform'}
+      />
       <DatasetUploadCard isPending={isPending} onSubmit={(data) => mutate(data)} />
     </div>
   );
