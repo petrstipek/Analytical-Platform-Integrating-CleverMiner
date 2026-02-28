@@ -9,6 +9,9 @@ import { Accordion, AccordionItem } from '@radix-ui/react-accordion';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { Link } from 'react-router';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { deleteTask } from '@/modules/tasks/api/tasks.api';
+import { toast } from 'sonner';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type Props = { task: Task };
 
@@ -44,6 +47,18 @@ function pickSummary(task: Task) {
 export default function TasksForList({ task }: Props) {
   const summary = pickSummary(task);
   const { bg, text } = PROCEDURE_STYLES[task.procedure];
+  const queryClient = useQueryClient();
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: (taskId: number) => deleteTask(taskId),
+    onError: (error: any) => {
+      toast.error('Delete failed:', error.message);
+      queryClient.invalidateQueries({ queryKey: ['project-tasks'] });
+    },
+    onSuccess: () => {
+      toast.success('Task deleted successfully');
+    },
+  });
 
   return (
     <Card className="group hover:border-primary/50 transition-colors">
@@ -91,7 +106,11 @@ export default function TasksForList({ task }: Props) {
                 <Link to={`/tasks/${task.id}`} className="flex items-center gap-2" replace={true}>
                   <Button className="flex w-full">Task Detail</Button>
                 </Link>
-                <Button className="w-full bg-red-500 text-white" variant="outline">
+                <Button
+                  className="w-full bg-red-500 text-white"
+                  variant="outline"
+                  onClick={() => deleteTaskMutation.mutate(task.id)}
+                >
                   Remove Task
                 </Button>
               </div>

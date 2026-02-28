@@ -16,6 +16,7 @@ import type { RunResult } from '@/modules/runs/domain/runs-results.type';
 import { getBaseRunColumns } from '@/modules/runs/components/organisms/table/runs.columns';
 import { getDatasetBaseColumns } from '@/modules/datasets/components/organisms/table/datasetBase.columns';
 import type { Dataset } from '@/modules/datasets/api/types/datasetBase.type';
+import { PlatformCard } from '@/shared/components/molecules';
 
 type ProjectOverviewTabProps = {
   members: ProjectMember[];
@@ -55,47 +56,41 @@ export default function ProjectOverviewTab({
 
   return (
     <div className="grid gap-6 md:grid-cols-3">
-      <Card className={'col-span-2'}>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-base font-semibold">Project Overview</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Runs</h3>
-            </div>
+      <PlatformCard
+        cardTitle={'Project Overview'}
+        cardDescription={'Explore project overview.'}
+        className={'col-span-2'}
+      >
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Runs</h3>
+          </div>
 
-            <DataTable
-              columns={RunsBaseColumns}
-              data={runs}
-              onRowClick={(row) => navigate(`/run/${row.id}`)}
-            />
+          <DataTable
+            columns={RunsBaseColumns}
+            data={runs}
+            onRowClick={(row) => navigate(`/run/${row.id}`)}
+          />
+        </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Datasets</h3>
           </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Datasets</h3>
-            </div>
-            <DataTable
-              columns={DatasetBaseColumns}
-              data={datasets}
-              onRowClick={(row) => navigate(`/datasets/${row.id}`)}
-            />
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-base font-semibold">Team Overview</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <FormProvider {...methods}>
-            <form onSubmit={submit} className="space-y-4">
-              <AddProjectMember />
-            </form>
-          </FormProvider>
-          <ProjectMembers projectMembers={members} />
-        </CardContent>
-      </Card>
+          <DataTable
+            columns={DatasetBaseColumns}
+            data={datasets}
+            onRowClick={(row) => navigate(`/datasets/${row.id}`)}
+          />
+        </div>
+      </PlatformCard>
+      <PlatformCard cardTitle={'Team Overview'}>
+        <FormProvider {...methods}>
+          <form onSubmit={submit} className="space-y-4">
+            <AddProjectMember />
+          </form>
+        </FormProvider>
+        <ProjectMembers projectMembers={members} />
+      </PlatformCard>
     </div>
   );
 }

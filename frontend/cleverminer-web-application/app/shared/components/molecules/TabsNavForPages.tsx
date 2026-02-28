@@ -16,21 +16,13 @@ type TabsNavProps = {
 
 export function TabsNavForPages({ items, className, triggerClassName }: TabsNavProps) {
   return (
-    <TabsList
-      className={cn(
-        'h-auto w-full justify-start rounded-none border-b bg-transparent p-0',
-        className,
-      )}
-    >
+    <TabsList className="bg-muted w-full rounded-full p-1">
       {items.map((t) => (
         <TabsTrigger
           key={t.value}
           value={t.value}
           disabled={t.disabled}
-          className={cn(
-            'data-[state=active]:border-primary data-[state=active]:bg-cleverminer-two rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:rounded-md data-[state=active]:text-white',
-            triggerClassName,
-          )}
+          className={cn('flex-1', triggerClassName)}
         >
           {t.label}
         </TabsTrigger>
