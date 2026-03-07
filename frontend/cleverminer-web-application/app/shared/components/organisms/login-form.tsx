@@ -31,6 +31,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   });
 
   const onSubmit = (data: LoginFormValues) => {
+    console.log('VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL);
+    console.log('submiting login');
     login(data);
   };
 
