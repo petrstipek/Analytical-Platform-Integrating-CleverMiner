@@ -253,7 +253,6 @@ def compute_correlation(
         corr_df = corr_df.sample(options.sample_rows_for_corr, random_state=42)
 
     corr_matrix = corr_df.corr(method="pearson").round(3)
-    corr_matrix = corr_matrix.fillna(None)
 
     top_pairs = []
 
@@ -273,6 +272,9 @@ def compute_correlation(
 
     return {
         "labels": cols,
-        "matrix": corr_matrix.values.tolist(),
+        "matrix": [
+            [None if np.isnan(v) else v for v in row]
+            for row in corr_matrix.values.tolist()
+        ],
         "top_pairs": top_pairs,
     }
