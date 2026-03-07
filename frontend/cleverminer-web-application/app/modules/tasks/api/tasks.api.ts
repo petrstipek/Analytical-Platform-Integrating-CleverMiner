@@ -22,7 +22,7 @@ export async function createTask(payload: CreateTaskFormValues): Promise<TaskRes
   return res.data;
 }
 
-export async function createAndExecuteTask(taskId: number): Promise<void> {
+export async function createAndExecuteRun(taskId: number): Promise<void> {
   await apiClient.post(`/tasks/${taskId}/create_run_and_execute/`);
 }
 
