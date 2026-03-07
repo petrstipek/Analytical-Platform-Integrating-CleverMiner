@@ -253,12 +253,15 @@ def compute_correlation(
         corr_df = corr_df.sample(options.sample_rows_for_corr, random_state=42)
 
     corr_matrix = corr_df.corr(method="pearson").round(3)
+    corr_matrix = corr_matrix.fillna(None)
 
     top_pairs = []
 
     for i in range(len(cols)):
         for j in range(i + 1, len(cols)):
             value = corr_matrix.iloc[i, j]
+            if pd.isna(value):
+                continue
             if abs(value) >= options.corr_threshold:
                 top_pairs.append(
                     {
