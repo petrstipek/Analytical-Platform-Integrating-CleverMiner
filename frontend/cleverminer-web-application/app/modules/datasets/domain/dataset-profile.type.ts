@@ -44,7 +44,7 @@ export type AttributeProfile = NumericAttributeProfile | CategoricalAttributePro
 
 export type Correlation = {
   labels: string[];
-  matrix: number[][];
+  matrix: (number | null)[][];
   top_pairs: Array<{ a: string; b: string; corr: number }>;
 } | null;
 
