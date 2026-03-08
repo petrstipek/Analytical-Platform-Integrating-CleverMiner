@@ -259,6 +259,8 @@ def compute_correlation(
     for i in range(len(cols)):
         for j in range(i + 1, len(cols)):
             value = corr_matrix.iloc[i, j]
+            if pd.isna(value):
+                continue
             if abs(value) >= options.corr_threshold:
                 top_pairs.append(
                     {
@@ -270,6 +272,9 @@ def compute_correlation(
 
     return {
         "labels": cols,
-        "matrix": corr_matrix.values.tolist(),
+        "matrix": [
+            [None if np.isnan(v) else v for v in row]
+            for row in corr_matrix.values.tolist()
+        ],
         "top_pairs": top_pairs,
     }

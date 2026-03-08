@@ -170,7 +170,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Celery settings
-CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 60 * 60
@@ -198,9 +198,16 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://frontend-production-a802.up.railway.app",
+    "https://cleverminer.stipekdevs.cz",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://frontend-production-a802.up.railway.app",
+    "https://cleverminer.stipekdevs.cz",
+]
 
 # dj-rest-auth settings
 REST_AUTH = {
@@ -209,9 +216,9 @@ REST_AUTH = {
     "TOKEN_MODEL": None,
     "JWT_AUTH_COOKIE": "cleverminer-analytical-platform-auth",
     "JWT_AUTH_REFRESH_COOKIE": "cleverminer-analytical-platform-refresh",
-    "JWT_AUTH_SECURE": False,
+    "JWT_AUTH_SECURE": True,
     "JWT_AUTH_HTTPONLY": True,
-    "JWT_AUTH_SAMESITE": "Lax",
+    "JWT_AUTH_SAMESITE": "None",
 }
 
 
@@ -234,26 +241,26 @@ ACCOUNT_SIGNUP_FIELDS = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# AWS_ACCESS_KEY_ID = os.getenv("S3_ACCESS_KEY_ID")
-# AWS_SECRET_ACCESS_KEY = os.getenv("S3_SECRET_ACCESS_KEY")
-# AWS_STORAGE_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
-# AWS_S3_ENDPOINT_URL = os.getenv("S3_ENDPOINT_URL")
-#
-# AWS_S3_REGION_NAME = os.getenv("S3_REGION", None)
-#
-# AWS_S3_SIGNATURE_VERSION = "s3v4"
-# AWS_S3_ADDRESSING_STYLE = "path"
-# AWS_DEFAULT_ACL = None
-#
-# AWS_QUERYSTRING_AUTH = False
-# AWS_S3_FILE_OVERWRITE = False
+AWS_ACCESS_KEY_ID = os.getenv("S3_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("S3_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+AWS_S3_ENDPOINT_URL = os.getenv("S3_ENDPOINT_URL")
 
-# STORAGES = {
-#     "default": {"BACKEND": "storages.backends.s3.S3Storage"},
-#     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
-# }
+AWS_S3_REGION_NAME = os.getenv("S3_REGION", None)
+
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_S3_ADDRESSING_STYLE = "path"
+AWS_DEFAULT_ACL = None
+
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_FILE_OVERWRITE = False
 
 STORAGES = {
-    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "default": {"BACKEND": "storages.backends.s3.S3Storage"},
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
+
+# STORAGES = {
+#     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+#     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+# }
