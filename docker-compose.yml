@@ -52,7 +52,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    command: uv run celery -A config worker --loglevel=info
+    command: uv run python -m celery -A config worker --loglevel=info
     environment:
       SECRET_KEY: local-docker-secret-key-not-for-production
       DEBUG: "True"
