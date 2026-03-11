@@ -103,6 +103,13 @@ def apply_dataset_transformation(self, transformation_id: int) -> None:
             finished_at=timezone.now(),
         )
 
+        from cleverminer_tasks.models import DatasetProfile
+        from cleverminer_tasks.api.dataset.service import create_dataset_profile
+
+        out_ds.refresh_from_db()
+        dataset_profile, _ = DatasetProfile.objects.get_or_create(dataset=out_ds)
+        create_dataset_profile(dataset=out_ds, dataset_profile=dataset_profile)
+
     except Exception as e:
         DatasetTransformation.objects.filter(id=transformation_id).update(
             status=RunStatus.FAILED,
