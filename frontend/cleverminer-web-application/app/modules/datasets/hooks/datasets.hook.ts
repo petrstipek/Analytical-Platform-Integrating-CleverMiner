@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { uploadDataset, type UploadDatasetPayload } from '../api/datasets.api';
+import { uploadDataset } from '../api/datasets.api';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
+import type { UploadDatasetPayload } from '@/modules/datasets/api/types/datasetBase.type';
 
 export function useUploadDatasetMutation() {
   const queryClient = useQueryClient();

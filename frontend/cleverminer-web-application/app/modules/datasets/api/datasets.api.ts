@@ -6,6 +6,7 @@ export async function uploadDataset(payload: UploadDatasetPayload): Promise<Data
 
   formData.append('name', payload.name);
   formData.append('file', payload.file);
+  formData.append('delimiter', payload.delimiter);
   if (payload.projectId) formData.append('project_id', payload.projectId.toString());
 
   const res = await apiClient.post<Dataset>('/datasets/', formData, {

@@ -11,6 +11,7 @@ export type Dataset = {
 
 export type UploadDatasetPayload = {
   name: string;
+  delimiter: string;
   file: File;
   projectId?: number;
 };
