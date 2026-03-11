@@ -16,6 +16,7 @@ export async function createTask(payload: CreateTaskFormValues): Promise<TaskRes
     name: payload.name,
     dataset: Number(payload.dataset),
     procedure: payload.procedure,
+    project: payload.project,
     params: payload.configuration,
   };
   const res = await apiClient.post<TaskResponse>('/tasks/', apiPayload);

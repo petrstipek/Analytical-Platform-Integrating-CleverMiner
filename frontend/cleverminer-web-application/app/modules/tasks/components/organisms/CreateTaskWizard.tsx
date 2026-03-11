@@ -127,6 +127,7 @@ export default function CreateTaskWizard({
 
   const onSubmit = (data: CreateTaskFormValues) => {
     // TODO - will not work with the update now
+    console.log('Submitting form with data:', data);
     if (taskId) {
       updateTask({ taskId, data });
       return;
@@ -139,6 +140,10 @@ export default function CreateTaskWizard({
   };
 
   const procedure = methods.watch('procedure');
+
+  console.log(methods.formState.errors);
+  console.log(methods.formState.isValid);
+  console.log(methods.getValues());
 
   return (
     <FormProvider {...methods}>
@@ -193,7 +198,7 @@ export default function CreateTaskWizard({
                   >
                     {isPending ? 'Starting Mining...' : 'Run Task'}
                   </Button>
-                  <Button type="button" onClick={() => setIntent('save')} className="w-32">
+                  <Button type="submit" onClick={() => setIntent('save')} className="w-32">
                     Save Task
                   </Button>
                 </div>
