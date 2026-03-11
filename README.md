@@ -9,12 +9,14 @@ No source code needed — just Docker.
 curl -O https://raw.githubusercontent.com/petrstipek/cleverminer-application/main/docker-compose.hub.yml
 ```
 
+Or directly download the docker-compose.hub.yml file.
+
 **2. Start the application:**
 ```bash
 docker compose -f docker-compose.hub.yml up -d
 ```
 
-**4. Open http://localhost:3000**
+**3. Open http://localhost:3000**
 
 ### Prerequisites
 - [Docker Desktop](https://docs.docker.com/get-docker/) installed and running (Windows, Mac, or Linux)
