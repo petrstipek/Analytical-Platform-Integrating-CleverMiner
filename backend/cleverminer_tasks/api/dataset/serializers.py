@@ -129,7 +129,7 @@ class DatasetSerializer(serializers.ModelSerializer):
         dataset.file_format = DatasetFormat.PARQUET
         dataset.source_type = "storage_file"
         dataset.source = dataset.file.name
-        dataset.delimiter = ";"
+        dataset.delimiter = dataset.delimiter or ";"
         dataset.save()
 
         return dataset
