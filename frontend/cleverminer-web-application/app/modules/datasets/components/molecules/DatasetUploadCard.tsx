@@ -21,6 +21,7 @@ interface DatasetUploadFormProps {
 
 type FormInputs = {
   name: string;
+  delimiter: string;
 };
 
 export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUploadFormProps) {
@@ -40,6 +41,7 @@ export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUpload
     onSubmit({
       name: data.name,
       file: selectedFile,
+      delimiter: data.delimiter,
     });
   };
 
@@ -59,14 +61,23 @@ export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUpload
 
       <CardContent>
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="name">Dataset Name</Label>
-            <Input
-              id="name"
-              placeholder="e.g. Titanic Passengers 2024"
-              {...register('name', { required: 'Name is required' })}
-            />
-            {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
+          <div className="grid grid-cols-2 gap-4 space-y-2">
+            <div>
+              <Label htmlFor="name">Dataset Name</Label>
+              <Input
+                id="name"
+                placeholder="e.g. Titanic Passengers 2024"
+                {...register('name', { required: 'Name is required' })}
+              />
+              {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
+            </div>
+            <div>
+              <Label>Delimiter</Label>
+              <Input id="delimiter" placeholder={"Default: ';'"} {...register('delimiter')} />
+              {errors.delimiter && (
+                <p className="text-destructive text-sm">{errors.delimiter.message}</p>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">

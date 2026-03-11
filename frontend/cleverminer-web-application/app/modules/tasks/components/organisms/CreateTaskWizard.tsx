@@ -198,7 +198,7 @@ export default function CreateTaskWizard({
                   </Button>
                 </div>
               ) : (
-                <Button type="button" onClick={nextStep} className="w-32">
+                <Button type="submit" onClick={nextStep} className="w-32">
                   Next Step
                 </Button>
               )}
