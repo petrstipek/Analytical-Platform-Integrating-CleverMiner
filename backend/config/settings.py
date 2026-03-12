@@ -30,7 +30,12 @@ SECRET_KEY = "django-insecure--5#y$r@5jmn_(@+k08$9@fwgji00pt%5-!zr#+w3)tqx#5@mlh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["django-backend-production-7c9a.up.railway.app"]
+# ALLOWED_HOSTS = ["django-backend-production-7c9a.up.railway.app", "localhost"]
+ALLOWED_HOSTS = [
+    "api.stipekdevs.cz",
+    "localhost",
+    "django-backend-production-7c9a.up.railway.app",
+]
 
 # Application definition
 
@@ -207,6 +212,7 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "https://frontend-production-a802.up.railway.app",
     "https://cleverminer.stipekdevs.cz",
+    "https://api.stipekdevs.cz",
 ]
 
 # dj-rest-auth settings
