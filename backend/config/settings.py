@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure--5#y$r@5jmn_(@+k08$9@fwgji00pt%5-!zr#+w3)tqx#5@mlh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["django-backend-production-7c9a.up.railway.app"]
+ALLOWED_HOSTS = ["localhost"]
 
 # Application definition
 
@@ -132,7 +132,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "CET"
+TIME_ZONE = "Europe/Prague"  
 
 USE_I18N = True
 
@@ -241,26 +241,26 @@ ACCOUNT_SIGNUP_FIELDS = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-AWS_ACCESS_KEY_ID = os.getenv("S3_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("S3_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
-AWS_S3_ENDPOINT_URL = os.getenv("S3_ENDPOINT_URL")
+# AWS_ACCESS_KEY_ID = os.getenv("S3_ACCESS_KEY_ID")
+# AWS_SECRET_ACCESS_KEY = os.getenv("S3_SECRET_ACCESS_KEY")
+# AWS_STORAGE_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+# AWS_S3_ENDPOINT_URL = os.getenv("S3_ENDPOINT_URL")
 
-AWS_S3_REGION_NAME = os.getenv("S3_REGION", None)
+# AWS_S3_REGION_NAME = os.getenv("S3_REGION", None)
 
-AWS_S3_SIGNATURE_VERSION = "s3v4"
-AWS_S3_ADDRESSING_STYLE = "path"
-AWS_DEFAULT_ACL = None
+# AWS_S3_SIGNATURE_VERSION = "s3v4"
+# AWS_S3_ADDRESSING_STYLE = "path"
+# AWS_DEFAULT_ACL = None
 
-AWS_QUERYSTRING_AUTH = False
-AWS_S3_FILE_OVERWRITE = False
-
-STORAGES = {
-    "default": {"BACKEND": "storages.backends.s3.S3Storage"},
-    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
-}
+# AWS_QUERYSTRING_AUTH = False
+# AWS_S3_FILE_OVERWRITE = False
 
 # STORAGES = {
-#     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+#     "default": {"BACKEND": "storages.backends.s3.S3Storage"},
 #     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 # }
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
