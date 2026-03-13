@@ -16,7 +16,7 @@ Or directly download the docker-compose.hub.yml file.
 docker compose -f docker-compose.hub.yml up -d
 ```
 
-**3. Open http://localhost:3000**
+**3. Open http://localhost:3000 register and login.**
 
 ### Prerequisites
 - [Docker Desktop](https://docs.docker.com/get-docker/) installed and running (Windows, Mac, or Linux)
