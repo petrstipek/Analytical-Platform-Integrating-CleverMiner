@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { login, logout, register } from '@/modules/auth/api/auth.api';
+import { storage } from '@/modules/auth/utils/storage';
 
 export function useLogin() {
   const queryClient = useQueryClient();
@@ -9,8 +10,9 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: login,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['me'] });
+    onSuccess: (data) => {
+      storage.setTokens(data.access, data.refresh);
+      queryClient.setQueryData(['me'], data.user);
       toast.success('Successfully logged in!');
       navigate('/home');
     },

@@ -50,7 +50,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const { data: me, isLoading } = useMe();
+  const { data: me, isPending, fetchStatus } = useMe();
+  const isLoading = isPending && fetchStatus !== 'idle';
+
   const location = useLocation();
 
   const publicRoutes = ['/login', '/register', '/', '/projects', '/tasks', '/datasets', '/runs'];
