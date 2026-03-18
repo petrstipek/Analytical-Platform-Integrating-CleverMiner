@@ -25,7 +25,7 @@ Columns that are advised to be excluded from mining tasks entirely. This typical
 
 Use this tab as a **preparation checklist** before creating a mining task:
 
-1. Review the **Needs Binning** columns and apply discretisation via the [Columns Analysis and Preprocessing](./columns_analysis_preprocessing) tab
+1. Review the **Needs Binning** columns and apply discretisation via the [Columns Analysis and Preprocessing](./dataset_preprocessing_guide) tab
 2. Consider dropping or ignoring the **Ignored** columns
 3. Once all relevant columns are in the **Ready** group, your dataset is ready for use in a task
 

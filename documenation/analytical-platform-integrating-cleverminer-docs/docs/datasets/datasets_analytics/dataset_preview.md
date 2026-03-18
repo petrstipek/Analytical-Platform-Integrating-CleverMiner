@@ -15,5 +15,5 @@ The table displays **20 rows sampled** from the dataset, with all columns visibl
 Since datasets can have many columns, the table supports **horizontal scrolling**, allowing you to explore all available attributes regardless of how wide the dataset is.
 
 :::tip
-The Data Preview is read-only — it is purely for inspection purposes. To modify the data, head over to the [Columns Analysis and Preprocessing](./columns_analysis_preprocessing) tab.
+The Data Preview is read-only — it is purely for inspection purposes. To modify the data, head over to the [Columns Analysis and Preprocessing](./dataset_preprocessing_guide) tab.
 :::
