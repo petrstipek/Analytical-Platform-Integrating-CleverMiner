@@ -1,30 +1,256 @@
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* You can override the default Infima variables here. */
+/* CleverMiner color palette */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --cm-dark: oklch(0.218 0.036 251.294);    /* #1c2433 - darkest navy */
+  --cm-nav: oklch(0.269 0.042 262.698);     /* #1e2d42 - sidebar navy */
+  --cm-accent: oklch(0.854 0.018 120.731);  /* soft sage highlight */
+
+  /* Docusaurus primary — used for links, active states, buttons */
+  --ifm-color-primary: #4a90d9;
+  --ifm-color-primary-dark: #3a80c9;
+  --ifm-color-primary-darker: #2f75be;
+  --ifm-color-primary-darkest: #235e9e;
+  --ifm-color-primary-light: #5aa0e9;
+  --ifm-color-primary-lighter: #65a8ed;
+  --ifm-color-primary-lightest: #82baf2;
+
+  /* Typography */
+  --ifm-font-family-base: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --ifm-font-size-base: 15px;
+  --ifm-line-height-base: 1.65;
+
+  /* Navbar */
+  --ifm-navbar-background-color: var(--cm-dark);
+  --ifm-navbar-link-color: #e2e8f0;
+  --ifm-navbar-link-hover-color: #ffffff;
+
+  /* Sidebar */
+  --ifm-menu-color: #cbd5e1;
+  --ifm-menu-color-active: #ffffff;
+  --ifm-menu-link-sublist-icon-filter: invert(1);
+
+  /* Code blocks */
+  --ifm-code-font-size: 90%;
+  --ifm-code-border-radius: 6px;
+
+  /* Borders & surfaces */
+  --ifm-toc-border-color: #e2e8f0;
+  --ifm-hr-border-color: #e2e8f0;
+  --docusaurus-highlighted-code-line-bg: rgba(74, 144, 217, 0.1);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* ─── Navbar ─────────────────────────────────────────────── */
+.navbar {
+  background-color: var(--cm-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.navbar__brand {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.navbar__link {
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: #ffffff;
+}
+
+/* ─── Sidebar ────────────────────────────────────────────── */
+.theme-doc-sidebar-container {
+  background-color: var(--cm-nav);
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.menu {
+  background-color: var(--cm-nav);
+  padding: 12px 8px;
+}
+
+.menu__link {
+  color: #94a3b8;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  transition: background 0.15s, color 0.15s;
+}
+
+.menu__link:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+.menu__link--active {
+  background-color: rgba(74, 144, 217, 0.15);
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.menu__caret::before {
+  filter: invert(0.7);
+}
+
+.menu__list-item-collapsible:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Category label */
+.menu__list .menu__list-item > .menu__link--sublist {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* ─── Content area ───────────────────────────────────────── */
+.main-wrapper {
+  background-color: #f8fafc;
+}
+
+.markdown h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.markdown h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-top: 2rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.markdown h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* ─── Tables ─────────────────────────────────────────────── */
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 1.2rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.markdown table thead tr {
+  background-color: var(--cm-dark);
+  color: #e2e8f0;
+}
+
+.markdown table thead th {
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: none;
+}
+
+.markdown table tbody tr {
+  border-bottom: 1px solid #e8edf2;
+}
+
+.markdown table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.markdown table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.markdown table tbody td {
+  padding: 9px 14px;
+  color: #334155;
+}
+
+/* ─── Admonitions (tip / info / warning) ────────────────── */
+.alert--tip {
+  border-left-color: #22c55e;
+  background-color: #f0fdf4;
+}
+
+.alert--info {
+  border-left-color: #4a90d9;
+  background-color: #eff6ff;
+}
+
+.alert--warning {
+  border-left-color: #f59e0b;
+  background-color: #fffbeb;
+}
+
+/* ─── Code blocks ────────────────────────────────────────── */
+.prism-code {
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+code {
+  background-color: #eef2f7;
+  color: #1e3a5f;
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.875em;
+}
+
+/* ─── Dark mode overrides ────────────────────────────────── */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #60a5fa;
+  --ifm-background-color: #0f172a;
+  --ifm-background-surface-color: #1e293b;
+  --ifm-navbar-background-color: var(--cm-dark);
+  --ifm-toc-border-color: #1e293b;
+  --ifm-hr-border-color: #1e293b;
+}
+
+[data-theme='dark'] .main-wrapper {
+  background-color: #0f172a;
+}
+
+[data-theme='dark'] .markdown h1,
+[data-theme='dark'] .markdown h2,
+[data-theme='dark'] .markdown h3 {
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .markdown h2 {
+  border-bottom-color: #1e293b;
+}
+
+[data-theme='dark'] .markdown table thead tr {
+  background-color: #1e293b;
+}
+
+[data-theme='dark'] .markdown table tbody tr:nth-child(even) {
+  background-color: #172032;
+}
+
+[data-theme='dark'] .markdown table tbody td {
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .markdown table {
+  box-shadow: none;
+}
+
+[data-theme='dark'] code {
+  background-color: #1e293b;
+  color: #93c5fd;
 }
