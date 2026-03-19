@@ -11,6 +11,7 @@ import {
 import { type CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import type { ProjectType } from '@/modules/projects/domain/project.type';
+import { ProceduresType } from '@/shared/domain/procedures.type';
 
 type Step1TaskSetupProps = {
   datasets?: DatasetType[];
@@ -46,16 +47,18 @@ export default function Step1TaskSetup({ datasets, projects }: Step1TaskSetupPro
           <Label>Procedure Method</Label>
           <Select
             value={procedure}
-            onValueChange={(val) => setValue('procedure', val, { shouldValidate: true })}
+            onValueChange={(val) =>
+              setValue('procedure', val as ProceduresType, { shouldValidate: true })
+            }
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select procedure..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="SD4ftMiner">SD4ftMiner</SelectItem>
-              <SelectItem value="CFMiner">CFMiner</SelectItem>
-              <SelectItem value="UICMiner">UICMiner</SelectItem>
-              <SelectItem value="fourftMiner">4ftMiner</SelectItem>
+              <SelectItem value={ProceduresType.SD4FTMINER}>SD4ftMiner</SelectItem>
+              <SelectItem value={ProceduresType.CFMINER}>CFMiner</SelectItem>
+              <SelectItem value={ProceduresType.UICMINER}>UICMiner</SelectItem>
+              <SelectItem value={ProceduresType.FOURFTMINER}>4ftMiner</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -85,21 +88,26 @@ export default function Step1TaskSetup({ datasets, projects }: Step1TaskSetupPro
         <div className="space-y-2">
           <Label>Project</Label>
           <Select
-            value={String(projectWatch)}
-            onValueChange={(val) => setValue('project', parseInt(val), { shouldValidate: true })}
+            value={projectWatch ? String(projectWatch) : 'none'}
+            onValueChange={(val) =>
+              setValue('project', val === 'none' ? undefined : parseInt(val), {
+                shouldValidate: true,
+              })
+            }
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Project..." />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="none">— No project —</SelectItem>
               {projects?.map((project) => (
                 <SelectItem key={project.id} value={String(project.id)}>
                   {project.name}
                 </SelectItem>
               ))}
             </SelectContent>
-            <span className="text-muted-foreground text-xs font-medium">Project is optional!</span>
           </Select>
+
           {errors.project && <p className="text-destructive text-sm">{errors.project.message}</p>}
         </div>
       </div>

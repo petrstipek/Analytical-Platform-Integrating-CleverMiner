@@ -18,7 +18,11 @@ export default function Step2LogicBuilder({
   availableColumns,
   isLoading,
 }: Step2LogicBuilderProps) {
-  const { control, watch } = useFormContext<CreateTaskFormValues>();
+  const {
+    control,
+    watch,
+    formState: { errors },
+  } = useFormContext<CreateTaskFormValues>();
 
   const visibleSections = LOGIC_LAYOUTS[procedure] || [];
 
@@ -38,6 +42,8 @@ export default function Step2LogicBuilder({
   const tabsDefaultValue = visibleSections.includes('target')
     ? visibleSections[1]
     : visibleSections[0];
+
+  const configErrors = errors.configuration;
 
   return (
     <div className={'space-y-6'}>
@@ -67,21 +73,36 @@ export default function Step2LogicBuilder({
           <div className="bg-background flex-1 rounded-lg border p-6 shadow-sm">
             {visibleSections.map((section) => {
               if (section === 'target') return null;
+              const sectionError = configErrors?.[section as keyof typeof configErrors];
+
               return (
                 <TabsContent key={section} value={section} className="m-0 mt-0">
                   <Controller
                     control={control}
                     name={`configuration.${section}` as any}
                     render={({ field }) => (
-                      <CedentEditor
-                        title={SECTION_LABELS[section]}
-                        description={`Configure the ${SECTION_LABELS[section]} logic.`}
-                        config={
-                          field.value || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }
-                        }
-                        onChange={field.onChange}
-                        availableColumns={availableColumns}
-                      />
+                      <>
+                        <CedentEditor
+                          title={SECTION_LABELS[section]}
+                          description={`Configure the ${SECTION_LABELS[section]} logic.`}
+                          config={
+                            field.value || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }
+                          }
+                          onChange={field.onChange}
+                          availableColumns={availableColumns}
+                        />
+                        {sectionError && (
+                          <div className="mt-2 space-y-1">
+                            {Object.entries(sectionError).map(([key, err]: [string, any]) =>
+                              err?.message ? (
+                                <p key={key} className="text-destructive text-sm">
+                                  {SECTION_LABELS[section]} — {err.message}
+                                </p>
+                              ) : null,
+                            )}
+                          </div>
+                        )}
+                      </>
                     )}
                   />
                 </TabsContent>

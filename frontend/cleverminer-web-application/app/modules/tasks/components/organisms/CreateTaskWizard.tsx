@@ -21,6 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { getBaseProjects } from '@/modules/projects/api/queries/projects.query';
 import { PlatformSiteHeader } from '@/shared/components/ui/organisms/site-header';
 import { ModulePagesHeader } from '@/shared/components/molecules';
+import { ProceduresType } from '@/shared/domain/procedures.type';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -58,8 +59,8 @@ export default function CreateTaskWizard({
     defaultValues: {
       name: '',
       dataset: 0,
-      procedure: 'SD4ftMiner',
-      project: Number(projectId) ?? undefined,
+      procedure: ProceduresType.FOURFTMINER,
+      project: projectId ? Number(projectId) : undefined,
       configuration: {
         ante: { type: 'con', attributes: [], minlen: 1, maxlen: 5 },
         succ: { type: 'con', attributes: [], minlen: 1, maxlen: 5 },
@@ -141,9 +142,11 @@ export default function CreateTaskWizard({
 
   const procedure = methods.watch('procedure');
 
-  console.log(methods.formState.errors);
-  console.log(methods.formState.isValid);
-  console.log(methods.getValues());
+  console.log('errors', methods.formState.errors);
+
+  const {
+    formState: { errors },
+  } = methods;
 
   return (
     <FormProvider {...methods}>
@@ -153,7 +156,12 @@ export default function CreateTaskWizard({
             title={existingTask ? `Edit Analysis: ${existingTask?.name}` : 'New Analysis'}
             description={'Define your data mining task parameters.'}
           >
-            <NavBarWizard steps={STEPS} validateAndMove={validateAndMove} step={step} />
+            <NavBarWizard
+              steps={STEPS}
+              validateAndMove={validateAndMove}
+              step={step}
+              errors={errors}
+            />
           </ModulePagesHeader>
 
           <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
