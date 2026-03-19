@@ -15,11 +15,10 @@ import { NavBarWizard } from '@/modules/tasks/components/atoms';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import { getDatasetsColumns } from '@/modules/tasks/api/tasks.api';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import type { Task } from '@/modules/tasks/domain/task.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getBaseProjects } from '@/modules/projects/api/queries/projects.query';
-import { PlatformSiteHeader } from '@/shared/components/ui/organisms/site-header';
 import { ModulePagesHeader } from '@/shared/components/molecules';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 
@@ -184,8 +183,9 @@ export default function CreateTaskWizard({
                 {step === 3 && <Step3Quantifiers procedure={procedure} />}
               </div>
             </CardContent>
-
-            <CardFooter className="flex justify-between border-t bg-gray-50/50 px-8 py-4">
+          </Card>
+          <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
+            <CardContent className={'flex items-center justify-between'}>
               <Button
                 type="button"
                 variant="outline"
@@ -195,7 +195,6 @@ export default function CreateTaskWizard({
               >
                 Back
               </Button>
-
               {step === 3 ? (
                 <div className="flex justify-between gap-4">
                   <Button
@@ -215,7 +214,7 @@ export default function CreateTaskWizard({
                   Next Step
                 </Button>
               )}
-            </CardFooter>
+            </CardContent>
           </Card>
         </form>
       </div>

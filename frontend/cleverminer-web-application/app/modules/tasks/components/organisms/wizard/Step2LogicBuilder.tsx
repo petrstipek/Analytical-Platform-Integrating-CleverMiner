@@ -1,11 +1,13 @@
 import { useFormContext, Controller } from 'react-hook-form';
-import { Tabs, TabsList, TabsContent } from '@/shared/components/ui/molecules/tabs';
 import { CedentEditor } from '../../molecules';
 import { LOGIC_LAYOUTS, SECTION_LABELS } from '@/modules/tasks/utils/logic-layout';
 import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
-import TabItem from '@/modules/tasks/components/atoms/TabItem';
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
 import { TargetEditor } from '@/modules/tasks/components/molecules';
+import { Fragment, useState } from 'react';
+import { AlertCircle, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/shared/components/ui/atoms/button';
 
 interface Step2LogicBuilderProps {
   procedure: string;
@@ -24,92 +26,141 @@ export default function Step2LogicBuilder({
     formState: { errors },
   } = useFormContext<CreateTaskFormValues>();
 
-  const visibleSections = LOGIC_LAYOUTS[procedure] || [];
+  const visibleSections = (LOGIC_LAYOUTS[procedure] || []).filter((s) => s !== 'target');
+  const [currentSection, setCurrentSection] = useState(0);
 
   const config = watch('configuration');
-
-  const header = (
-    <div>
-      <h2 className="text-2xl font-bold tracking-tight text-gray-900">Analysis Cedents Setup</h2>
-      <p className="text-muted-foreground">Choose cedents and other parameters for the analysis.</p>
-    </div>
-  );
-
-  if (isLoading) {
-    return <div>Loading columns...</div>;
-  }
-
-  const tabsDefaultValue = visibleSections.includes('target')
-    ? visibleSections[1]
-    : visibleSections[0];
-
   const configErrors = errors.configuration;
 
+  if (isLoading) return <div>Loading columns...</div>;
+
+  const activeSection = visibleSections[currentSection];
+  const sectionError = configErrors?.[activeSection as keyof typeof configErrors];
+  const isLast = currentSection === visibleSections.length - 1;
+  const isFirst = currentSection === 0;
+
   return (
-    <div className={'space-y-6'}>
-      {header}
-      <div className="flex min-h-[500px] flex-col gap-6 md:flex-row">
-        <Tabs defaultValue={tabsDefaultValue} className="flex w-full gap-6">
-          <TabsList className="h-auto w-full justify-start rounded-none border-b bg-transparent p-0">
-            {visibleSections.map((section) => {
-              if (section === 'target') return null;
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Analysis Cedents Setup</h2>
+        <p className="text-muted-foreground">
+          Choose cedents and other parameters for the analysis.
+        </p>
+      </div>
 
-              const count =
-                (config?.[section as keyof typeof config] as any)?.attributes?.length || 0;
+      <nav className="flex items-center gap-2">
+        {visibleSections.map((section, i) => {
+          const count = (config?.[section as keyof typeof config] as any)?.attributes?.length || 0;
+          const hasError = !!configErrors?.[section as keyof typeof configErrors];
+          const isActive = i === currentSection;
+          const isDone = i < currentSection;
 
-              return (
-                <TabItem
-                  key={section}
-                  value={section}
-                  label={SECTION_LABELS[section]}
-                  count={count}
-                />
-              );
-            })}
-          </TabsList>
-          {visibleSections.includes('target') && (
-            <TargetEditor availableColumns={availableColumns} isLoading={isLoading} />
-          )}
-          <div className="bg-background flex-1 rounded-lg border p-6 shadow-sm">
-            {visibleSections.map((section) => {
-              if (section === 'target') return null;
-              const sectionError = configErrors?.[section as keyof typeof configErrors];
+          return (
+            <Fragment key={section}>
+              <button
+                type="button"
+                onClick={() => setCurrentSection(i)}
+                className={cn(
+                  'flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : hasError
+                      ? 'text-destructive hover:bg-destructive/10'
+                      : isDone
+                        ? 'text-primary hover:bg-primary/10'
+                        : 'text-muted-foreground hover:bg-gray-100',
+                )}
+              >
+                {hasError ? (
+                  <AlertCircle className="h-4 w-4" />
+                ) : isDone ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full border text-xs">
+                    {i + 1}
+                  </span>
+                )}
+                <span className="hidden sm:inline">{SECTION_LABELS[section]}</span>
+                {count > 0 && (
+                  <span className="bg-primary/10 text-primary rounded-full px-1.5 py-0.5 text-xs">
+                    {count}
+                  </span>
+                )}
+              </button>
+              {i < visibleSections.length - 1 && (
+                <ChevronRight className="h-4 w-4 shrink-0 text-gray-300" />
+              )}
+            </Fragment>
+          );
+        })}
+      </nav>
 
-              return (
-                <TabsContent key={section} value={section} className="m-0 mt-0">
-                  <Controller
-                    control={control}
-                    name={`configuration.${section}` as any}
-                    render={({ field }) => (
-                      <>
-                        <CedentEditor
-                          title={SECTION_LABELS[section]}
-                          description={`Configure the ${SECTION_LABELS[section]} logic.`}
-                          config={
-                            field.value || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }
-                          }
-                          onChange={field.onChange}
-                          availableColumns={availableColumns}
-                        />
-                        {sectionError && (
-                          <div className="mt-2 space-y-1">
-                            {Object.entries(sectionError).map(([key, err]: [string, any]) =>
-                              err?.message ? (
-                                <p key={key} className="text-destructive text-sm">
-                                  {SECTION_LABELS[section]} — {err.message}
-                                </p>
-                              ) : null,
-                            )}
-                          </div>
+      {(LOGIC_LAYOUTS[procedure] || []).includes('target') && (
+        <TargetEditor availableColumns={availableColumns} isLoading={isLoading} />
+      )}
+
+      <div className="bg-background min-h-[400px] rounded-lg border p-6 shadow-sm">
+        {visibleSections.map((section) => {
+          const sectionError = configErrors?.[section as keyof typeof configErrors];
+
+          return (
+            <div key={section} className={section === activeSection ? 'block' : 'hidden'}>
+              <Controller
+                control={control}
+                name={`configuration.${section}` as any}
+                render={({ field }) => (
+                  <>
+                    <CedentEditor
+                      title={SECTION_LABELS[section]}
+                      description={`Configure the ${SECTION_LABELS[section]} logic.`}
+                      config={field.value || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }}
+                      onChange={field.onChange}
+                      availableColumns={availableColumns}
+                    />
+                    {sectionError && (
+                      <div className="mt-3 space-y-1">
+                        {Object.entries(sectionError).map(([key, err]: [string, any]) =>
+                          err?.message ? (
+                            <p key={key} className="text-destructive text-sm">
+                              {SECTION_LABELS[section]} — {err.message}
+                            </p>
+                          ) : null,
                         )}
-                      </>
+                      </div>
                     )}
-                  />
-                </TabsContent>
-              );
-            })}
-          </div>
-        </Tabs>
+                  </>
+                )}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex justify-between border-t-2 py-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setCurrentSection((i) => i - 1)}
+          disabled={isFirst}
+          className="flex items-center gap-2"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          {!isFirst && (
+            <span className="text-sm">{SECTION_LABELS[visibleSections[currentSection - 1]]}</span>
+          )}
+        </Button>
+
+        <Button
+          type="button"
+          onClick={() => setCurrentSection((i) => i + 1)}
+          disabled={isLast}
+          className="flex items-center gap-2"
+        >
+          {!isLast && (
+            <span className="text-sm">{SECTION_LABELS[visibleSections[currentSection + 1]]}</span>
+          )}
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );
