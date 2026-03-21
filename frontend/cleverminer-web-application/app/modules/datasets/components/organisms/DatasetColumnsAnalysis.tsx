@@ -18,6 +18,9 @@ import {
 import { createDerivedDataset } from '@/modules/datasets/api/dataset-analysis.api';
 import { BaseStatCard } from '@/shared/components/atoms';
 import { PlatformCard } from '@/shared/components/molecules';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router';
 
 type DatasetColumnsAnalysisView = {
   columnsAnalysis: DatasetStats;
@@ -30,6 +33,7 @@ export default function DatasetColumnsAnalysisView({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedColumn, setSelectedColumn] = useState<DatasetColumnStats | null>(null);
   const { steps, upsertStep, removeStepAtGlobalIndex, clearAll } = useTransformations();
+  const navigate = useNavigate();
 
   const processedColumns = useMemo(() => {
     if (!columnsAnalysis?.columns) return [];
@@ -82,20 +86,32 @@ export default function DatasetColumnsAnalysisView({
     return [];
   }
 
+  const {
+    mutate: applyTransformation,
+    isPending,
+    data,
+  } = useMutation({
+    mutationFn: async (payload: { name: string; transform_spec: { steps: TransformStep[] } }) => {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      return createDerivedDataset(datasetId, payload);
+    },
+    onError: (error: any) => toast.error(error.message),
+    onSuccess: () => {
+      toast.success('Transformation applied successfully! The dataset will be available soon.');
+      console.log('Transformation applied successfully!', data);
+      clearAll();
+    },
+  });
+
   async function handleTransformation() {
-    if (steps.length === 0) return;
+    if (steps.length === 0) {
+      return toast.error('No transformation steps staged. Please add some transformations first.');
+    }
 
-    //TODO - needs refactor, loading and error states
-
-    const payload = {
+    applyTransformation({
       name: `Derived_${new Date().toISOString()}`,
       transform_spec: { steps },
-      output_format: 'csv' as const,
-    };
-
-    console.log(payload);
-    const derived = await createDerivedDataset(datasetId, payload);
-    console.log(derived);
+    });
   }
 
   return (
@@ -105,12 +121,12 @@ export default function DatasetColumnsAnalysisView({
           cardTitle={'Applied Preprocess steps'}
           cardDescription={'Preview preprocessed steps.'}
         >
-          <div className="animate-in fade-in slide-in-from-top-2 sticky top-0 z-10 flex items-center justify-between border-b bg-blue-50 p-4 shadow-sm">
-            <div className="flex items-center gap-4">
+          <div className="animate-in fade-in slide-in-from-top-2 sticky top-0 z-10 grid grid-cols-[1fr_auto] items-start gap-2 border-b bg-blue-50 p-4 shadow-sm">
+            <div className="flex flex-col gap-2">
               <span className="text-sm font-medium text-blue-900">
                 {steps.length} transformations staged
               </span>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {steps.map((s, idx) => {
                   const cols = affectedColumns(s);
                   const label = cols.length > 0 ? cols.join(', ') : '(no column)';
@@ -132,12 +148,14 @@ export default function DatasetColumnsAnalysisView({
                 })}
               </div>
             </div>
-            <div className="flex gap-2">
+
+            <div className="flex flex-col gap-2">
               <Button variant="ghost" size="sm" onClick={clearAll} className="text-gray-600">
                 <Trash2 className="mr-2 h-4 w-4" /> Clear All
               </Button>
-              <Button size="sm" onClick={handleTransformation}>
-                <Play className="mr-2 h-4 w-4 fill-current" /> Apply All
+              <Button size="sm" onClick={handleTransformation} disabled={isPending}>
+                <Play className="mr-2 h-4 w-4 fill-current" />
+                {isPending ? 'Applying...' : 'Apply All'}
               </Button>
             </div>
           </div>

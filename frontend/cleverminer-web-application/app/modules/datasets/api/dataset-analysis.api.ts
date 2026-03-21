@@ -28,12 +28,12 @@ export async function createDerivedDataset(
   payload: {
     name: string;
     transform_spec: object;
-    output_format: 'csv' | 'parquet';
+    output_format?: 'csv' | 'parquet';
   },
 ) {
   const form = new FormData();
   form.append('name', payload.name);
-  form.append('output_format', payload.output_format);
+  form.append('output_format', payload.output_format ?? 'parquet');
   form.append('transform_spec', JSON.stringify(payload.transform_spec));
 
   const res = await apiClient.post(`/datasets/${datasetId}/create-derived/`, form, {
