@@ -147,59 +147,61 @@ export default function ColumnDetailsDrawer({
               <div className="space-y-3">
                 <h4 className="font-semibold text-gray-900">Available Transformations</h4>
 
-                <section className="space-y-4">
-                  <div className="flex items-center gap-2 font-semibold text-gray-900">
-                    <Eraser className="h-4 w-4" />
-                    <h4>Missing Values</h4>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {strategies.map((strategy) => (
-                      <Button
-                        key={strategy}
-                        variant={fillNaStrategy === strategy ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => {
-                          setFillnaStrategy(strategy);
-                          if (strategy !== FillnaStrategiesOptions.constant) {
-                            addColumnStep(TransformOptions.fillMissingNumbers, { strategy });
-                          }
-                        }}
-                      >
-                        Fill with {strategy}
-                      </Button>
-                    ))}
-                  </div>
-
-                  {fillNaStrategy === FillnaStrategiesOptions.constant && (
-                    <div className="grid gap-2">
-                      <Label className="text-xs text-gray-600">Fill with constant</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          value={config.constantValue}
-                          onChange={(e) => updateConfig({ constantValue: e.target.value })}
-                          placeholder="e.g. 0 or Unknown"
-                        />
-                        <Button
-                          variant={
-                            fillNaStrategy === FillnaStrategiesOptions.constant
-                              ? 'default'
-                              : 'outline'
-                          }
-                          onClick={() =>
-                            addColumnStep(TransformOptions.fillMissingNumbers, {
-                              strategy: 'constant',
-                              value: parseConstant,
-                            })
-                          }
-                          disabled={config.constantValue.trim() === ''}
-                        >
-                          Apply
-                        </Button>
-                      </div>
+                {column.nulls !== 0 && (
+                  <section className="space-y-4">
+                    <div className="flex items-center gap-2 font-semibold text-gray-900">
+                      <Eraser className="h-4 w-4" />
+                      <h4>Missing Values</h4>
                     </div>
-                  )}
-                </section>
+
+                    <div className="flex flex-wrap gap-2">
+                      {strategies.map((strategy) => (
+                        <Button
+                          key={strategy}
+                          variant={fillNaStrategy === strategy ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => {
+                            setFillnaStrategy(strategy);
+                            if (strategy !== FillnaStrategiesOptions.constant) {
+                              addColumnStep(TransformOptions.fillMissingNumbers, { strategy });
+                            }
+                          }}
+                        >
+                          Fill with {strategy}
+                        </Button>
+                      ))}
+                    </div>
+
+                    {fillNaStrategy === FillnaStrategiesOptions.constant && (
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-gray-600">Fill with constant</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            value={config.constantValue}
+                            onChange={(e) => updateConfig({ constantValue: e.target.value })}
+                            placeholder="e.g. 0 or Unknown"
+                          />
+                          <Button
+                            variant={
+                              fillNaStrategy === FillnaStrategiesOptions.constant
+                                ? 'default'
+                                : 'outline'
+                            }
+                            onClick={() =>
+                              addColumnStep(TransformOptions.fillMissingNumbers, {
+                                strategy: 'constant',
+                                value: parseConstant,
+                              })
+                            }
+                            disabled={config.constantValue.trim() === ''}
+                          >
+                            Apply
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </section>
+                )}
 
                 <section className="space-y-4">
                   <div className="flex items-center gap-2 font-semibold text-gray-900">
