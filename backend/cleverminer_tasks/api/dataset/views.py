@@ -280,3 +280,38 @@ class DatasetViewSet(viewsets.ModelViewSet):
             )
 
         return response
+
+    @action(detail=True, methods=["get"], url_path="children-transformations")
+    def children_transformations(self, request, pk=None):
+        dataset = self.get_object()
+
+        children = Dataset.objects.filter(parent=dataset).select_related(
+            "transformation"
+        )
+
+        data = []
+
+        for child in children:
+            tr = getattr(child, "transformation", None)
+            data.append(
+                {
+                    "dataset_id": child.id,
+                    "dataset_name": child.name,
+                    "created_at": child.created_at,
+                    "is_ready": child.is_ready,
+                    "file_format": child.file_format,
+                    "transformation": {
+                        "transformation_id": tr.id,
+                        "status": tr.status,
+                        "transform_spec": tr.transform_spec,
+                        "created_at": tr.created_at,
+                        "started_at": tr.started_at,
+                        "finished_at": tr.finished_at,
+                        "error_log": tr.error_log,
+                    }
+                    if tr
+                    else None,
+                }
+            )
+
+        return Response({"dataset_id": dataset.id, "children": data})
