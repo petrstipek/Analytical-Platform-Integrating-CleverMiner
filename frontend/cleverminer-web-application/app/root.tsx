@@ -55,7 +55,7 @@ export default function App() {
 
   const location = useLocation();
 
-  const publicRoutes = ['/login', '/register', '/', '/projects', '/tasks', '/datasets', '/runs'];
+  const publicRoutes = ['/login', '/register'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
   if (isLoading) {

@@ -88,7 +88,7 @@ export default function RunsPage() {
           <DataTable
             columns={RunsBaseColumns}
             data={runsData}
-            onRowClick={(row) => navigate(`/run/${row.id}`)}
+            onRowClick={(row) => navigate(`/runs/${row.id}`)}
             showSearch={true}
             mainSearchColumn={'task_name'}
             exportData={exportRunsMutation.mutate}
