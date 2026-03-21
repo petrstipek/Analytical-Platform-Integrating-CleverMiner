@@ -20,7 +20,6 @@ import { BaseStatCard } from '@/shared/components/atoms';
 import { PlatformCard } from '@/shared/components/molecules';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
 
 type DatasetColumnsAnalysisView = {
   columnsAnalysis: DatasetStats;
@@ -33,7 +32,6 @@ export default function DatasetColumnsAnalysisView({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedColumn, setSelectedColumn] = useState<DatasetColumnStats | null>(null);
   const { steps, upsertStep, removeStepAtGlobalIndex, clearAll } = useTransformations();
-  const navigate = useNavigate();
 
   const processedColumns = useMemo(() => {
     if (!columnsAnalysis?.columns) return [];
