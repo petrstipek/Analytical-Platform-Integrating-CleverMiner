@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { Settings, Calculator, BrainCircuit } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/atoms/button';
-import { Card, CardContent, CardFooter } from '@/shared/components/ui/molecules/card';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import { Step1TaskSetup, Step2LogicBuilder, Step3Quantifiers } from './wizard/';
 import { type CreateTaskFormValues, createTaskSchema } from '@/modules/tasks/utils/task-validation';
 import {
@@ -19,8 +19,9 @@ import { useLocation } from 'react-router';
 import type { Task } from '@/modules/tasks/domain/task.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getBaseProjects } from '@/modules/projects/api/queries/projects.query';
-import { ModulePagesHeader } from '@/shared/components/molecules';
+import { ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
 import { ProceduresType } from '@/shared/domain/procedures.type';
+import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -140,6 +141,8 @@ export default function CreateTaskWizard({
   };
 
   const procedure = methods.watch('procedure');
+  const taskName = methods.watch('name');
+  const selectedDataset = datasets?.find((dataset) => dataset.id === selectedDatasetId);
 
   console.log('errors', methods.formState.errors);
 
@@ -162,6 +165,28 @@ export default function CreateTaskWizard({
               errors={errors}
             />
           </ModulePagesHeader>
+
+          {(step === 2 || step === 3) && (
+            <PlatformCard
+              cardTitle={'Analysis details'}
+              cardDescription={'Explore the already selected options'}
+            >
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                <div key={'name'} className="flex flex-col gap-1">
+                  <span className="text-muted-foreground text-xs font-medium">{'Task Name'}</span>
+                  <span className="text-sm font-semibold">{taskName}</span>
+                </div>
+                <div key={'name'} className="flex flex-col gap-1">
+                  <span className="text-muted-foreground text-xs font-medium">{'Procedure'}</span>
+                  <ProcedureBadge procedure={procedure} />
+                </div>
+                <div key={'name'} className="flex flex-col gap-1">
+                  <span className="text-muted-foreground text-xs font-medium">{'Dataset'}</span>
+                  <span className="text-sm font-semibold">{selectedDataset?.name}</span>
+                </div>
+              </div>
+            </PlatformCard>
+          )}
 
           <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
             <CardContent className="p-6">
