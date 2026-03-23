@@ -207,7 +207,7 @@ export default function ColumnDetailsDrawer({
                               onClick={() =>
                                 addColumnStep(TransformOptions.fillMissingNumbers, {
                                   strategy: 'constant',
-                                  value: parseConstant,
+                                  value: parseConstant(config.constantValue),
                                 })
                               }
                               disabled={config.constantValue.trim() === ''}
