@@ -20,10 +20,11 @@ type NavItemDef = {
 
 const NAV_PRIMARY: NavItemDef[] = [
   { to: '/', label: 'Home' },
-  { to: '/features', label: 'Features', description: 'Task wizard, datasets, runs' },
   { to: '/docs', label: 'Docs', description: 'API + concepts + procedures' },
-  { to: '/pricing', label: 'Pricing', description: 'Personal / Team / Enterprise' },
-  { to: '/about', label: 'About', description: 'Project & research context' },
+  {
+    to: 'https://github.com/petrstipek/Analytical-Platform-Integrating-CleverMiner',
+    label: 'GitHub',
+  },
 ];
 
 export function Topbar() {
