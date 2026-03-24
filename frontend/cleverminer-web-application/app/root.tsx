@@ -58,26 +58,25 @@ export default function App() {
   const publicRoutes = ['/login', '/register'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
-        <div className="text-sm text-gray-500">Loading user in application...</div>
-      </div>
-    );
-  }
-
-  if (!me && !isPublicRoute) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (me && location.pathname === '/login') {
-    return <Navigate to="/projects" replace />;
-  }
-
   return (
     <>
       <Toaster richColors position="top-right" />
-      <Outlet />
+      {(() => {
+        if (isLoading) {
+          return (
+            <div className="flex h-screen items-center justify-center bg-gray-50">
+              <div className="text-sm text-gray-500">Loading...</div>
+            </div>
+          );
+        }
+        if (!me && !isPublicRoute) {
+          return <Navigate to="/login" replace />;
+        }
+        if (me && isPublicRoute) {
+          return <Navigate to="/home" replace />;
+        }
+        return <Outlet />;
+      })()}
     </>
   );
 }

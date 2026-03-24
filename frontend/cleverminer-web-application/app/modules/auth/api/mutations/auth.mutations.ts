@@ -12,9 +12,8 @@ export function useLogin() {
     mutationFn: login,
     onSuccess: (data) => {
       storage.setTokens(data.access, data.refresh);
-      queryClient.setQueryData(['me'], data.user);
       toast.success('Successfully logged in!');
-      navigate('/home');
+      queryClient.setQueryData(['me'], data.user);
     },
     onError: () => {
       toast.error('Invalid email or password');
@@ -41,8 +40,8 @@ export function useRegister() {
   return useMutation({
     mutationFn: register,
     onSuccess: () => {
-      navigate('/login');
       toast.success('Successfully registered!');
+      navigate('/login');
     },
     onError: () => {
       toast.error('Registration failed');
