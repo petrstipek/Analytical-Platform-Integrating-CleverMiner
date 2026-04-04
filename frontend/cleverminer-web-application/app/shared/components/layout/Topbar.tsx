@@ -20,7 +20,11 @@ type NavItemDef = {
 
 const NAV_PRIMARY: NavItemDef[] = [
   { to: '/', label: 'Home' },
-  { to: '/docs', label: 'Docs', description: 'API + concepts + procedures' },
+  {
+    to: 'https://cleverminer-docs.stipekdevs.cz/docs/platform-introduction',
+    label: 'Docs',
+    description: 'API + concepts + procedures',
+  },
   {
     to: 'https://github.com/petrstipek/Analytical-Platform-Integrating-CleverMiner',
     label: 'GitHub',
