@@ -14,8 +14,13 @@ export const useProject = (projectId?: string) => {
       toast.success('Member added successfully!');
     },
     onError: (error: any) => {
-      console.error('Failed to add member', error);
-      toast.error('Failed to add member');
+      const data = error?.response?.data;
+
+      const message = Object.values(data ?? {})
+        .flat()
+        .join(', ');
+
+      toast.error(message || 'Failed to add member');
     },
   });
 

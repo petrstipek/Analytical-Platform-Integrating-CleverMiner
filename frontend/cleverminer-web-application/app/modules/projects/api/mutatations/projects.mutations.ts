@@ -7,7 +7,7 @@ export async function createNewProject(name: string): Promise<void> {
 }
 
 export async function addMember(payload: AddProjectMemberType) {
-  const res = await apiClient.post(`/projects/${payload.projectId}/members/`, {
+  const res = await apiClient.post(`/projects/${payload.projectId}/add-member/`, {
     email: payload.email,
     role: payload.role,
   });
