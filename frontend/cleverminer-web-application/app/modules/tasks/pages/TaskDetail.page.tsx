@@ -9,6 +9,7 @@ import { useCreateAndExecuteRunMutation } from '@/modules/tasks/hooks/tasks.hook
 import { LoadingStatus, PlatformCard, renderProcedureDetails } from '@/shared/components/molecules';
 import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
 import { ActionContainer } from '@/shared/components/atoms';
+import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
 
 export default function TaskDetailPage() {
   const { taskId } = useParams();
@@ -53,7 +54,7 @@ export default function TaskDetailPage() {
             <span className="0 mr-2 rounded px-1 py-0.5 font-mono text-xs text-slate-600">
               <ProcedureBadge procedure={task.procedure} />
             </span>
-            Analyze the task set up.x
+            Analyze the task set up.
           </p>
         </ActionContainer>
 
@@ -91,8 +92,8 @@ export default function TaskDetailPage() {
         titleClassName={'text-2xl font-bold tracking-tight text-gray-900'}
       >
         <p className="text-muted-foreground">
-          <span className="mr-2 rounded bg-slate-100 px-1 py-0.5 font-mono text-xs text-slate-600">
-            {task.procedure}
+          <span className="0 mr-2 rounded px-1 py-0.5 font-mono text-xs text-slate-600">
+            <ProcedureBadge procedure={task.procedure} />
           </span>
           Analyze the task runs.
         </p>
@@ -103,7 +104,7 @@ export default function TaskDetailPage() {
             <DataTable
               columns={TaskRunsColumns}
               data={tasksRuns!}
-              onRowClick={(row) => navigate(`/run/${row.id}`)}
+              onRowClick={(row) => handleRunClick(row as any, navigate)}
             />
           )}
         </div>
