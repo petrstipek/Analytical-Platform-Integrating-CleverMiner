@@ -3,6 +3,7 @@ import { getBaseRunColumns } from '@/modules/runs/components/organisms/table/run
 import type { RunResult } from '@/modules/runs/domain/runs-results.type';
 import { useNavigate } from 'react-router';
 import { PlatformCard } from '@/shared/components/molecules';
+import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
 
 type ProjectRunsTabProps = {
   runs: RunResult[];
@@ -18,7 +19,7 @@ export default function ProjectRunsTab({ runs }: ProjectRunsTabProps) {
       <DataTable
         columns={RunsBaseColumns}
         data={runs}
-        onRowClick={(row) => navigate(`/run/${row.id}`)}
+        onRowClick={(row) => handleRunClick(row, navigate)}
       />
     </PlatformCard>
   );

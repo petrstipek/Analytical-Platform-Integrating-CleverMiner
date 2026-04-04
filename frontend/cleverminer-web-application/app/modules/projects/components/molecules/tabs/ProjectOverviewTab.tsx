@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
 import type { ProjectMember } from '@/modules/projects/domain/member.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -17,6 +16,7 @@ import { getBaseRunColumns } from '@/modules/runs/components/organisms/table/run
 import { getDatasetBaseColumns } from '@/modules/datasets/components/organisms/table/datasetBase.columns';
 import type { Dataset } from '@/modules/datasets/api/types/datasetBase.type';
 import { PlatformCard } from '@/shared/components/molecules';
+import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
 
 type ProjectOverviewTabProps = {
   members: ProjectMember[];
@@ -69,7 +69,7 @@ export default function ProjectOverviewTab({
           <DataTable
             columns={RunsBaseColumns}
             data={runs}
-            onRowClick={(row) => navigate(`/run/${row.id}`)}
+            onRowClick={(row) => handleRunClick(row, navigate)}
           />
         </div>
         <div className="space-y-4">
@@ -84,12 +84,14 @@ export default function ProjectOverviewTab({
         </div>
       </PlatformCard>
       <PlatformCard cardTitle={'Team Overview'}>
-        <FormProvider {...methods}>
-          <form onSubmit={submit} className="space-y-4">
-            <AddProjectMember />
-          </form>
-        </FormProvider>
-        <ProjectMembers projectMembers={members} />
+        <div className={'space-y-4'}>
+          <FormProvider {...methods}>
+            <form onSubmit={submit} className="space-y-4">
+              <AddProjectMember />
+            </form>
+          </FormProvider>
+          <ProjectMembers projectMembers={members} />
+        </div>
       </PlatformCard>
     </div>
   );

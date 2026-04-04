@@ -60,7 +60,7 @@ export default function ProjectDetailsPage() {
   const { mutate: uploadDataset, isPending: uploadingDataset } = useUploadDatasetMutation();
   const { addMemberMutation, projectSummary, projectSummaryLoading } = useProject(projectId);
 
-  const handleDatasetUpload = (formData: Pick<UploadPayload, 'name' | 'file'>) => {
+  const handleDatasetUpload = (formData: Pick<UploadPayload, 'name' | 'file' | 'delimiter'>) => {
     uploadDataset({
       ...formData,
       projectId: Number(projectId),
