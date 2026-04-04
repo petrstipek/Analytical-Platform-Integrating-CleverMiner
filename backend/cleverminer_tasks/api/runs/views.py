@@ -31,7 +31,11 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
         if user.is_authenticated and user.is_staff:
             return qs
         if user.is_authenticated:
-            return qs.filter(task__owner=user)
+            from django.db.models import Q
+
+            return qs.filter(
+                Q(task__owner=user) | Q(task__project__memberships__user=user)
+            ).distinct()
         return qs.none()
 
     def get_serializer_class(self):

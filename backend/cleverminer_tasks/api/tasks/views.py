@@ -1,5 +1,6 @@
 import csv
 
+from django.db.models import Q
 from django.http import HttpResponse
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
@@ -23,7 +24,16 @@ from cleverminer_tasks.api.execution.service import (
     get_run_status_summary,
 )
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
-from cleverminer_tasks.models import Task, RunStatus, Run
+from cleverminer_tasks.models import Task, RunStatus, Run, ProjectMembership
+
+
+class IsTaskOwnerOrProjectMember(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if obj.owner == request.user:
+            return True
+        return ProjectMembership.objects.filter(
+            project=obj.project, user=request.user
+        ).exists()
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -47,15 +57,24 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = Task.objects.select_related("dataset").all()
         project_id = self.request.query_params.get("project")
-
         user = self.request.user
+
         if user.is_authenticated and user.is_staff:
             return qs
         if user.is_authenticated:
             if project_id:
-                return qs.filter(project_id=project_id)
-            return qs.filter(owner=user)
+                return qs.filter(
+                    project_id=project_id, project__memberships__user=user
+                ).distinct()
+            return qs.filter(
+                Q(owner=user) | Q(project__memberships__user=user)
+            ).distinct()
         return qs.none()
+
+    def get_permissions(self):
+        if self.action in ("retrieve", "runs", "summary", "create_run_and_execute"):
+            return [permissions.IsAuthenticated(), IsTaskOwnerOrProjectMember()]
+        return [permissions.IsAuthenticated(), IsOwnerOrAdmin()]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
