@@ -20,7 +20,10 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
       task.result.rules.map((r) => ({
         id: r.id,
         text: r.text,
-        metrics: { confidence: r.quantifiers.conf1, base: r.quantifiers.base1 },
+        metrics: {
+          ratioconf: r.quantifiers.ratioconf,
+          base: r.quantifiers.base1,
+        },
       })),
     [task.result.rules],
   );

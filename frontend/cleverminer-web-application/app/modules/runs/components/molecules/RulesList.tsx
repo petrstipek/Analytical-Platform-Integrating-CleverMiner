@@ -16,6 +16,7 @@ export type RuleListRow = {
   metrics?: {
     confidence?: number;
     base?: number;
+    ratioconf?: number;
   };
 };
 
@@ -71,6 +72,69 @@ export default function RulesList({
       );
     }
 
+    if (procedure === ProceduresType.SD4FTMINER) {
+      const [logic, rest] = text.split(' | ');
+      const [, groups] = (rest ?? '').split(' : ');
+      const [group1, group2] = (groups ?? '').split(' x ').map((g) => g.trim());
+
+      const parts = logic.split('=>');
+      const parseChunk = (chunk: string) => {
+        const match = chunk.trim().match(/^(.+?)\((.+)\)$/);
+        if (!match) return { field: chunk.trim(), values: [] as string[] };
+        return {
+          field: match[1].replace(/_/g, ' '),
+          values: match[2].split(/\s+/).filter(Boolean),
+        };
+      };
+
+      const lhs = parseChunk(parts[0]);
+      const rhs = parseChunk(parts[1]);
+      const { bg_light, text: textColour } = PROCEDURE_STYLES[procedure];
+
+      return (
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
+              {lhs.field}
+            </span>
+            {lhs.values.map((v) => (
+              <span
+                key={v}
+                className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
+              >
+                {v}
+              </span>
+            ))}
+          </div>
+
+          <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
+
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
+              {rhs.field}
+            </span>
+            {rhs.values.map((v) => (
+              <span
+                key={v}
+                className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
+              >
+                {v}
+              </span>
+            ))}
+          </div>
+
+          {group1 && group2 && (
+            <div className="flex items-center gap-1 text-xs text-slate-500">
+              <span className="font-semibold">:</span>
+              <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{group1}</span>
+              <span className="font-semibold">×</span>
+              <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{group2}</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     if (parts.length !== 2) return <span className="font-mono text-xs">{text}</span>;
 
     const parseChunk = (chunk: string) => {
@@ -122,6 +186,7 @@ export default function RulesList({
   };
 
   const showConfidence = rules.some((r) => r.metrics?.confidence != null);
+  const showRatioconf = rules.some((r) => r.metrics?.ratioconf != null);
   const showBase = rules.some((r) => r.metrics?.base != null);
 
   return (
@@ -132,6 +197,7 @@ export default function RulesList({
             <TableHead className="w-[50px]">ID</TableHead>
             <TableHead>Rule Logic</TableHead>
             {showConfidence && <TableHead className="text-right">Confidence</TableHead>}
+            {showRatioconf && <TableHead className="text-right">Ratio Conf</TableHead>}
             {showBase && <TableHead className="text-right">Base</TableHead>}
           </TableRow>
         </TableHeader>
@@ -158,6 +224,11 @@ export default function RulesList({
                     {rule.metrics?.confidence != null
                       ? `${(rule.metrics.confidence * 100).toFixed(1)}%`
                       : '—'}
+                  </TableCell>
+                )}
+                {showRatioconf && (
+                  <TableCell className="text-right font-mono text-xs text-amber-600">
+                    {rule.metrics?.ratioconf != null ? rule.metrics.ratioconf.toFixed(3) : '—'}
                   </TableCell>
                 )}
                 {showBase && (
