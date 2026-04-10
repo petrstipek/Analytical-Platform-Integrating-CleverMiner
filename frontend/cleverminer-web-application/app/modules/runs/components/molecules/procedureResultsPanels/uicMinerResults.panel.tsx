@@ -89,7 +89,7 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
                         <div className="flex justify-between border-b pb-2">
                           <span className="text-muted-foreground">Relative Base</span>
                           <span className="font-mono">
-                            {(selectedRule.quantifiers.rel_base * 100).toFixed(2)}%
+                            {(selectedRule.quantifiers.rel_base! * 100).toFixed(2)}%
                           </span>
                         </div>
                         <div className="flex justify-between border-b pb-2">
@@ -99,33 +99,35 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
                           </span>
                         </div>
 
-                        <div className="pt-1 text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                          Likelihood vs Background
+                        <div className="space-y-1 pt-2">
+                          <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                            Interpretation
+                          </div>
+                          {categories.map((cat, i) => {
+                            const times = selectedRule.quantifiers!.times_more[i];
+                            const bgPct = (
+                              selectedRule.quantifiers!.rel_hist_background[i] * 100
+                            ).toFixed(1);
+                            const rulePct = (
+                              selectedRule.quantifiers!.rel_hist_rule[i] * 100
+                            ).toFixed(1);
+                            const color =
+                              times > 1.2
+                                ? 'text-red-500'
+                                : times < 0.8
+                                  ? 'text-green-600'
+                                  : 'text-slate-500';
+                            return (
+                              <p key={cat} className="text-xs text-slate-600">
+                                <span className="font-medium">{cat}</span> occurs {bgPct}% in
+                                background, {rulePct}% with antecedent —{' '}
+                                <span className={`font-semibold ${color}`}>
+                                  {times.toFixed(2)}× more
+                                </span>
+                              </p>
+                            );
+                          })}
                         </div>
-                        {categories.map((cat, i) => {
-                          const times = selectedRule.quantifiers!.times_more[i];
-                          const color =
-                            times > 1.2
-                              ? 'text-red-500'
-                              : times < 0.8
-                                ? 'text-green-600'
-                                : 'text-slate-500';
-                          return (
-                            <div
-                              key={cat}
-                              className="flex justify-between border-b pb-2 last:border-0"
-                            >
-                              <span className="text-muted-foreground">{cat}</span>
-                              <span className={`font-mono ${color}`}>
-                                {(selectedRule.quantifiers!.rel_hist_rule[i] * 100).toFixed(1)}% vs{' '}
-                                {(selectedRule.quantifiers!.rel_hist_background[i] * 100).toFixed(
-                                  1,
-                                )}
-                                % — {times.toFixed(2)}×
-                              </span>
-                            </div>
-                          );
-                        })}
                       </CardContent>
                     </Card>
                   )}

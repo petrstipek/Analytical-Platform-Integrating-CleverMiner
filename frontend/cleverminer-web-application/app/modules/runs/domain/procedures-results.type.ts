@@ -31,9 +31,17 @@ export type Sd4ftRule = {
 export type UicRule = {
   id: number;
   text: string;
-  quantifiers: null;
+  quantifiers: {
+    base: number;
+    rel_base: number;
+    aad: number;
+    times_more: number[];
+    rel_hist_rule: number[];
+    rel_hist_background: number[];
+  } | null;
   histogram_rule: number[];
   histogram_background: number[];
+  aad: number;
 };
 
 export type CfRule = {

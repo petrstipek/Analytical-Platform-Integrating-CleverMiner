@@ -43,7 +43,7 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
           setSelectedId={setSelectedId}
           procedure={ProceduresType.SD4FTMINER}
         />
-        <div className="space-y-4">
+        <div className="h-full min-h-0 space-y-4 overflow-y-auto">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-xl font-semibold">Rule Detail</CardTitle>
@@ -51,7 +51,7 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
             </CardHeader>
             <CardContent>
               {selectedRule ? (
-                <div className="sticky top-6 space-y-4">
+                <div className="sticky top-6 space-y-4 overflow-y-auto">
                   <Card>
                     <CardContent className="space-y-2">
                       <div className="text-sm font-medium">Fourfold table (group 1)</div>
