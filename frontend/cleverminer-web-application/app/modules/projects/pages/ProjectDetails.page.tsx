@@ -58,7 +58,8 @@ export default function ProjectDetailsPage() {
   });
 
   const { mutate: uploadDataset, isPending: uploadingDataset } = useUploadDatasetMutation();
-  const { addMemberMutation, projectSummary, projectSummaryLoading } = useProject(projectId);
+  const { addMemberMutation, projectSummary, projectSummaryLoading, removeMemberMutation } =
+    useProject(projectId);
 
   const handleDatasetUpload = (formData: Pick<UploadPayload, 'name' | 'file' | 'delimiter'>) => {
     uploadDataset({
@@ -69,6 +70,10 @@ export default function ProjectDetailsPage() {
 
   const handleAddMember = (payload: AddProjectMemberType) => {
     addMemberMutation.mutate(payload);
+  };
+
+  const handeRemoveMember = (memberId: number) => {
+    removeMemberMutation.mutate({ projectId: Number(projectId), memberId: memberId });
   };
 
   const loading =
@@ -101,6 +106,7 @@ export default function ProjectDetailsPage() {
             <ProjectOverviewTab
               members={projectMembers!}
               onAddMember={handleAddMember}
+              onRemoveMember={handeRemoveMember}
               projectId={Number(projectId)}
               runs={runsData!}
               datasets={projectDatasets!}

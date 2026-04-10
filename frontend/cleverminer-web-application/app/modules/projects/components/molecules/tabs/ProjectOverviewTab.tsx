@@ -21,6 +21,7 @@ import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
 type ProjectOverviewTabProps = {
   members: ProjectMember[];
   onAddMember: (payload: AddProjectMemberType) => void;
+  onRemoveMember: (memberId: number) => void;
   projectId: number;
   runs: RunResult[];
   datasets: Dataset[];
@@ -29,6 +30,7 @@ type ProjectOverviewTabProps = {
 export default function ProjectOverviewTab({
   members,
   onAddMember,
+  onRemoveMember,
   projectId,
   runs,
   datasets,
@@ -90,7 +92,7 @@ export default function ProjectOverviewTab({
               <AddProjectMember />
             </form>
           </FormProvider>
-          <ProjectMembers projectMembers={members} />
+          <ProjectMembers projectMembers={members} onRemoveMember={onRemoveMember} />
         </div>
       </PlatformCard>
     </div>

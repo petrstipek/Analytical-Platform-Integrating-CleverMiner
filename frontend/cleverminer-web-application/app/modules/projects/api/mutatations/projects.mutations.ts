@@ -18,3 +18,10 @@ export async function deleteProject(projectId: number) {
   const res = await apiClient.delete(`/projects/${projectId}/`);
   return res.data;
 }
+
+export async function removeMember(projectId: number, memberId: number) {
+  const res = await apiClient.post(`/projects/${projectId}/remove-member/`, {
+    user_id: memberId,
+  });
+  return res.data;
+}
