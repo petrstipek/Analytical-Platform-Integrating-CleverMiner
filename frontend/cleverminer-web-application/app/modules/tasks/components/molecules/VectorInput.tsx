@@ -16,7 +16,7 @@ export default function VectorInput({ value, onChange, label, desc }: VectorInpu
     if (value && Array.isArray(value)) {
       setStrVal(value.join(', '));
     }
-  }, [value]);
+  }, []);
 
   const handleChange = (input: string) => {
     setStrVal(input);
