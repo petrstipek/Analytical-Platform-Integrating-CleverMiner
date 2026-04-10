@@ -61,8 +61,8 @@ export default function DatasetDerivedList({ datasetId }: DatasetDerivedListProp
         )}
 
         {childrenTransformationsError && (
-          <div className="border-destructive/30 bg-destructive/5 text-destructive flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+          <div className="border-destructive/30 bg-destructive/5 text-destructive flex items-start gap-2 rounded-md border px-3 py-2 text-sm">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
             {childrenTransformationsError.message}
           </div>
         )}

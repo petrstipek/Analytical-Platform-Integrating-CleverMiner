@@ -13,6 +13,8 @@ export default function DerivedChildDatasetRow({ child }: { child: DatasetChildr
   const [open, setOpen] = useState(false);
   const tr = child.transformation;
 
+  const status = child.transformation.error_log ? 'error' : child.is_ready ? 'ready' : 'pending';
+
   return (
     <>
       <TableRow
@@ -42,26 +44,33 @@ export default function DerivedChildDatasetRow({ child }: { child: DatasetChildr
             variant="outline"
             className={cn(
               'text-xs',
-              child.is_ready
-                ? 'border-green-200 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400'
-                : 'border-amber-200 bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400',
+              status === 'ready' &&
+                'border-green-200 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400',
+              status === 'pending' &&
+                'border-amber-200 bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400',
+              status === 'error' &&
+                'border-red-200 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
             )}
           >
-            {child.is_ready ? 'Ready' : 'Pending'}
+            {status === 'ready' ? 'Ready' : status === 'error' ? 'Error' : 'Pending'}
           </Badge>
         </TableCell>
 
         <TableCell>
-          <Link to={`/datasets/${child.dataset_id}`}>
-            <Button variant={'outline'}>View Dataset</Button>
-          </Link>
+          {status !== 'error' ? (
+            <Link to={`/datasets/${child.dataset_id}`}>
+              <Button variant={'outline'}>View Dataset</Button>
+            </Link>
+          ) : (
+            <span className={'text-red-500'}>Dataset not available</span>
+          )}
         </TableCell>
       </TableRow>
 
       {open && (
         <TableRow>
-          <TableCell colSpan={5} className="pt-2 pb-4">
-            <div className="bg-card space-y-3 rounded-lg border p-4">
+          <TableCell colSpan={5} className="max-w-0 pt-2 pb-4">
+            <div className="bg-card space-y-3 overflow-hidden rounded-lg border p-4">
               <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
                 <div>
                   <p className="text-muted-foreground mb-0.5 text-xs">Dataset ID</p>
@@ -89,7 +98,9 @@ export default function DerivedChildDatasetRow({ child }: { child: DatasetChildr
               {tr?.error_log && (
                 <div className="border-destructive/30 bg-destructive/5 flex items-start gap-2 rounded-md border px-3 py-2">
                   <AlertCircle className="text-destructive mt-0.5 h-4 w-4 shrink-0" />
-                  <p className="text-destructive font-mono text-xs break-words">{tr.error_log}</p>
+                  <p className="text-destructive font-mono text-xs leading-relaxed break-words whitespace-normal">
+                    {tr.error_log}
+                  </p>
                 </div>
               )}
 
