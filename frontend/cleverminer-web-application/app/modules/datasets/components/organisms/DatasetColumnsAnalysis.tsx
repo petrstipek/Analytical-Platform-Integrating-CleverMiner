@@ -156,7 +156,7 @@ export default function DatasetColumnsAnalysisView({
                   {steps.length} transformations staged
                 </span>
 
-                <ScrollArea className="h-100 pr-3">
+                <ScrollArea className="max-h-100 pr-3">
                   <div className="flex flex-col gap-2">
                     {Object.entries(
                       steps.reduce<Record<string, { step: TransformStep; idx: number }[]>>(
