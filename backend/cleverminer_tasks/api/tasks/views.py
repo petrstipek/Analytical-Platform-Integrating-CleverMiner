@@ -24,7 +24,7 @@ from cleverminer_tasks.api.execution.service import (
     get_run_status_summary,
 )
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
-from cleverminer_tasks.models import Task, RunStatus, Run, ProjectMembership
+from cleverminer_tasks.models import Task, Run, ProjectMembership
 
 
 class IsTaskOwnerOrProjectMember(permissions.BasePermission):
@@ -87,7 +87,7 @@ class TaskViewSet(viewsets.ModelViewSet):
             qs = Run.objects.filter(task=task).order_by("-created_at")
             return Response(RunSummarySerializer(qs, many=True).data)
 
-        run = Run.objects.create(task=task, status=RunStatus.QUEUED)
+        run = create_run(task=task)
         return Response(RunDetailSerializer(run).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=["post"])

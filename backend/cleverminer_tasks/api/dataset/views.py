@@ -82,7 +82,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
         if user.is_authenticated:
             if project_id:
                 return qs.filter(
-                    projects_id=project_id, projects__memberships__user=user
+                    projects__id=project_id, projects__memberships__user=user
                 ).distinct()
 
             from django.db.models import Q
