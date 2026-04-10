@@ -62,13 +62,20 @@ export default function ColumnDetailsDrawer({
   const { config, updateConfig, derived } = useColumnTransformConfig(column.name);
   const addStep = useCallback((step: TransformStep) => onAddStep(step), [onAddStep]);
   const strategies = Object.values(FillnaStrategiesOptions) as FillnaStrategy[];
-  const [fillNaStrategy, setFillnaStrategy] = useState<FillnaStrategy>(
-    FillnaStrategiesOptions.mean,
+
+  const fillNaStrategy =
+    (stagedSteps.find((s) => s.op === TransformOptions.fillMissingNumbers) as any)?.strategy ??
+    FillnaStrategiesOptions.mean;
+
+  const discretizationStrategy = (
+    stagedSteps.find((s) => s.op === TransformOptions.discretize) as any
+  )?.method;
+
+  const [showExplicit, setShowExplicit] = useState(
+    stagedSteps.some(
+      (s) => s.op === TransformOptions.discretize && (s as any).method === 'explicit',
+    ),
   );
-  const discretizationStrategies = Object.values(
-    DiscretizeStrategiesOptions,
-  ) as DiscretizeStrategy[];
-  const [discretizationStrategy, setDiscretizationStrategy] = useState<DiscretizeStrategy>();
 
   const addColumnStep = useCallback(
     <T extends Extract<TransformStep, { column: string }>>(
@@ -83,23 +90,6 @@ export default function ColumnDetailsDrawer({
     },
     [onAddStep, column.name],
   );
-
-  const applyDiscretize = () => {
-    if (discretizationStrategy === DiscretizeStrategiesOptions.explicit) {
-      addColumnStep(TransformOptions.discretize, {
-        method: 'explicit',
-        bins: config.explicitBins,
-        output_column: config.outputColumn,
-      });
-      return;
-    }
-
-    addColumnStep(TransformOptions.discretize, {
-      discretizationStrategy,
-      k: config.binK,
-      output_column: config.outputColumn,
-    });
-  };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="right">
@@ -178,7 +168,6 @@ export default function ColumnDetailsDrawer({
                             variant={fillNaStrategy === strategy ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => {
-                              setFillnaStrategy(strategy);
                               if (strategy !== FillnaStrategiesOptions.constant) {
                                 addColumnStep(TransformOptions.fillMissingNumbers, { strategy });
                               }
@@ -271,7 +260,6 @@ export default function ColumnDetailsDrawer({
                             : 'outline'
                         }
                         onClick={() => {
-                          setDiscretizationStrategy(DiscretizeStrategiesOptions.quantile);
                           addColumnStep(TransformOptions.discretize, {
                             method: 'quantile',
                             k: config.binK,
@@ -291,7 +279,6 @@ export default function ColumnDetailsDrawer({
                             : 'outline'
                         }
                         onClick={() => {
-                          setDiscretizationStrategy(DiscretizeStrategiesOptions.equal_width);
                           addColumnStep(TransformOptions.discretize, {
                             method: 'equal_width',
                             k: config.binK,
@@ -309,15 +296,13 @@ export default function ColumnDetailsDrawer({
                             ? 'default'
                             : 'outline'
                         }
-                        onClick={() =>
-                          setDiscretizationStrategy(DiscretizeStrategiesOptions.explicit)
-                        }
+                        onClick={() => setShowExplicit(true)}
                       >
                         Explicit
                       </Button>
                     </div>
 
-                    {discretizationStrategy === DiscretizeStrategiesOptions.explicit && (
+                    {showExplicit && (
                       <div className="mt-4 space-y-2 rounded-md border bg-white p-3">
                         <div className="text-sm font-semibold text-gray-900">Explicit bins</div>
 

@@ -125,6 +125,23 @@ export default function DatasetColumnsAnalysisView({
     });
   }
 
+  function formatStepLabel(step: TransformStep): string {
+    switch (step.op) {
+      case TransformOptions.fillMissingNumbers:
+        if (step.strategy === 'constant') return `Fill missing → constant (${step.value})`;
+        return `Fill missing → ${step.strategy}`;
+      case TransformOptions.discretize:
+        if (step.method === 'equal_width') return `Bin → equal width (k=${step.k})`;
+        if (step.method === 'quantile') return `Bin → quantile (k=${step.k})`;
+        if (step.method === 'explicit') return `Bin → explicit (${step.bins?.join(', ')})`;
+        return `Bin → ${step.method}`;
+      case TransformOptions.dropColumns:
+        return `Drop column`;
+      default:
+        return step.op;
+    }
+  }
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <div className="flex flex-col gap-4">
@@ -133,32 +150,54 @@ export default function DatasetColumnsAnalysisView({
             cardTitle={'Applied Preprocess steps'}
             cardDescription={'Preview preprocessed steps.'}
           >
-            <div className="animate-in fade-in slide-in-from-top-2 sticky top-0 z-10 grid grid-cols-[1fr_auto] items-start gap-2 border-b bg-blue-50 p-4 shadow-sm">
+            <div className="animate-in fade-in slide-in-from-top-2 sticky top-0 z-10 grid grid-cols-[1fr_auto] items-start gap-2 rounded-2xl border-b bg-blue-50 p-4 shadow-sm">
               <div className="flex flex-col gap-2">
                 <span className="text-sm font-medium text-blue-900">
                   {steps.length} transformations staged
                 </span>
-                <div className="flex flex-wrap gap-2">
-                  {steps.map((s, idx) => {
-                    const cols = affectedColumns(s);
-                    const label = cols.length > 0 ? cols.join(', ') : '(no column)';
 
-                    return (
-                      <>
-                        <Badge key={`${s.op}-${idx}`} variant="secondary" className="bg-blue-100">
-                          {label}: {s.op}
-                          <button
-                            onClick={() => removeStepAtGlobalIndex(idx)}
-                            className="ml-2 hover:text-red-500"
-                            type="button"
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      </>
-                    );
-                  })}
-                </div>
+                <ScrollArea className="h-100 pr-3">
+                  <div className="flex flex-col gap-2">
+                    {Object.entries(
+                      steps.reduce<Record<string, { step: TransformStep; idx: number }[]>>(
+                        (acc, s, idx) => {
+                          const cols = affectedColumns(s);
+                          const key = cols.length > 0 ? cols.join(', ') : '(no column)';
+                          if (!acc[key]) acc[key] = [];
+                          acc[key].push({ step: s, idx });
+                          return acc;
+                        },
+                        {},
+                      ),
+                    ).map(([colName, entries]) => (
+                      <div
+                        key={colName}
+                        className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5"
+                      >
+                        <div className="rounded-t-2xl bg-blue-100 px-3 py-1.5 text-xs font-semibold text-blue-800">
+                          {colName}
+                        </div>
+                        <ul className="divide-y divide-gray-100">
+                          {entries.map(({ step, idx }) => (
+                            <li
+                              key={idx}
+                              className="flex items-center justify-between px-3 py-1.5 text-xs"
+                            >
+                              <span className="text-gray-700">{formatStepLabel(step)}</span>
+                              <button
+                                type="button"
+                                onClick={() => removeStepAtGlobalIndex(idx)}
+                                className="text-gray-400 hover:text-red-500"
+                              >
+                                ×
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -217,22 +256,23 @@ export default function DatasetColumnsAnalysisView({
           </div>
 
           <ScrollArea className="h-[800px] w-full rounded-md border bg-gray-50/50 p-4">
-            {filteredColumns.length > 0 ? (
-              <div className="flex flex-col gap-1">
-                {filteredColumns.map((item) => (
-                  <ColumnCard
-                    key={item.data.name}
-                    col={item.data}
-                    status={item.status}
-                    onClick={() => setSelectedColumn(item.data)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex h-40 items-center justify-center text-gray-500">
-                No columns found matching "{searchTerm}"
-              </div>
-            )}
+            {filteredColumns.map((item) => {
+              const hasSteps = steps.some(
+                (s) =>
+                  ('column' in s && s.column === item.data.name) ||
+                  (s.op === TransformOptions.dropColumns && s.columns.includes(item.data.name)),
+              );
+
+              return (
+                <ColumnCard
+                  key={item.data.name}
+                  col={item.data}
+                  status={item.status}
+                  onClick={() => setSelectedColumn(item.data)}
+                  className={hasSteps ? 'border-blue-200 bg-blue-50' : ''}
+                />
+              );
+            })}
           </ScrollArea>
         </PlatformCard>
         <ColumnDetailsDrawer
