@@ -41,7 +41,9 @@ export default function DatasetsPage() {
   if (isLoading) return <LoadingStatus />;
   if (!data) return <div>No datasets found</div>;
 
-  const generatedDatasets = data.filter((dataset) => dataset.source_type === 'generated');
+  const generatedDatasets = data.filter(
+    (dataset) => dataset.source_type === 'generated' && dataset.file !== null,
+  );
 
   type DatasetNode = Dataset & { children: DatasetNode[] };
 

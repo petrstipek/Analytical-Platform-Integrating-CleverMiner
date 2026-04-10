@@ -13,6 +13,9 @@ import {
   ChartTooltipContent,
 } from '@/shared/components/ui/molecules/chart';
 
+const MAX_LABEL_CHARS = 24;
+const CHAR_WIDTH = 10;
+
 type TopValue = { value: string; count: number; pct: number };
 
 type Props = {
@@ -36,6 +39,11 @@ export default function BarChartHorizontal({ title, description, topValues }: Pr
     },
   } satisfies ChartConfig;
 
+  const yAxisWidth = Math.min(
+    Math.max(...chartData.map((d) => String(d.name).length)) * CHAR_WIDTH,
+    MAX_LABEL_CHARS * CHAR_WIDTH,
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -49,7 +57,7 @@ export default function BarChartHorizontal({ title, description, topValues }: Pr
             accessibilityLayer
             data={chartData}
             layout="vertical"
-            margin={{ left: -20, right: 48, top: 4, bottom: 20 }}
+            margin={{ left: 48, right: 48, top: 4, bottom: 20 }}
           >
             <XAxis
               type="number"
@@ -65,9 +73,18 @@ export default function BarChartHorizontal({ title, description, topValues }: Pr
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              width={140}
-              tickFormatter={(value) => String(value).slice(0, 24)}
-              label={{ value: 'Category', angle: -90, position: 'insideLeft', fontSize: 12 }}
+              width={yAxisWidth}
+              tickFormatter={(value) => {
+                const s = String(value);
+                return s.length > MAX_LABEL_CHARS ? s.slice(0, MAX_LABEL_CHARS) + '…' : s;
+              }}
+              label={{
+                value: 'Category',
+                angle: -90,
+                position: 'insideLeft',
+                dx: -36,
+                fontSize: 12,
+              }}
             />
 
             <ChartTooltip
