@@ -4,3 +4,5 @@ export { default as DatasetDetailHeader } from './DatasetDetailHeader';
 export { default as DatasetEDAOverviewStats } from './DatasetEDAOverviewStats';
 export { default as AttributesSelector } from './AttributesSelector';
 export { default as AttributeDetails } from './AttributeDetails';
+export { default as DerivedChildDatasetRow } from './DerivedChildDatasetRow';
+export { default as TransformSteps } from './TransformSteps';

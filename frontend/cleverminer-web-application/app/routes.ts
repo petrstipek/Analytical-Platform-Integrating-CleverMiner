@@ -21,8 +21,11 @@ export default [
       route(':datasetId', 'modules/datasets/pages/DatasetDetail.page.tsx'),
     ]),
 
-    route('run/:runId', 'modules/runs/pages/RunDetail.page.tsx'),
-    route('runs', 'modules/runs/pages/Runs.page.tsx'),
+    route('runs', 'modules/runs/pages/Runs.layout.tsx', [
+      index('modules/runs/pages/Runs.page.tsx'),
+      route(':runId', 'modules/runs/pages/RunDetail.page.tsx'),
+    ]),
+
     layout('modules/dashboard/pages/Dashboard.layout.tsx', [
       route('home', 'modules/dashboard/pages/Dashboard.page.tsx'),
     ]),

@@ -8,8 +8,9 @@ import {
 import { useNavigate } from 'react-router';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { LoadingStatus, ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
-import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
+import { type RunResult, RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import { toast } from 'sonner';
+import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
 
 export default function RunsPage() {
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ export default function RunsPage() {
           <DataTable
             columns={RunsBaseColumns}
             data={runsData}
-            onRowClick={(row) => navigate(`/run/${row.id}`)}
+            onRowClick={(row) => handleRunClick(row, navigate)}
             showSearch={true}
             mainSearchColumn={'task_name'}
             exportData={exportRunsMutation.mutate}

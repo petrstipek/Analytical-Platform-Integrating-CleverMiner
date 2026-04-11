@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { Settings, Calculator, BrainCircuit } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/atoms/button';
-import { Card, CardContent, CardFooter } from '@/shared/components/ui/molecules/card';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import { Step1TaskSetup, Step2LogicBuilder, Step3Quantifiers } from './wizard/';
 import { type CreateTaskFormValues, createTaskSchema } from '@/modules/tasks/utils/task-validation';
 import {
@@ -15,12 +15,13 @@ import { NavBarWizard } from '@/modules/tasks/components/atoms';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import { getDatasetsColumns } from '@/modules/tasks/api/tasks.api';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import type { Task } from '@/modules/tasks/domain/task.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getBaseProjects } from '@/modules/projects/api/queries/projects.query';
-import { PlatformSiteHeader } from '@/shared/components/ui/organisms/site-header';
-import { ModulePagesHeader } from '@/shared/components/molecules';
+import { ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
+import { ProceduresType } from '@/shared/domain/procedures.type';
+import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -58,8 +59,8 @@ export default function CreateTaskWizard({
     defaultValues: {
       name: '',
       dataset: 0,
-      procedure: 'SD4ftMiner',
-      project: Number(projectId) ?? undefined,
+      procedure: ProceduresType.FOURFTMINER,
+      project: projectId ? Number(projectId) : undefined,
       configuration: {
         ante: { type: 'con', attributes: [], minlen: 1, maxlen: 5 },
         succ: { type: 'con', attributes: [], minlen: 1, maxlen: 5 },
@@ -127,6 +128,7 @@ export default function CreateTaskWizard({
 
   const onSubmit = (data: CreateTaskFormValues) => {
     // TODO - will not work with the update now
+    console.log('Submitting form with data:', data);
     if (taskId) {
       updateTask({ taskId, data });
       return;
@@ -139,6 +141,14 @@ export default function CreateTaskWizard({
   };
 
   const procedure = methods.watch('procedure');
+  const taskName = methods.watch('name');
+  const selectedDataset = datasets?.find((dataset) => dataset.id === selectedDatasetId);
+
+  console.log('errors', methods.formState.errors);
+
+  const {
+    formState: { errors },
+  } = methods;
 
   return (
     <FormProvider {...methods}>
@@ -148,8 +158,35 @@ export default function CreateTaskWizard({
             title={existingTask ? `Edit Analysis: ${existingTask?.name}` : 'New Analysis'}
             description={'Define your data mining task parameters.'}
           >
-            <NavBarWizard steps={STEPS} validateAndMove={validateAndMove} step={step} />
+            <NavBarWizard
+              steps={STEPS}
+              validateAndMove={validateAndMove}
+              step={step}
+              errors={errors}
+            />
           </ModulePagesHeader>
+
+          {(step === 2 || step === 3) && (
+            <PlatformCard
+              cardTitle={'Analysis details'}
+              cardDescription={'Explore the already selected options'}
+            >
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                <div key={'name'} className="flex flex-col gap-1">
+                  <span className="text-muted-foreground text-xs font-medium">{'Task Name'}</span>
+                  <span className="text-sm font-semibold">{taskName}</span>
+                </div>
+                <div key={'name'} className="flex flex-col gap-1">
+                  <span className="text-muted-foreground text-xs font-medium">{'Procedure'}</span>
+                  <ProcedureBadge procedure={procedure} />
+                </div>
+                <div key={'name'} className="flex flex-col gap-1">
+                  <span className="text-muted-foreground text-xs font-medium">{'Dataset'}</span>
+                  <span className="text-sm font-semibold">{selectedDataset?.name}</span>
+                </div>
+              </div>
+            </PlatformCard>
+          )}
 
           <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
             <CardContent className="p-6">
@@ -171,8 +208,9 @@ export default function CreateTaskWizard({
                 {step === 3 && <Step3Quantifiers procedure={procedure} />}
               </div>
             </CardContent>
-
-            <CardFooter className="flex justify-between border-t bg-gray-50/50 px-8 py-4">
+          </Card>
+          <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
+            <CardContent className={'flex items-center justify-between'}>
               <Button
                 type="button"
                 variant="outline"
@@ -182,7 +220,6 @@ export default function CreateTaskWizard({
               >
                 Back
               </Button>
-
               {step === 3 ? (
                 <div className="flex justify-between gap-4">
                   <Button
@@ -193,7 +230,7 @@ export default function CreateTaskWizard({
                   >
                     {isPending ? 'Starting Mining...' : 'Run Task'}
                   </Button>
-                  <Button type="button" onClick={() => setIntent('save')} className="w-32">
+                  <Button type="submit" onClick={() => setIntent('save')} className="w-32">
                     Save Task
                   </Button>
                 </div>
@@ -202,7 +239,7 @@ export default function CreateTaskWizard({
                   Next Step
                 </Button>
               )}
-            </CardFooter>
+            </CardContent>
           </Card>
         </form>
       </div>

@@ -13,8 +13,13 @@ interface Step3QuantifiersProps {
 }
 
 export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
-  const { register, control } = useFormContext<CreateTaskFormValues>();
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<CreateTaskFormValues>();
   const schema = QUANTIFIER_SCHEMAS[procedure] || [];
+  const quantifierErrors = errors.configuration?.quantifiers;
 
   const groups = schema.reduce(
     (acc, field) => {
@@ -48,19 +53,26 @@ export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {fields.map((field) => {
+              const fieldError = quantifierErrors?.[
+                field.key as keyof typeof quantifierErrors
+              ] as any;
+
               if (field.type === 'vector') {
                 return (
                   <Controller
                     key={field.key}
                     control={control}
                     name={`configuration.quantifiers.${field.key}`}
-                    render={({ field: { value, onChange } }) => (
-                      <VectorInput
-                        label={field.label}
-                        desc={field.desc}
-                        value={(value as number[]) || null}
-                        onChange={onChange}
-                      />
+                    render={({ field: { value, onChange }, fieldState: { error } }) => (
+                      <div className="space-y-1.5">
+                        <VectorInput
+                          label={field.label}
+                          desc={field.desc}
+                          value={(value as number[]) || null}
+                          onChange={onChange}
+                        />
+                        {error && <p className="text-destructive text-sm">{error.message}</p>}
+                      </div>
                     )}
                   />
                 );
@@ -84,6 +96,9 @@ export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
                       },
                     })}
                   />
+                  {fieldError?.message && (
+                    <p className="text-destructive text-sm">{fieldError.message}</p>
+                  )}
                 </div>
               );
             })}

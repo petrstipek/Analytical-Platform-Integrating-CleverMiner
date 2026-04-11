@@ -1,6 +1,8 @@
 import { DatasetSummaryCard } from '@/modules/datasets/components/atoms';
 import type { DatasetStatsOverview } from '@/modules/datasets/api/types/datasetStatsOverview.type';
-import { PlatformCard, PlatformTitles } from '@/shared/components/molecules';
+import { ModulePagesHeader } from '@/shared/components/molecules';
+import { Button } from '@/shared/components/ui/atoms/button';
+import { DialogTrigger } from '@radix-ui/react-dialog';
 
 type DatasetDetailHeaderProps = {
   datasetStatsOverview: DatasetStatsOverview;
@@ -9,10 +11,14 @@ type DatasetDetailHeaderProps = {
 export default function DatasetDetailHeader({ datasetStatsOverview }: DatasetDetailHeaderProps) {
   return (
     <div>
-      <PlatformTitles
+      <ModulePagesHeader
         title={datasetStatsOverview.dataset_name}
         description={'Explore the selected dataset.'}
-      />
+      >
+        <DialogTrigger asChild>
+          <Button>Explore Dataset Transformations</Button>
+        </DialogTrigger>
+      </ModulePagesHeader>
       <div className="grid gap-4 md:grid-cols-3">
         <DatasetSummaryCard
           title="Total Rows"

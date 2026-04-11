@@ -8,7 +8,7 @@ export type Member = {
 };
 
 export type ProjectMember = {
-  userId: number;
+  user_id: number;
   email: string;
   username: string;
   role: ProjectRole;

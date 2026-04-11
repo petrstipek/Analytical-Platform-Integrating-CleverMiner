@@ -1,15 +1,18 @@
 import { Badge, BarChart3, CheckCircle, XCircle } from 'lucide-react';
 import { DataTypeIcon } from '@/modules/datasets/components/atoms';
 import type { ClmCandidate } from '@/modules/datasets/api/types/clmGuidance.type';
+import { cn } from '@/lib/utils';
 
 export default function ColumnCard({
   col,
   status,
   onClick,
+  className,
 }: {
   col: ClmCandidate;
   status: 'good' | 'warning' | 'bad';
   onClick?: () => void;
+  className?: string;
 }) {
   const dtype = col.dtype || 'N/A';
 
@@ -23,13 +26,14 @@ export default function ColumnCard({
     reasons = [col.reason];
   }
 
-  const badgeText =
-    col.clm?.recommended_representation || (status === 'bad' ? 'ignored' : 'unknown');
-
   return (
     <div
       onClick={onClick}
-      className="mb-2 flex items-start justify-between rounded-lg border bg-white p-3 shadow-sm transition-all hover:bg-gray-50"
+      className={cn(
+        'mb-2 flex items-start justify-between rounded-lg border p-3 shadow-sm transition-all hover:bg-gray-50',
+
+        className,
+      )}
     >
       <div className="flex items-start gap-3">
         <div

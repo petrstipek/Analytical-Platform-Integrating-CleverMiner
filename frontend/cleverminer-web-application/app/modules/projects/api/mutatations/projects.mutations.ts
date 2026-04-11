@@ -7,7 +7,7 @@ export async function createNewProject(name: string): Promise<void> {
 }
 
 export async function addMember(payload: AddProjectMemberType) {
-  const res = await apiClient.post(`/projects/${payload.projectId}/members/`, {
+  const res = await apiClient.post(`/projects/${payload.projectId}/add-member/`, {
     email: payload.email,
     role: payload.role,
   });
@@ -16,5 +16,12 @@ export async function addMember(payload: AddProjectMemberType) {
 
 export async function deleteProject(projectId: number) {
   const res = await apiClient.delete(`/projects/${projectId}/`);
+  return res.data;
+}
+
+export async function removeMember(projectId: number, memberId: number) {
+  const res = await apiClient.post(`/projects/${projectId}/remove-member/`, {
+    user_id: memberId,
+  });
   return res.data;
 }

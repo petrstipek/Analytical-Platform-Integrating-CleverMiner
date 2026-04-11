@@ -74,7 +74,12 @@ const data = {
   ],
   navSecondary: [
     {
-      title: 'Docs',
+      title: 'Platform Docs',
+      url: 'https://www.cleverminer.org/doc/index.html',
+      icon: LifeBuoy,
+    },
+    {
+      title: 'CleverMiner Docs',
       url: 'https://www.cleverminer.org/doc/index.html',
       icon: LifeBuoy,
     },
@@ -100,19 +105,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar
-      {...props}
-      variant="floating"
+      variant="inset"
       collapsible="icon"
-      className="shadow-cleverminer-one rounded-xl p-0 shadow-2xl"
+      className="shadow-cleverminer-one rounded-xl shadow-2xl [&_[data-sidebar=sidebar]]:p-0"
     >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a>
-                <div className="ring-border bg-cleverminer-one relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl">
-                  <div className="from-primary/90 to-primary/40 absolute inset-0 bg-gradient-to-br" />
-                  <span className="text-primary-foreground relative text-xs font-semibold">CM</span>
+                <div className="ring-border relative grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-lg">
+                  <div className="absolute inset-0 bg-white" />
+                  <span className="text-cleverminer-one relative text-xs font-semibold">CM</span>
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">CleverMiner</span>

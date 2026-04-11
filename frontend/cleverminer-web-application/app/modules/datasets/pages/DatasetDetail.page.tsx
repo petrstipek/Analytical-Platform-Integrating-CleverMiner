@@ -1,6 +1,7 @@
 import {
   DatasetAnalysisView,
   DatasetColumnsAnalysisView,
+  DatasetDerivedList,
   DatasetPreview,
   DatasetProfile,
 } from '@/modules/datasets/components/organisms';
@@ -13,6 +14,13 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/shared/components/ui/molecules/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
 import { LoadingStatus } from '@/shared/components/molecules';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/molecules/dialog';
 
 export default function DatasetDetailPage() {
   const { datasetId } = useParams();
@@ -25,6 +33,7 @@ export default function DatasetDetailPage() {
     isAnalysing,
     error,
   } = useDatasetAnalysis(Number(datasetId));
+
   const {
     data: preview,
     isLoading: previewLoading,
@@ -34,59 +43,72 @@ export default function DatasetDetailPage() {
   const loading = isAnalysing || previewLoading;
   const mainError = error || previewError;
 
+  if (!datasetId) return <div>No dataset ID provided.</div>;
   if (loading) return <LoadingStatus />;
   if (mainError) return <div>Error loading dataset analysis.</div>;
 
   return (
-    <div className="grid w-full grid-cols-1 gap-6">
-      <DatasetDetailHeader datasetStatsOverview={datasetStatsOverview!} />
+    <Dialog>
+      <div className="grid w-full grid-cols-1 gap-6">
+        <DatasetDetailHeader datasetStatsOverview={datasetStatsOverview!} />
 
-      <Tabs defaultValue="datasetProfile" className="w-full">
-        <div className="flex items-end justify-between">
-          <TabsList className="bg-muted w-full rounded-full p-1">
-            <TabsTrigger value="datasetProfile" className="flex-1">
-              Exploratory Data Analysis
-            </TabsTrigger>
-            <TabsTrigger value="preview" className="flex-1">
-              Data Preview
-            </TabsTrigger>
-            <TabsTrigger value="clmGuidance" className="flex-1">
-              CleverMiner Guidance
-            </TabsTrigger>
-            <TabsTrigger value="ColumnsAnalysis" className="flex-1">
-              Columns Analysis and Preprocessing
-            </TabsTrigger>
-          </TabsList>
-        </div>
+        <Tabs defaultValue="datasetProfile" className="w-full">
+          <div className="flex items-end justify-between">
+            <TabsList className="bg-muted w-full rounded-full p-1">
+              <TabsTrigger value="datasetProfile" className="flex-1">
+                Exploratory Data Analysis
+              </TabsTrigger>
+              <TabsTrigger value="preview" className="flex-1">
+                Data Preview
+              </TabsTrigger>
+              <TabsTrigger value="clmGuidance" className="flex-1">
+                CleverMiner Guidance
+              </TabsTrigger>
+              <TabsTrigger value="ColumnsAnalysis" className="flex-1">
+                Columns Analysis and Preprocessing
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-        <TabsContent
-          value="datasetProfile"
-          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
-        >
-          <DatasetProfile datasetProfileData={datasetProfile!} />
-        </TabsContent>
+          <TabsContent
+            value="datasetProfile"
+            className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
+          >
+            <DatasetProfile datasetProfileData={datasetProfile!} />
+          </TabsContent>
 
-        <TabsContent
-          value="preview"
-          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
-        >
-          <DatasetPreview preview={preview!} />
-        </TabsContent>
+          <TabsContent
+            value="preview"
+            className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
+          >
+            <DatasetPreview preview={preview!} />
+          </TabsContent>
 
-        <TabsContent
-          value="clmGuidance"
-          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
-        >
-          <DatasetAnalysisView datasetId={Number(datasetId)} clmGuidance={clmCandidatesData!} />
-        </TabsContent>
+          <TabsContent
+            value="clmGuidance"
+            className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
+          >
+            <DatasetAnalysisView datasetId={Number(datasetId)} clmGuidance={clmCandidatesData!} />
+          </TabsContent>
 
-        <TabsContent
-          value="ColumnsAnalysis"
-          className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
-        >
-          <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} datasetId={datasetId!} />
-        </TabsContent>
-      </Tabs>
-    </div>
+          <TabsContent
+            value="ColumnsAnalysis"
+            className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
+          >
+            <DatasetColumnsAnalysisView columnsAnalysis={columnStatsData!} datasetId={datasetId!} />
+          </TabsContent>
+        </Tabs>
+
+        <DialogContent className="max-w-6xl">
+          <DialogHeader>
+            <DialogTitle>Dataset Transformations</DialogTitle>
+            <DialogDescription>
+              Explore the transformations carried out on this dataset.
+            </DialogDescription>
+          </DialogHeader>
+          <DatasetDerivedList datasetId={datasetId} />
+        </DialogContent>
+      </div>
+    </Dialog>
   );
 }

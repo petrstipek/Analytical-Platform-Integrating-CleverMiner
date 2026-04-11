@@ -28,6 +28,13 @@ from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
 from cleverminer_tasks.models import Dataset, DatasetProfile
 
 
+class IsDatasetOwnerOrProjectMember(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if obj.owner == request.user:
+            return True
+        return obj.projects.filter(memberships__user=request.user).exists()
+
+
 class DatasetViewSet(viewsets.ModelViewSet):
     serializer_class = DatasetSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrAdmin]
@@ -48,6 +55,23 @@ class DatasetViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    def get_permissions(self):
+        if self.action in (
+            "retrieve",
+            "preview",
+            "columns",
+            "stats",
+            "clm_candidates",
+            "dataset_main_stats",
+            "dataset_stats_overview",
+            "get_dataset_profile",
+            "transformation",
+            "children_transformations",
+        ):
+            return [permissions.IsAuthenticated(), IsDatasetOwnerOrProjectMember()]
+
+        return [permissions.IsAuthenticated(), IsOwnerOrAdmin()]
+
     def get_queryset(self):
         qs = Dataset.objects.prefetch_related("tasks")
         user = self.request.user
@@ -57,8 +81,16 @@ class DatasetViewSet(viewsets.ModelViewSet):
             return qs
         if user.is_authenticated:
             if project_id:
-                return qs.filter(project_id=project_id)
-            return qs.filter(owner=user)
+                return qs.filter(
+                    projects__id=project_id, projects__memberships__user=user
+                ).distinct()
+
+            from django.db.models import Q
+
+            return qs.filter(
+                Q(owner=user) | Q(projects__memberships__user=user)
+            ).distinct()
+
         return qs.none()
 
     def perform_create(self, serializer):
@@ -280,3 +312,38 @@ class DatasetViewSet(viewsets.ModelViewSet):
             )
 
         return response
+
+    @action(detail=True, methods=["get"], url_path="children-transformations")
+    def children_transformations(self, request, pk=None):
+        dataset = self.get_object()
+
+        children = Dataset.objects.filter(parent=dataset).select_related(
+            "transformation"
+        )
+
+        data = []
+
+        for child in children:
+            tr = getattr(child, "transformation", None)
+            data.append(
+                {
+                    "dataset_id": child.id,
+                    "dataset_name": child.name,
+                    "created_at": child.created_at,
+                    "is_ready": child.is_ready,
+                    "file_format": child.file_format,
+                    "transformation": {
+                        "transformation_id": tr.id,
+                        "status": tr.status,
+                        "transform_spec": tr.transform_spec,
+                        "created_at": tr.created_at,
+                        "started_at": tr.started_at,
+                        "finished_at": tr.finished_at,
+                        "error_log": tr.error_log,
+                    }
+                    if tr
+                    else None,
+                }
+            )
+
+        return Response({"dataset_id": dataset.id, "children": data})

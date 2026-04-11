@@ -12,8 +12,15 @@ type DatasetClmGuidanceViewProps = {
 export default function DatasetClmGuidanceView({
   clmGuidance: analysis,
 }: DatasetClmGuidanceViewProps) {
-  const goodCols = analysis.target_candidates.filter((c) => c.clm?.clm_usable_as_is);
-  const warningCols = analysis.target_candidates.filter((c) => c.clm && !c.clm.clm_usable_as_is);
+  const allCols = [
+    ...analysis.target_candidates,
+    ...analysis.cond_candidates.filter(
+      (c) => !analysis.target_candidates.some((t) => t.name === c.name),
+    ),
+  ];
+
+  const goodCols = allCols.filter((c) => c.clm?.clm_usable_as_is);
+  const warningCols = allCols.filter((c) => c.clm && !c.clm.clm_usable_as_is);
   const ignoredCols = analysis.ignored_candidates;
 
   return (

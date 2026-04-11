@@ -15,12 +15,12 @@ export default function Footer() {
             <Link className="text-muted-foreground hover:text-foreground" to="/register">
               Register
             </Link>
-            <a className="text-muted-foreground hover:text-foreground" href="#">
-              Privacy
-            </a>
-            <a className="text-muted-foreground hover:text-foreground" href="#">
-              Terms
-            </a>
+            <Link
+              className="text-muted-foreground hover:text-foreground"
+              to="https://github.com/petrstipek/Analytical-Platform-Integrating-CleverMiner"
+            >
+              GitHub
+            </Link>
           </div>
         </div>
       </div>

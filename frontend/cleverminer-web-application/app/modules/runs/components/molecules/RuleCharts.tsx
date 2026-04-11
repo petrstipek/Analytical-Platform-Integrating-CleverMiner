@@ -45,7 +45,7 @@ export default function RuleCharts({ fourfold }: RuleChartsProps) {
         <CardContent>
           <div className="h-[180px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={anteData}>
+              <BarChart data={anteData} margin={{ top: 20, right: 10, left: 10, bottom: 0 }}>
                 <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
@@ -83,7 +83,7 @@ export default function RuleCharts({ fourfold }: RuleChartsProps) {
         <CardContent>
           <div className="h-[180px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={globalData}>
+              <BarChart data={globalData} margin={{ top: 20, right: 10, left: 10, bottom: 0 }}>
                 <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>

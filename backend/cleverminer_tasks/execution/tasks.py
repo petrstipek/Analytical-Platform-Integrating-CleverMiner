@@ -70,7 +70,7 @@ def apply_dataset_transformation(self, transformation_id: int) -> None:
 
     try:
         required_columns = _get_required_attributes(tr.transform_spec)
-        df = load_dataset(in_ds, nrows=None)
+        df = load_dataset(in_ds, nrows=None, columns=required_columns)
         df2 = apply_transform_spec(df, tr.transform_spec)
 
         if out_ds.file_format == DatasetFormat.PARQUET:

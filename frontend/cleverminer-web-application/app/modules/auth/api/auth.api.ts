@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import type { Me } from '@/modules/auth/api/domain/user.types';
+import { storage } from '@/modules/auth/utils/storage';
 
 export async function getMe(): Promise<Me> {
   const res = await apiClient.get('/users/me/');
@@ -26,5 +27,10 @@ export async function register(registerData: {
 }
 
 export async function logout() {
-  await apiClient.post('/auth/logout/');
+  const refresh = localStorage.getItem('refresh_token');
+  try {
+    await apiClient.post('/auth/logout/', { refresh });
+  } finally {
+    storage.clearTokens();
+  }
 }
