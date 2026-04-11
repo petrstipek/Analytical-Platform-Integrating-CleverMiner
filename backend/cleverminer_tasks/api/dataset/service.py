@@ -45,6 +45,10 @@ def create_derived_dataset(
         encoding=input_dataset.encoding,
     )
 
+    if input_dataset.projects.exists():
+        project = input_dataset.projects.first()
+        output.projects.add(project)
+
     transformation = DatasetTransformation.objects.create(
         output_dataset=output,
         transform_spec=transform_spec,

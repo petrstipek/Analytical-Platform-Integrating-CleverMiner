@@ -1,4 +1,20 @@
+import io
+import re
+import sys
 from typing import Any, Dict, List
+
+
+def get_uic_aad(clm, rule_id: int) -> float | None:
+    buffer = io.StringIO()
+    old_stdout = sys.stdout
+    sys.stdout = buffer
+    try:
+        clm.print_rule(rule_id)
+    finally:
+        sys.stdout = old_stdout
+    output = buffer.getvalue()
+    match = re.search(r"aad score\s*:\s*([\d.]+)", output)
+    return float(match.group(1)) if match else None
 
 
 def serialize_uic_result(clm, target_column: str) -> Dict[str, Any]:
@@ -21,13 +37,37 @@ def serialize_uic_result(clm, target_column: str) -> Dict[str, Any]:
             except Exception:
                 text = f"UIC Rule #{rule_id}"
 
+            hist_rule = clm.get_hist(rule_id, fullCond=False)
+            hist_background = clm.get_hist_cond(rule_id)
+
             try:
-                quantifiers = clm.get_quantifiers(rule_id)
+                quantifiers = clm.get_quantifiers(rule_id) or {}
             except Exception:
                 quantifiers = {}
 
-            hist_rule = clm.get_hist(rule_id, fullCond=False)
-            hist_background = clm.get_hist_cond(rule_id)
+            if hist_rule and hist_background:
+                rule_total = sum(hist_rule)
+                bg_total = sum(hist_background)
+                rel_hist_rule = (
+                    [v / rule_total for v in hist_rule] if rule_total else []
+                )
+                rel_hist_bg = (
+                    [v / bg_total for v in hist_background] if bg_total else []
+                )
+                times_more = [
+                    (rel_hist_rule[i] / rel_hist_bg[i]) if rel_hist_bg[i] else 0
+                    for i in range(len(hist_rule))
+                ]
+                quantifiers.update(
+                    {
+                        "base": rule_total,
+                        "rel_base": rule_total / bg_total if bg_total else 0,
+                        "aad": get_uic_aad(clm, rule_id),
+                        "rel_hist_rule": rel_hist_rule,
+                        "rel_hist_background": rel_hist_bg,
+                        "times_more": times_more,
+                    }
+                )
 
             rules.append(
                 {

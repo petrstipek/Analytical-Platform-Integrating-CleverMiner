@@ -60,16 +60,19 @@ def apply_transform_spec(df: pd.DataFrame, spec: dict) -> pd.DataFrame:
 
             if method == "quantile":
                 k = int(step["k"])
-                out[output_col] = pd.qcut(out[col], q=k, duplicates="drop")
+                out[output_col] = pd.qcut(out[col], q=k, duplicates="drop").astype(str)
+
             elif method == "equal_width":
                 k = int(step["k"])
-                out[output_col] = pd.cut(out[col], bins=k)
+                out[output_col] = pd.cut(out[col], bins=k).astype(str)
+
             elif method == "explicit":
                 bins = step["bins"]
                 labels = step.get("labels")
                 out[output_col] = pd.cut(
                     out[col], bins=bins, labels=labels, include_lowest=True
-                )
+                ).astype(str)
+
             else:
                 raise ValueError(f"Unknown bin method: {method}")
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ProceduresType } from '@/shared/domain/procedures.type';
 
 const attributeSchema = z
   .object({
@@ -35,24 +36,62 @@ const optionsSchema = z.object({
   max_categories: z.number().nullable().optional(),
 });
 
-export const createTaskSchema = z.object({
-  name: z.string().min(3, 'Task name must be at least 3 characters'),
-  dataset: z.number().min(1, { message: 'Please select a dataset' }),
-  procedure: z.string(),
-  project: z.number().min(1).optional(),
-  configuration: z.object({
-    ante: cedentSchema.optional(),
-    succ: cedentSchema.optional(),
-    cond: cedentSchema.nullable().optional(),
+export const createTaskSchema = z
+  .object({
+    name: z.string().min(3, 'Task name must be at least 3 characters'),
+    dataset: z.number().min(1, { message: 'Please select a dataset' }),
+    procedure: z.enum([
+      ProceduresType.CFMINER,
+      ProceduresType.SD4FTMINER,
+      ProceduresType.UICMINER,
+      ProceduresType.FOURFTMINER,
+    ]),
+    project: z.number().positive().optional(),
+    configuration: z.object({
+      ante: cedentSchema.optional(),
+      succ: cedentSchema.optional(),
+      cond: cedentSchema.nullable().optional(),
 
-    set1: cedentSchema.optional(),
-    set2: cedentSchema.optional(),
+      set1: cedentSchema.optional(),
+      set2: cedentSchema.optional(),
 
-    target: z.string().optional(),
+      target: z.string().optional(),
 
-    quantifiers: quantifiersSchema,
-    opts: optionsSchema.optional(),
-  }),
-});
+      quantifiers: quantifiersSchema,
+      opts: optionsSchema.optional(),
+    }),
+  })
+  .superRefine((data, ctx) => {
+    const { procedure, configuration } = data;
 
+    const requireCedent = (key: 'ante' | 'succ' | 'set1' | 'set2' | 'cond', label: string) => {
+      const cedent = configuration[key] as any;
+      if (!cedent || cedent.attributes.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `${label} requires at least one attribute`,
+          path: ['configuration', key, 'attributes'],
+        });
+      }
+    };
+
+    switch (procedure) {
+      case ProceduresType.FOURFTMINER:
+        requireCedent('ante', 'Antecedent');
+        requireCedent('succ', 'Succedent');
+        break;
+      case ProceduresType.SD4FTMINER:
+        requireCedent('ante', 'Antecedent');
+        requireCedent('succ', 'Succedent');
+        requireCedent('set1', 'First Set');
+        requireCedent('set2', 'Second Set');
+        break;
+      case ProceduresType.CFMINER:
+        requireCedent('cond', 'Condition');
+        break;
+      case ProceduresType.UICMINER:
+        requireCedent('ante', 'Antecedent');
+        break;
+    }
+  });
 export type CreateTaskFormValues = z.infer<typeof createTaskSchema>;

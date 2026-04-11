@@ -63,10 +63,22 @@ export default function FourFtMinerResultsPanel({ task }: { task: any }) {
                       <span className="text-muted-foreground">Support (Base)</span>
                       <span className="font-mono">{selectedRule.quantifiers.base}</span>
                     </div>
-                    <div className="flex justify-between pb-2 text-sm">
+                    <div className="flex justify-between border-b pb-2 text-sm">
                       <span className="text-muted-foreground">Relative Base</span>
                       <span className="font-mono">
                         {(selectedRule.quantifiers.rel_base * 100).toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2 text-sm">
+                      <span className="text-muted-foreground">AAD</span>
+                      <span className="font-mono">
+                        {(selectedRule.quantifiers.aad! * 100).toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between pb-2 text-sm">
+                      <span className="text-muted-foreground">BAD</span>
+                      <span className="font-mono">
+                        {(selectedRule.quantifiers.bad! * 100).toFixed(2)}%
                       </span>
                     </div>
                   </CardContent>

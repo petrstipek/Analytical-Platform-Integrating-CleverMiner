@@ -101,6 +101,22 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
                           {(selectedRule.quantifiers.rel_max * 100).toFixed(2)}%
                         </span>
                       </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-muted-foreground">Steps Up (consecutive)</span>
+                        <span className="font-mono">{selectedRule.quantifiers.s_up}</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-muted-foreground">Steps Down (consecutive)</span>
+                        <span className="font-mono">{selectedRule.quantifiers.s_down}</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-muted-foreground">Steps Up (any)</span>
+                        <span className="font-mono">{selectedRule.quantifiers.s_any_up}</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-muted-foreground">Steps Down (any)</span>
+                        <span className="font-mono">{selectedRule.quantifiers.s_any_down}</span>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>

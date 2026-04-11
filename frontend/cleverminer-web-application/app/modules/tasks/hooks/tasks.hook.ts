@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { createTask, createAndExecuteTask, updateTask } from '../api/tasks.api';
+import { createTask, createAndExecuteRun, updateTask } from '../api/tasks.api';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -8,7 +8,7 @@ export function useCreateTaskAndRunMutation() {
   return useMutation({
     mutationFn: async (data: any) => {
       const task = await createTask(data);
-      await createAndExecuteTask(task.id);
+      await createAndExecuteRun(task.id);
       return task;
     },
     onSuccess: (task) => {
@@ -44,7 +44,7 @@ export function useUpdateTaskMutation() {
 export function useCreateAndExecuteRunMutation(options?: { onSuccess?: () => void }) {
   return useMutation({
     mutationFn: async (taskId: number) => {
-      await createAndExecuteTask(taskId);
+      await createAndExecuteRun(taskId);
     },
     onSuccess: () => {
       toast.success(`Run for task created and started!`);

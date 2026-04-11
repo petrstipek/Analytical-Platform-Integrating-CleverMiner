@@ -77,6 +77,60 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
                     values={selectedRule.histogram_background}
                     colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
                   />
+                  {selectedRule.quantifiers && (
+                    <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
+                      <CardContent className="space-y-2 pt-6 text-sm">
+                        <div className="flex justify-between border-b pb-2">
+                          <span className="text-muted-foreground">Base</span>
+                          <span className="font-mono font-bold">
+                            {selectedRule.quantifiers.base.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between border-b pb-2">
+                          <span className="text-muted-foreground">Relative Base</span>
+                          <span className="font-mono">
+                            {(selectedRule.quantifiers.rel_base! * 100).toFixed(2)}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between border-b pb-2">
+                          <span className="text-muted-foreground">AAD Score</span>
+                          <span className="font-mono font-bold text-indigo-600">
+                            {selectedRule.quantifiers.aad.toFixed(4)}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1 pt-2">
+                          <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                            Interpretation
+                          </div>
+                          {categories.map((cat, i) => {
+                            const times = selectedRule.quantifiers!.times_more[i];
+                            const bgPct = (
+                              selectedRule.quantifiers!.rel_hist_background[i] * 100
+                            ).toFixed(1);
+                            const rulePct = (
+                              selectedRule.quantifiers!.rel_hist_rule[i] * 100
+                            ).toFixed(1);
+                            const color =
+                              times > 1.2
+                                ? 'text-red-500'
+                                : times < 0.8
+                                  ? 'text-green-600'
+                                  : 'text-slate-500';
+                            return (
+                              <p key={cat} className="text-xs text-slate-600">
+                                <span className="font-medium">{cat}</span> occurs {bgPct}% in
+                                background, {rulePct}% with antecedent —{' '}
+                                <span className={`font-semibold ${color}`}>
+                                  {times.toFixed(2)}× more
+                                </span>
+                              </p>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
               ) : (
                 <div className="text-muted-foreground text-sm">Select a rule to view details</div>

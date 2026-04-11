@@ -80,10 +80,12 @@ export default function CedentDetail({ title, data, color = 'default' }: CedentD
                   <div className="font-medium text-slate-900">{attr.name}</div>
                   <div className="text-muted-foreground flex items-center gap-2 text-xs">
                     <Badge variant="outline" className="h-5 px-1 font-mono text-[10px]">
-                      {attr.attr_type}
+                      Type: {attr.attr_type}
                     </Badge>
                     {attr.gace && (
-                      <span className="text-[10px] text-slate-400 uppercase">{attr.gace}</span>
+                      <span className="text-[10px] text-slate-400 uppercase">
+                        Gace: {attr.gace}
+                      </span>
                     )}
                   </div>
                 </div>

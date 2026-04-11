@@ -11,7 +11,7 @@ export default function PlatformLayout() {
       <SidebarProvider className="flex flex-col">
         <div className="flex flex-1 rounded-xl">
           <AppSidebar />
-          <SidebarInset className="flex flex-col">
+          <SidebarInset className="md:peer-data-[variant=inset]:m-5">
             <PlatformSiteHeader />
             <main className="flex flex-1 flex-col p-4 md:p-6 lg:p-8">
               <Outlet />

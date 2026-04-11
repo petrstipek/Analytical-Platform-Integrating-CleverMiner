@@ -1,4 +1,4 @@
-import { addMember } from '@/modules/projects/api/mutatations/projects.mutations';
+import { addMember, removeMember } from '@/modules/projects/api/mutatations/projects.mutations';
 import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AddProjectMemberType } from '@/modules/projects/api/domain/project.type';
@@ -14,8 +14,13 @@ export const useProject = (projectId?: string) => {
       toast.success('Member added successfully!');
     },
     onError: (error: any) => {
-      console.error('Failed to add member', error);
-      toast.error('Failed to add member');
+      const data = error?.response?.data;
+
+      const message = Object.values(data ?? {})
+        .flat()
+        .join(', ');
+
+      toast.error(message || 'Failed to add member');
     },
   });
 
@@ -24,5 +29,20 @@ export const useProject = (projectId?: string) => {
     queryFn: () => getProjectSummary(Number(projectId)),
   });
 
-  return { addMemberMutation, projectSummary, projectSummaryLoading };
+  const removeMemberMutation = useMutation({
+    mutationFn: (payload: { projectId: number; memberId: number }) =>
+      removeMember(payload.projectId, payload.memberId),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['project-members'] });
+      toast.success('Member removed successfully!');
+    },
+
+    onError: (error: any) => {
+      const data = error?.response?.data;
+      toast.error(data?.detail || 'Failed to remove member');
+    },
+  });
+
+  return { addMemberMutation, projectSummary, projectSummaryLoading, removeMemberMutation };
 };

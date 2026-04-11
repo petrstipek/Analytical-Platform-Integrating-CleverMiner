@@ -54,7 +54,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ("add_member", "remove_member", "update_member_role"):
             return [permissions.IsAuthenticated(), IsUserProjectAdmin()]
-        return super().get_permissions()
+
+        if self.action in (
+            "retrieve",
+            "project_runs",
+            "project_datasets",
+            "project_members",
+            "summary",
+        ):
+            return [permissions.IsAuthenticated(), IsUserProjectMember()]
+
+        return [permissions.IsAuthenticated(), IsOwnerOrAdmin()]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

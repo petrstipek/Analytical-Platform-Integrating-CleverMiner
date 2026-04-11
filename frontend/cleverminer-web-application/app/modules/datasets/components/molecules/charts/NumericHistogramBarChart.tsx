@@ -64,7 +64,7 @@ export default function NumericHistogramBarChart({ attributeName, histogram }: P
 
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+          <BarChart accessibilityLayer data={chartData} margin={{ bottom: 16, left: 48 }}>
             <CartesianGrid vertical={false} />
 
             <XAxis
@@ -73,10 +73,24 @@ export default function NumericHistogramBarChart({ attributeName, histogram }: P
               tickMargin={10}
               axisLine={false}
               interval="preserveStartEnd"
-              tickFormatter={(v) => String(v).slice(0, 8)}
+              angle={-35}
+              textAnchor="end"
+              height={50}
+              tickFormatter={(v) => String(v).slice(0, 10)}
             />
 
-            <YAxis tickLine={false} axisLine={false} width={40} />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              width={40}
+              label={{
+                value: 'Count',
+                angle: -90,
+                position: 'insideLeft',
+                dx: -30,
+                fontSize: 12,
+              }}
+            />
 
             <ChartTooltip
               cursor={false}

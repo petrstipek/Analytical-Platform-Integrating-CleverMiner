@@ -1,5 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
-import type { RunResult } from '@/modules/runs/domain/runs-results.type';
+import { type RunResult, RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import { formatDate } from '@/shared/utils/formatDate';
 import { elapsed } from '@/modules/tasks/utils/time-calculations';
 import { RunStatusBadge } from '@/modules/runs/components/atoms/RunStatusBadge';
@@ -73,7 +73,9 @@ export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<Run
     id: 'actions',
     header: 'Actions',
     cell: ({ row }) => {
-      if (!row.original?.finished_at) return <div>Cannot delete not finished run!</div>;
+      console.log(row.original.status);
+      if ([RunResultStatus.Queued, RunResultStatus.Running].includes(row.original?.status))
+        return <div>Cannot delete not finished run!</div>;
       return (
         <Button
           variant="ghost"

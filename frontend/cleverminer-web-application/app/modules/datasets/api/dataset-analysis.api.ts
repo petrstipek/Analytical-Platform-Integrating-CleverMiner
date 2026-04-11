@@ -6,6 +6,7 @@ import type {
 } from '@/modules/datasets/api/types/clmGuidance.type';
 import type { DatasetStatsOverview } from '@/modules/datasets/api/types/datasetStatsOverview.type';
 import type { DatasetProfileResult } from '@/modules/datasets/domain/dataset-profile.type';
+import type { DatasetChildrenTransformation } from '@/modules/datasets/api/types/datasetChildrenTransfomration.type';
 
 export async function getDatasetPreview(id: number) {
   const res = await apiClient.get<DatasetPreviewResponse>(`/datasets/${id}/preview/?rows=20`);
@@ -27,12 +28,12 @@ export async function createDerivedDataset(
   payload: {
     name: string;
     transform_spec: object;
-    output_format: 'csv' | 'parquet';
+    output_format?: 'csv' | 'parquet';
   },
 ) {
   const form = new FormData();
   form.append('name', payload.name);
-  form.append('output_format', payload.output_format);
+  form.append('output_format', payload.output_format ?? 'parquet');
   form.append('transform_spec', JSON.stringify(payload.transform_spec));
 
   const res = await apiClient.post(`/datasets/${datasetId}/create-derived/`, form, {
@@ -51,5 +52,12 @@ export async function getDatasetStatsOverview(datasetId: number) {
 
 export async function getDatasetProfile(datasetId: number): Promise<DatasetProfileResult> {
   const res = await apiClient.get(`/datasets/${datasetId}/dataset-profile/`);
+  return res.data;
+}
+
+export async function getDatasetChildrenTransformations(
+  datasetId: string,
+): Promise<DatasetChildrenTransformation> {
+  const res = await apiClient.get(`/datasets/${datasetId}/children-transformations/`);
   return res.data;
 }

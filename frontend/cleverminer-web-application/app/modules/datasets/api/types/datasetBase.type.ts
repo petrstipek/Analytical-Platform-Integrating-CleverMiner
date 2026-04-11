@@ -7,6 +7,7 @@ export type Dataset = {
   created_at: string;
   parent_id: number;
   used_in_tasks: boolean;
+  file: string;
 };
 
 export type UploadDatasetPayload = {
