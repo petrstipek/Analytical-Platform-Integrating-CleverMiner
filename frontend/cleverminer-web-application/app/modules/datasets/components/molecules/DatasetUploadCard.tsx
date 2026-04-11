@@ -42,6 +42,7 @@ export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUpload
       name: data.name,
       delimiter: data.delimiter,
       file: selectedFile,
+      delimiter: data.delimiter,
     });
   };
 
