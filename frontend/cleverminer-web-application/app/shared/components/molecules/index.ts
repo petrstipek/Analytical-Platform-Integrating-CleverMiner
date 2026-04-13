@@ -3,3 +3,4 @@ export { default as PlatformCard } from './PlatformCard';
 export { default as PlatformTitles } from './PlatformTitles';
 export { default as ModulePagesHeader } from './ModulePagesHeader';
 export { renderProcedureDetails } from './ProcedureDetailsRenderer';
+export { default as NotReadyStatus } from './NotReadyStatus';

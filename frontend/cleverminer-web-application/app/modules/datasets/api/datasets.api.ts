@@ -43,3 +43,8 @@ export async function deleteDataset(id: number) {
   const response = await apiClient.delete(`/datasets/${id}/`);
   return response.data;
 }
+
+export async function getDataset(id: number) {
+  const response = await apiClient.get(`/datasets/${id}/`);
+  return response.data;
+}

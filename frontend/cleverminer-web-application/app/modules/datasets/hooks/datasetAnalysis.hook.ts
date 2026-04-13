@@ -7,16 +7,28 @@ import {
   getDatasetStatsOverview,
 } from '../api/dataset-analysis.api';
 import { toast } from 'sonner';
-
-export function useDatasetPreview(id: number | null) {
-  return useQuery({
-    queryKey: ['dataset-preview', id],
-    queryFn: () => getDatasetPreview(id!),
-    enabled: !!id,
-  });
-}
+import { getDataset } from '@/modules/datasets/api/datasets.api';
 
 export function useDatasetAnalysis(id: number | null) {
+  const { data: dataset, isLoading: datasetLoading } = useQuery({
+    queryKey: ['dataset', id],
+    queryFn: () => getDataset(id!),
+    enabled: !!id,
+    refetchInterval: (query) => (query.state.data?.is_ready ? false : 2000),
+  });
+
+  const isReady = dataset?.is_ready ?? false;
+
+  const {
+    data: datasetPreview,
+    isLoading: previewLoading,
+    error: previewError,
+  } = useQuery({
+    queryKey: ['dataset-preview', id],
+    queryFn: () => getDatasetPreview(id!),
+    enabled: !!id && isReady,
+  });
+
   const {
     data: clmCandidatesData,
     isLoading: clmCandidatesLoading,
@@ -24,7 +36,7 @@ export function useDatasetAnalysis(id: number | null) {
   } = useQuery({
     queryKey: ['dataset-analysis', id],
     queryFn: () => getDatasetAnalysis(id!),
-    enabled: !!id,
+    enabled: !!id && isReady,
   });
 
   const {
@@ -34,7 +46,7 @@ export function useDatasetAnalysis(id: number | null) {
   } = useQuery({
     queryKey: ['dataset-column-stats', id],
     queryFn: () => getDatasetAnalysisStats(id!),
-    enabled: !!id,
+    enabled: !!id && isReady,
   });
 
   const {
@@ -44,7 +56,7 @@ export function useDatasetAnalysis(id: number | null) {
   } = useQuery({
     queryKey: ['dataset-stats-overview', id],
     queryFn: () => getDatasetStatsOverview(id!),
-    enabled: !!id,
+    enabled: !!id && isReady,
   });
 
   const {
@@ -54,16 +66,22 @@ export function useDatasetAnalysis(id: number | null) {
   } = useQuery({
     queryKey: ['dataset-profile', id],
     queryFn: () => getDatasetProfile(id!),
-    enabled: !!id,
+    enabled: !!id && isReady,
   });
 
   const error =
-    clmCandidatesError || columnStatsError || datasetStatsOverviewError || datasetProfileError;
+    clmCandidatesError ||
+    columnStatsError ||
+    datasetStatsOverviewError ||
+    datasetProfileError ||
+    previewError;
+
   const isAnalysing =
     clmCandidatesLoading ||
     columnStatsLoading ||
     datasetStatsOverviewLoading ||
-    datasetProfileLoading;
+    datasetProfileLoading ||
+    previewLoading;
 
   if (error) {
     console.error('Failed to fetch dataset analysis:', clmCandidatesError, columnStatsError);
@@ -77,5 +95,7 @@ export function useDatasetAnalysis(id: number | null) {
     datasetProfile,
     isAnalysing,
     error,
+    isReady,
+    datasetPreview,
   };
 }
