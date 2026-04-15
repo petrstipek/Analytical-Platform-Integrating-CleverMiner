@@ -52,7 +52,7 @@ def load_dataset(
     file_format = getattr(dataset, "file_format", DatasetFormat.CSV)
 
     if file_format == DatasetFormat.PARQUET:
-        cols_list = list(columns) if columns is not None else None
+        cols_list = list(columns) if columns else None
         df = pd.read_parquet(file_ref, columns=cols_list)
         return df.head(nrows) if nrows is not None else df
 

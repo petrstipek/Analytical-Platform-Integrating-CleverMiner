@@ -7,13 +7,10 @@ import {
 } from '@/modules/datasets/components/organisms';
 import { useParams } from 'react-router';
 import { DatasetDetailHeader } from '@/modules/datasets/components/molecules';
-import {
-  useDatasetAnalysis,
-  useDatasetPreview,
-} from '@/modules/datasets/hooks/datasetAnalysis.hook';
+import { useDatasetAnalysis } from '@/modules/datasets/hooks/datasetAnalysis.hook';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/components/ui/molecules/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
-import { LoadingStatus } from '@/shared/components/molecules';
+import { LoadingStatus, NotReadyStatus } from '@/shared/components/molecules';
 import {
   Dialog,
   DialogContent,
@@ -32,20 +29,26 @@ export default function DatasetDetailPage() {
     datasetProfile,
     isAnalysing,
     error,
+    isReady,
+    datasetPreview,
   } = useDatasetAnalysis(Number(datasetId));
 
-  const {
-    data: preview,
-    isLoading: previewLoading,
-    error: previewError,
-  } = useDatasetPreview(Number(datasetId));
-
-  const loading = isAnalysing || previewLoading;
-  const mainError = error || previewError;
-
   if (!datasetId) return <div>No dataset ID provided.</div>;
-  if (loading) return <LoadingStatus />;
-  if (mainError) return <div>Error loading dataset analysis.</div>;
+  if (!isReady)
+    return (
+      <NotReadyStatus
+        description={'The dataset will be soon available.'}
+        hint={'You can leave this page and come back later. The dataset id is: ' + datasetId}
+      />
+    );
+  if (isAnalysing)
+    return (
+      <LoadingStatus
+        title={'Analyzing dataset...'}
+        description={'Application is analyzing the dataset.'}
+      />
+    );
+  if (error) return <div>Error loading dataset analysis.</div>;
 
   return (
     <Dialog>
@@ -81,7 +84,7 @@ export default function DatasetDetailPage() {
             value="preview"
             className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
           >
-            <DatasetPreview preview={preview!} />
+            <DatasetPreview preview={datasetPreview!} />
           </TabsContent>
 
           <TabsContent

@@ -3,7 +3,9 @@ from typing import Any, Dict, List, Set
 import pandas as pd
 from pandas.api.types import is_bool_dtype
 
-from cleverminer_tasks.api.dataset.utils.clmDataGuidance import clm_column_data_guidance
+from cleverminer_tasks.execution.datasets.profile.clmDataGuidance import (
+    clm_column_data_guidance,
+)
 
 
 def _is_target_candidate(series: pd.Series, *, max_unique: int) -> bool:

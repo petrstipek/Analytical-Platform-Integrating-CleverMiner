@@ -1,4 +1,6 @@
-from cleverminer_tasks.api.dataset.utils.clmDataGuidance import clm_column_data_guidance
+from cleverminer_tasks.execution.datasets.profile.clmDataGuidance import (
+    clm_column_data_guidance,
+)
 from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
 from cleverminer_tasks.models import Dataset
 
