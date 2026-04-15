@@ -13,19 +13,23 @@ from cleverminer_tasks.api.dataset.serializers import (
     DatasetSerializer,
     CreateDerivedDatasetSerializer,
 )
-from cleverminer_tasks.api.dataset.service import (
-    create_derived_dataset,
-    create_dataset_profile,
-)
-from cleverminer_tasks.api.dataset.utils.buildDatasetProfile import (
+from cleverminer_tasks.execution.datasets.profile.buildDatasetProfile import (
     build_dataset_profile,
 )
-from cleverminer_tasks.api.dataset.utils.clmTargetCandidates import build_clm_candidates
-from cleverminer_tasks.api.dataset.utils.datasetColumns import create_dataset_columns
-from cleverminer_tasks.api.dataset.utils.datasetStats import build_stats
+from cleverminer_tasks.execution.datasets.profile.clmTargetCandidates import (
+    build_clm_candidates,
+)
+from cleverminer_tasks.execution.datasets.profile.datasetColumns import (
+    create_dataset_columns,
+)
+from cleverminer_tasks.execution.datasets.profile.datasetStats import build_stats
 from cleverminer_tasks.api.views import IsOwnerOrAdmin
+from cleverminer_tasks.execution.datasets.transformations.service import (
+    create_derived_dataset,
+)
 from cleverminer_tasks.execution.utils.datasetLoader import load_dataset
-from cleverminer_tasks.models import Dataset, DatasetProfile
+from cleverminer_tasks.models import Dataset
+from cleverminer_tasks.execution.tasks import convert_csv_to_parquet
 
 
 class IsDatasetOwnerOrProjectMember(permissions.BasePermission):
@@ -96,8 +100,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         dataset = serializer.save(owner=self.request.user)
 
-        dataset_profile = DatasetProfile.objects.create(dataset=dataset)
-        create_dataset_profile(dataset=dataset, dataset_profile=dataset_profile)
+        convert_csv_to_parquet.delay(dataset.id)
 
     def perform_destroy(self, instance):
         if instance.tasks.exists():

@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("cleverminer_tasks", "0009_datasetprofile_dataset_eda_profile"),
     ]
