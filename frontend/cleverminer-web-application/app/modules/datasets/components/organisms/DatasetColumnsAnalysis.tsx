@@ -150,14 +150,16 @@ export default function DatasetColumnsAnalysisView({
             cardTitle={'Applied Preprocess steps'}
             cardDescription={'Preview preprocessed steps.'}
           >
-            <div className="animate-in fade-in slide-in-from-top-2 sticky top-0 z-10 grid grid-cols-[1fr_auto] items-start gap-2 rounded-2xl border-b bg-blue-50 p-4 shadow-sm">
-              <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium text-blue-900">
-                  {steps.length} transformations staged
+            <div className="animate-in fade-in slide-in-from-top-2 sticky top-0 z-10 grid grid-cols-1 items-start gap-4 rounded-2xl border-b bg-blue-50 p-4 shadow-sm md:grid-cols-[1fr_auto]">
+              <div className="flex min-w-0 flex-col gap-3">
+                <span className="flex items-center gap-2 text-sm font-semibold text-blue-900">
+                  <Badge variant="secondary" className="bg-blue-200 text-blue-800">
+                    {steps.length}
+                  </Badge>
+                  transformations staged
                 </span>
-
-                <ScrollArea className="max-h-100 pr-3">
-                  <div className="flex flex-col gap-2">
+                <ScrollArea className="h-[250px] w-full rounded-md pr-4">
+                  <div className="flex flex-col gap-3 pb-2">
                     {Object.entries(
                       steps.reduce<Record<string, { step: TransformStep; idx: number }[]>>(
                         (acc, s, idx) => {
@@ -172,22 +174,24 @@ export default function DatasetColumnsAnalysisView({
                     ).map(([colName, entries]) => (
                       <div
                         key={colName}
-                        className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5"
+                        className="overflow-hidden rounded-xl border border-blue-100 bg-white shadow-sm"
                       >
-                        <div className="rounded-t-2xl bg-blue-100 px-3 py-1.5 text-xs font-semibold text-blue-800">
-                          {colName}
+                        <div className="border-b border-blue-100 bg-blue-100/50 px-3 py-1.5 text-[11px] font-bold tracking-wider text-blue-700 uppercase">
+                          Column: {colName}
                         </div>
-                        <ul className="divide-y divide-gray-100">
+                        <ul className="divide-y divide-gray-50">
                           {entries.map(({ step, idx }) => (
                             <li
                               key={idx}
-                              className="flex items-center justify-between px-3 py-1.5 text-xs"
+                              className="flex items-center justify-between px-3 py-2 text-xs transition-colors hover:bg-gray-50"
                             >
-                              <span className="text-gray-700">{formatStepLabel(step)}</span>
+                              <span className="font-medium text-gray-700">
+                                {formatStepLabel(step)}
+                              </span>
                               <button
                                 type="button"
                                 onClick={() => removeStepAtGlobalIndex(idx)}
-                                className="text-gray-400 hover:text-red-500"
+                                className="ml-2 flex h-5 w-5 items-center justify-center rounded-full text-gray-400 transition-all hover:bg-red-50 hover:text-red-500"
                               >
                                 ×
                               </button>
@@ -200,12 +204,17 @@ export default function DatasetColumnsAnalysisView({
                 </ScrollArea>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <Button variant="outline" size="sm" onClick={clearAll} className="text-gray-600">
+              <div className="flex shrink-0 flex-row gap-2 md:flex-col">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearAll}
+                  className="bg-white text-gray-600"
+                >
                   <Trash2 className="mr-2 h-4 w-4" /> Clear All
                 </Button>
                 <DialogTrigger asChild>
-                  <Button size="sm">
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                     <Book className="mr-2 h-4 w-4" /> Dataset Transformation
                   </Button>
                 </DialogTrigger>

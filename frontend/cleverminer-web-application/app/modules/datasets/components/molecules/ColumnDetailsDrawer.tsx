@@ -229,11 +229,11 @@ export default function ColumnDetailsDrawer({
                           id="overwrite"
                           checked={config.overwriteOriginal}
                           onCheckedChange={(checked: CheckedState) =>
-                            updateConfig({ overwriteOriginal: checked === true })
+                            updateConfig({ overwriteOriginal: checked === false })
                           }
                         />
                         <Label htmlFor="overwrite" className="text-xs text-gray-700">
-                          Overwrite original column
+                          Create New Column
                         </Label>
                       </div>
                       {config.overwriteOriginal && (
