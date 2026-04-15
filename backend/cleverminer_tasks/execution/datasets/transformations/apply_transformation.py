@@ -6,7 +6,7 @@ def _get_required_attributes(spec: dict) -> list[str]:
     steps = spec.get("steps", [])
 
     for step in steps:
-        col = step.get("column")
+        col = step.get("columns")
         if col is not None:
             columns.add(col)
 
