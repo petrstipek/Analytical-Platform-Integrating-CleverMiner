@@ -11,7 +11,6 @@ from django.db import transaction
 
 from cleverminer_tasks.execution.datasets.profile.service import create_dataset_profile
 from cleverminer_tasks.execution.datasets.transformations.apply_transformation import (
-    _get_required_attributes,
     apply_transform_spec,
 )
 from cleverminer_tasks.execution.runner import run_analysis
@@ -81,8 +80,7 @@ def apply_dataset_transformation(self, transformation_id: int) -> None:
         tr.save(update_fields=["status", "started_at", "error_log"])
 
     try:
-        required_columns = _get_required_attributes(tr.transform_spec)
-        df = load_dataset(in_ds, nrows=None, columns=required_columns)
+        df = load_dataset(in_ds, nrows=None, columns=None)
         df2 = apply_transform_spec(df, tr.transform_spec)
 
         if out_ds.file_format == DatasetFormat.PARQUET:
