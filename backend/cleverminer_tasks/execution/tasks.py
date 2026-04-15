@@ -55,8 +55,10 @@ def execute_runner_for_tasks(self, run_id: int) -> None:
 def apply_dataset_transformation(self, transformation_id: int) -> None:
     with transaction.atomic():
         tr = (
-            DatasetTransformation.objects.select_for_update()
-            .select_related("output_dataset", "output_dataset__parent")
+            DatasetTransformation.objects.select_related(
+                "output_dataset", "output_dataset__parent"
+            )
+            .select_for_update(of=("self",))
             .get(id=transformation_id)
         )
 
