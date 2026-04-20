@@ -13,6 +13,14 @@ import { useState } from 'react';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { toast } from 'sonner';
 import type { UploadPayload } from '@/modules/datasets/domain/uploadDataset.type';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/atoms/select';
+import { DELIMITER_OPTIONS } from '@/modules/datasets/domain/delimiterOptions';
 
 interface DatasetUploadFormProps {
   isPending: boolean;
@@ -21,12 +29,13 @@ interface DatasetUploadFormProps {
 
 type FormInputs = {
   name: string;
-  delimiter: string;
 };
 
 export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUploadFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [delimiterMode, setDelimiterMode] = useState<string>(';');
+  const [customDelimiter, setCustomDelimiter] = useState('');
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -65,7 +74,7 @@ export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUpload
     }
     onSubmit({
       name: data.name,
-      delimiter: data.delimiter,
+      delimiter: delimiterMode === '__custom__' ? customDelimiter : delimiterMode,
       file: selectedFile,
     });
   };
@@ -98,9 +107,33 @@ export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUpload
             </div>
             <div>
               <Label>Delimiter</Label>
-              <Input id="delimiter" placeholder={"Default: ';'"} {...register('delimiter')} />
-              {errors.delimiter && (
-                <p className="text-destructive text-sm">{errors.delimiter.message}</p>
+              <Select
+                value={delimiterMode}
+                onValueChange={(val) => {
+                  setDelimiterMode(val);
+                  setCustomDelimiter('');
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select delimiter" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DELIMITER_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {delimiterMode === '__custom__' && (
+                <Input
+                  className="mt-2"
+                  placeholder="Enter custom delimiter"
+                  value={customDelimiter}
+                  onChange={(e) => setCustomDelimiter(e.target.value)}
+                  maxLength={1}
+                />
               )}
             </div>
           </div>
