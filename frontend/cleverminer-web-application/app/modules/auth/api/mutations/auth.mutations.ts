@@ -35,17 +35,18 @@ export function useLogout() {
 }
 
 export function useRegister() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-
   return useMutation({
     mutationFn: register,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      storage.setTokens(data.access, data.refresh);
+      queryClient.setQueryData(['me'], data.user);
       toast.success('Successfully registered!');
-      navigate('/login');
+      navigate('/');
     },
     onError: () => {
       toast.error('Registration failed');
-      console.error('Registration failed');
     },
   });
 }
