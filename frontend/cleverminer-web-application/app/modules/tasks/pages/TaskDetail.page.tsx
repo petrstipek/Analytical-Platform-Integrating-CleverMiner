@@ -10,6 +10,7 @@ import { LoadingStatus, PlatformCard, renderProcedureDetails } from '@/shared/co
 import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
 import { ActionContainer } from '@/shared/components/atoms';
 import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
+import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 
 export default function TaskDetailPage() {
   const { taskId } = useParams();
@@ -33,6 +34,13 @@ export default function TaskDetailPage() {
     queryKey: ['tasksRuns', taskId],
     queryFn: () => getRunsForTask(Number(taskId)),
     enabled: isValidId,
+    refetchInterval: (query) => {
+      const runs = query.state.data;
+      const hasActiveRun = runs?.some(
+        (r) => r.status === RunResultStatus.Running || r.status === RunResultStatus.Queued,
+      );
+      return hasActiveRun ? 3000 : false;
+    },
   });
 
   const { mutate: createAndExecuteRun } = useCreateAndExecuteRunMutation({

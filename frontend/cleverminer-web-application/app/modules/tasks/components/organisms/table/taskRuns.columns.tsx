@@ -4,6 +4,7 @@ import { formatDate } from '@/shared/utils/formatDate';
 import { elapsed } from '@/modules/tasks/utils/time-calculations';
 import { RunAchievedResultBadge } from '@/modules/runs/components/atoms/RunAchievedResultBadge';
 import { RunStatusBadge } from '@/modules/runs/components/atoms/RunStatusBadge';
+import { ElapsedCell } from '@/shared/components/atoms';
 
 export const TaskRunsColumns: ColumnDef<TaskRun>[] = [
   {
@@ -28,7 +29,7 @@ export const TaskRunsColumns: ColumnDef<TaskRun>[] = [
   {
     id: 'elapsed',
     header: 'Elapsed',
-    cell: ({ row }) => elapsed(row.original.started_at, row.original.finished_at),
+    cell: ({ row }) => <ElapsedCell row={row.original} />,
   },
   {
     accessorKey: 'result_summary.has_result',

@@ -23,11 +23,6 @@ export const RunsRunningColumns: ColumnDef<RunResult>[] = [
     header: 'Started At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
   },
-  {
-    id: 'elapsed',
-    header: 'Elapsed',
-    cell: ({ row }) => elapsed(row.original.started_at, row.original.finished_at),
-  },
 
   {
     accessorKey: 'result_summary.has_result',
@@ -54,11 +49,6 @@ export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<Run
     accessorKey: 'started_at',
     header: 'Started At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
-  },
-  {
-    id: 'elapsed',
-    header: 'Elapsed',
-    cell: ({ row }) => elapsed(row.original.started_at, row.original.finished_at),
   },
 
   {
