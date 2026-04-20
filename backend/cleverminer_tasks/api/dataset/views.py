@@ -350,3 +350,29 @@ class DatasetViewSet(viewsets.ModelViewSet):
             )
 
         return Response({"dataset_id": dataset.id, "children": data})
+
+    @action(
+        detail=True, methods=["get"], url_path="columns/(?P<column_name>[^/.]+)/values"
+    )
+    def column_values(self, request, pk=None, column_name=None):
+        dataset = self.get_object()
+
+        df = load_dataset(dataset, columns=[column_name])
+
+        if column_name not in df.columns:
+            return Response(
+                {"detail": f"Column '{column_name}' not found in dataset."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        values = df[column_name].dropna().unique().tolist()
+        values = [str(v) for v in values]
+        values.sort()
+
+        return Response(
+            {
+                "dataset_id": dataset.id,
+                "column": column_name,
+                "values": values,
+            }
+        )

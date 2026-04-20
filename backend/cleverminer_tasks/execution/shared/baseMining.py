@@ -24,6 +24,12 @@ class BaseMiningService(ABC):
 
     @staticmethod
     def _build_attribute(attr: AttributeSpec):
+        if attr.attr_type == AttributeType.ONE:
+            d = {"name": attr.name, "type": "one", "value": attr.value}
+            if attr.gace != GaceType.POSITIVE:
+                d["gace"] = attr.gace.value
+            return d
+
         method_map = {
             AttributeType.LCUT: clm_lcut,
             AttributeType.RCUT: clm_rcut,
@@ -31,16 +37,14 @@ class BaseMiningService(ABC):
             AttributeType.SUBSET: clm_subset,
         }
 
-        common_params = {"minlen": attr.minlen, "maxlen": attr.maxlen}
+        if attr.attr_type not in method_map:
+            raise ValueError(f"Unsupported attribute type: {attr.attr_type}")
 
+        common_params = {"minlen": attr.minlen, "maxlen": attr.maxlen}
         if attr.gace != GaceType.POSITIVE:
             common_params["gace"] = attr.gace.value
 
-        if attr.attr_type in method_map:
-            return method_map[attr.attr_type](attr.name, **common_params)
-        else:
-            params = {"name": attr.name, "type": attr.attr_type.value, **common_params}
-            return params
+        return method_map[attr.attr_type](attr.name, **common_params)
 
     def _build_cedent(self, cedent: CedentConfig):
         if not cedent or not cedent.attributes:
