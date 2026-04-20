@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import type { Dataset, UploadDatasetPayload } from '@/modules/datasets/api/types/datasetBase.type';
+import type { ColumnValues } from '@/modules/datasets/api/types/columnValues.type';
 
 export async function uploadDataset(payload: UploadDatasetPayload): Promise<Dataset> {
   const formData = new FormData();
@@ -46,5 +47,10 @@ export async function deleteDataset(id: number) {
 
 export async function getDataset(id: number) {
   const response = await apiClient.get(`/datasets/${id}/`);
+  return response.data;
+}
+
+export async function getDatasetColumnValues(id: number, column: string): Promise<ColumnValues> {
+  const response = await apiClient.get(`/datasets/${id}/columns/${column}/values`);
   return response.data;
 }

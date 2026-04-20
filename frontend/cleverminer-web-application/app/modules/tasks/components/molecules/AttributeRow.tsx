@@ -10,12 +10,15 @@ import {
 import { Button } from '@/shared/components/ui/atoms/button';
 import { AttributeType, type AttributeSpec } from '../../domain/task-schema';
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
+import { useQuery } from '@tanstack/react-query';
+import { getDatasetColumnValues } from '@/modules/datasets/api/datasets.api';
 
 interface AttributeRowProps {
   attribute: AttributeSpec;
   onChange: (updated: AttributeSpec) => void;
   onRemove: () => void;
   availableColumns?: DatasetsColumnsType[];
+  datasetId: number;
 }
 
 export default function AttributeRow({
@@ -23,10 +26,35 @@ export default function AttributeRow({
   onChange,
   onRemove,
   availableColumns,
+  datasetId,
 }: AttributeRowProps) {
+  const isOne = attribute.attr_type === AttributeType.ONE;
+  const columnName = attribute.name;
+
   const updateField = (field: keyof AttributeSpec, value: any) => {
     onChange({ ...attribute, [field]: value });
   };
+
+  const handleTypeChange = (newType: AttributeType) => {
+    if (newType === AttributeType.ONE) {
+      onChange({
+        ...attribute,
+        attr_type: newType,
+        minlen: undefined,
+        maxlen: undefined,
+        value: undefined,
+      });
+    } else {
+      onChange({ ...attribute, attr_type: newType, minlen: 1, maxlen: 1, value: undefined });
+    }
+  };
+
+  const { data: columnValuesData, isLoading: isLoadingValues } = useQuery({
+    queryKey: ['dataset-column-values', datasetId, columnName],
+    queryFn: () => getDatasetColumnValues(datasetId, columnName),
+    enabled: isOne && !!columnName,
+    staleTime: 5 * 60 * 1000,
+  });
 
   return (
     <div className="bg-card flex items-end gap-3 rounded-md border p-3">
@@ -37,7 +65,7 @@ export default function AttributeRow({
             <SelectValue placeholder="Select column" />
           </SelectTrigger>
           <SelectContent>
-            {availableColumns?.length || 0 > 0 ? (
+            {(availableColumns?.length ?? 0) > 0 ? (
               availableColumns?.map((col) => (
                 <SelectItem key={col.name} value={col.name}>
                   <div className="flex items-center gap-2">
@@ -61,7 +89,7 @@ export default function AttributeRow({
         <span className="text-muted-foreground text-xs font-medium">Type</span>
         <Select
           value={attribute.attr_type}
-          onValueChange={(v: any) => updateField('attr_type', v as AttributeType)}
+          onValueChange={(v) => handleTypeChange(v as AttributeType)}
         >
           <SelectTrigger className="h-8">
             <SelectValue />
@@ -76,26 +104,62 @@ export default function AttributeRow({
         </Select>
       </div>
 
-      <div className="flex w-[120px] gap-2 space-y-1">
-        <div>
-          <span className="text-muted-foreground text-xs font-medium">Min</span>
-          <Input
-            type="number"
-            className="h-8"
-            value={attribute.minlen}
-            onChange={(e) => updateField('minlen', parseInt(e.target.value))}
-          />
+      {isOne ? (
+        <div className="w-[160px] space-y-1">
+          <span className="text-muted-foreground text-xs font-medium">Value</span>
+          {!columnName ? (
+            <Input className="h-8" placeholder="Select column first" disabled />
+          ) : isLoadingValues ? (
+            <div className="text-muted-foreground flex h-8 items-center text-xs">Loading...</div>
+          ) : (columnValuesData?.values?.length ?? 0) > 0 ? (
+            <Select
+              value={attribute.value ?? ''}
+              onValueChange={(val) => updateField('value', val)}
+            >
+              <SelectTrigger className="h-8 bg-white">
+                <SelectValue placeholder="Select value" />
+              </SelectTrigger>
+              <SelectContent>
+                {columnValuesData!.values.map((v: string) => (
+                  <SelectItem key={v} value={v}>
+                    {v}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Input
+              className="h-8"
+              placeholder="Enter value"
+              value={attribute.value ?? ''}
+              onChange={(e) => updateField('value', e.target.value)}
+            />
+          )}
         </div>
-        <div>
-          <span className="text-muted-foreground text-xs font-medium">Max</span>
-          <Input
-            type="number"
-            className="h-8"
-            value={attribute.maxlen}
-            onChange={(e) => updateField('maxlen', parseInt(e.target.value))}
-          />
+      ) : (
+        <div className="flex w-[120px] gap-2">
+          <div className="space-y-1">
+            <span className="text-muted-foreground text-xs font-medium">Min</span>
+            <Input
+              type="number"
+              className="h-8"
+              value={attribute.minlen ?? 1}
+              min={1}
+              onChange={(e) => updateField('minlen', parseInt(e.target.value))}
+            />
+          </div>
+          <div className="space-y-1">
+            <span className="text-muted-foreground text-xs font-medium">Max</span>
+            <Input
+              type="number"
+              className="h-8"
+              value={attribute.maxlen ?? 1}
+              min={1}
+              onChange={(e) => updateField('maxlen', parseInt(e.target.value))}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <Button
         type="button"

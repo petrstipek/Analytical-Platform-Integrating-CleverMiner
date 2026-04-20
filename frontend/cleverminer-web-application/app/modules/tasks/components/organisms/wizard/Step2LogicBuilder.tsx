@@ -39,6 +39,8 @@ export default function Step2LogicBuilder({
   const isLast = currentSection === visibleSections.length - 1;
   const isFirst = currentSection === 0;
 
+  const datasetId = watch('dataset');
+
   return (
     <div className="space-y-6">
       <div>
@@ -116,6 +118,7 @@ export default function Step2LogicBuilder({
                       config={field.value || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }}
                       onChange={field.onChange}
                       availableColumns={availableColumns}
+                      datasetId={datasetId}
                     />
                     {sectionError && (
                       <div className="mt-3 space-y-1">

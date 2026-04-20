@@ -5,13 +5,43 @@ const attributeSchema = z
   .object({
     name: z.string().min(1, 'Column name is required'),
     attr_type: z.enum(['subset', 'lcut', 'rcut', 'seq', 'one']),
-    minlen: z.number().min(1),
-    maxlen: z.number().min(1),
+    minlen: z.number().min(1).optional(),
+    maxlen: z.number().min(1).optional(),
     gace: z.enum(['positive', 'negative', 'both']),
+    value: z.string().optional(),
   })
-  .refine((data) => data.minlen <= data.maxlen, {
-    message: 'Min length cannot be greater than Max length',
-    path: ['minlen'],
+  .superRefine((data, ctx) => {
+    if (data.attr_type === 'one') {
+      if (!data.value || data.value.trim() === '') {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'A specific value is required for "one" type',
+          path: ['value'],
+        });
+      }
+    } else {
+      if (data.minlen === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Min length is required',
+          path: ['minlen'],
+        });
+      }
+      if (data.maxlen === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Max length is required',
+          path: ['maxlen'],
+        });
+      }
+      if (data.minlen !== undefined && data.maxlen !== undefined && data.minlen > data.maxlen) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Min length cannot be greater than Max length',
+          path: ['minlen'],
+        });
+      }
+    }
   });
 
 const cedentSchema = z
