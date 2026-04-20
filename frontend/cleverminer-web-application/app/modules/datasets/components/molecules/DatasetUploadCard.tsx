@@ -26,6 +26,31 @@ type FormInputs = {
 
 export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUploadFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.name.endsWith('.csv')) {
+      setSelectedFile(file);
+    } else {
+      toast.error('Please drop a CSV file.');
+    }
+  };
 
   const {
     register,
@@ -85,7 +110,16 @@ export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUpload
             <div className="flex w-full items-center justify-center">
               <label
                 htmlFor="dropzone-file"
-                className={`flex h-40 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${selectedFile ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-gray-50 hover:bg-gray-100'} `}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`flex h-40 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
+                  selectedFile
+                    ? 'border-green-500 bg-green-50'
+                    : isDragging
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
+                }`}
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                   {selectedFile ? (
