@@ -35,25 +35,6 @@ export default function Step2LogicBuilder({
     watch,
     formState: { errors },
   } = useFormContext<CreateTaskFormValues>();
-
-  const visibleSections = (LOGIC_LAYOUTS[procedure] || []).filter((s) => s !== 'target');
-  const [currentSection, setCurrentSection] = useState(0);
-
-  const config = watch('configuration');
-  const configErrors = errors.configuration;
-
-  if (isLoading) return <div>Loading columns...</div>;
-
-  const activeSection = visibleSections[currentSection];
-  const sectionError = configErrors?.[activeSection as keyof typeof configErrors];
-  const isLast = currentSection === visibleSections.length - 1;
-  const isFirst = currentSection === 0;
-
-  const datasetId = watch('dataset');
-
-  const [showWarning, setShowWarning] = useState(false);
-  const [pendingSection, setPendingSection] = useState<number | null>(null);
-
   const getHighCardinalityAttrs = (section: string) => {
     const attrs = (config?.[section as keyof typeof config] as any)?.attributes ?? [];
     return attrs
@@ -71,6 +52,23 @@ export default function Step2LogicBuilder({
       setCurrentSection(index);
     }
   };
+
+  const visibleSections = (LOGIC_LAYOUTS[procedure] || []).filter((s) => s !== 'target');
+  const [currentSection, setCurrentSection] = useState(0);
+  const [showWarning, setShowWarning] = useState(false);
+  const [pendingSection, setPendingSection] = useState<number | null>(null);
+
+  const config = watch('configuration');
+  const configErrors = errors.configuration;
+
+  if (isLoading) return <div>Loading columns...</div>;
+
+  const activeSection = visibleSections[currentSection];
+  const sectionError = configErrors?.[activeSection as keyof typeof configErrors];
+  const isLast = currentSection === visibleSections.length - 1;
+  const isFirst = currentSection === 0;
+
+  const datasetId = watch('dataset');
 
   return (
     <div className="space-y-6">

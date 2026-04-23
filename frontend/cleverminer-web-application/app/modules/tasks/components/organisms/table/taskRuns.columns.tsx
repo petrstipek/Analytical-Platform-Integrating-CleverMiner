@@ -1,10 +1,10 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TaskRun } from '@/modules/tasks/domain/task-run.type';
 import { formatDate } from '@/shared/utils/formatDate';
-import { elapsed } from '@/modules/tasks/utils/time-calculations';
 import { RunAchievedResultBadge } from '@/modules/runs/components/atoms/RunAchievedResultBadge';
 import { RunStatusBadge } from '@/modules/runs/components/atoms/RunStatusBadge';
 import { ElapsedCell } from '@/shared/components/atoms';
+import { ErrorLogCell } from '@/modules/tasks/components/molecules';
 
 export const TaskRunsColumns: ColumnDef<TaskRun>[] = [
   {
@@ -39,4 +39,11 @@ export const TaskRunsColumns: ColumnDef<TaskRun>[] = [
     ),
   },
   { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },
+  {
+    id: 'error_log',
+    accessorKey: 'error_log',
+    header: 'Error',
+    cell: ({ row }) =>
+      row.original.error_log ? <ErrorLogCell errorLog={row.original.error_log} /> : null,
+  },
 ];

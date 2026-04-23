@@ -11,6 +11,7 @@ import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
 import { ActionContainer } from '@/shared/components/atoms';
 import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
 import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
+import { useMemo } from 'react';
 
 export default function TaskDetailPage() {
   const { taskId } = useParams();
@@ -48,6 +49,11 @@ export default function TaskDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['tasksRuns', taskId] });
     },
   });
+
+  const columns = useMemo(() => {
+    const hasErrors = tasksRuns?.some((r) => r.error_log);
+    return hasErrors ? TaskRunsColumns : TaskRunsColumns.filter((c) => c.id !== 'error_log');
+  }, [tasksRuns]);
 
   if (!isValidId) return <div>Invalid Task ID</div>;
   if (isLoading) return <LoadingStatus title={'Loading task detail...'} />;
@@ -110,7 +116,7 @@ export default function TaskDetailPage() {
             <div className="p-10 text-center">Loading task runs...</div>
           ) : (
             <DataTable
-              columns={TaskRunsColumns}
+              columns={columns}
               data={tasksRuns!}
               onRowClick={(row) => handleRunClick(row as any, navigate)}
             />
