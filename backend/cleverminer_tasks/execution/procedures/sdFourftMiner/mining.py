@@ -1,7 +1,6 @@
 from typing import Dict, Any
 
 import pandas as pd
-from cleverminer import cleverminer
 
 from cleverminer_tasks.execution.procedures.sdFourftMiner.configs import Sd4FtConfig
 from cleverminer_tasks.execution.shared.baseMining import BaseMiningService
@@ -36,7 +35,7 @@ class Sd4FtMiningService(BaseMiningService):
         if self.config.cond:
             params["cond"] = self._build_cedent(self.config.cond)
 
-        clm = cleverminer(**params)
+        clm = self._run_miner(params)
 
         return base_serialization(clm)
 

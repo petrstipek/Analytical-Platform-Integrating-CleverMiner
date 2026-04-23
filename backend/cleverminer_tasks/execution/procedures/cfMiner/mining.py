@@ -1,7 +1,6 @@
 from typing import Any, Dict
 
 import pandas as pd
-from cleverminer import cleverminer
 
 from cleverminer_tasks.execution.shared.baseMining import BaseMiningService
 from .config import CfMinerConfig
@@ -35,7 +34,7 @@ class CfMiningService(BaseMiningService):
         if self.config.opts:
             params["opts"] = self.config.opts.model_dump(exclude_none=True)
 
-        clm = cleverminer(**params)
+        clm = self._run_miner(params)
 
         return serialize_cf_result(clm, self.config.target)
 
