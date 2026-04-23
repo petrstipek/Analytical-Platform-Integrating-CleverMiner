@@ -285,6 +285,7 @@ export default function DatasetColumnsAnalysisView({
           </ScrollArea>
         </PlatformCard>
         <ColumnDetailsDrawer
+          key={selectedColumn?.name ?? 'none'}
           open={!!selectedColumn}
           column={selectedColumn}
           onOpenChange={(isOpen) => !isOpen && setSelectedColumn(null)}
