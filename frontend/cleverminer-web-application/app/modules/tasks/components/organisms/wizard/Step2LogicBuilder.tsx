@@ -5,9 +5,19 @@ import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
 import { TargetEditor } from '@/modules/tasks/components/molecules';
 import { Fragment, useState } from 'react';
-import { AlertCircle, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/atoms/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/shared/components/ui/molecules/alert-dialog';
 
 interface Step2LogicBuilderProps {
   procedure: string;
@@ -41,6 +51,27 @@ export default function Step2LogicBuilder({
 
   const datasetId = watch('dataset');
 
+  const [showWarning, setShowWarning] = useState(false);
+  const [pendingSection, setPendingSection] = useState<number | null>(null);
+
+  const getHighCardinalityAttrs = (section: string) => {
+    const attrs = (config?.[section as keyof typeof config] as any)?.attributes ?? [];
+    return attrs
+      .map((a: any) => availableColumns.find((col) => col.name === a.name))
+      .filter((col: DatasetsColumnsType | undefined) => col && col.distinct > 100)
+      .map((col: DatasetsColumnsType) => col.name);
+  };
+
+  const navigateTo = (index: number) => {
+    const offenders = getHighCardinalityAttrs(activeSection);
+    if (offenders.length > 0) {
+      setPendingSection(index);
+      setShowWarning(true);
+    } else {
+      setCurrentSection(index);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -61,7 +92,7 @@ export default function Step2LogicBuilder({
             <Fragment key={section}>
               <button
                 type="button"
-                onClick={() => setCurrentSection(i)}
+                onClick={() => navigateTo(i)}
                 className={cn(
                   'flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors',
                   isActive
@@ -155,7 +186,7 @@ export default function Step2LogicBuilder({
 
         <Button
           type="button"
-          onClick={() => setCurrentSection((i) => i + 1)}
+          onClick={() => navigateTo(currentSection + 1)}
           disabled={isLast}
           className="flex items-center gap-2"
         >
@@ -165,6 +196,38 @@ export default function Step2LogicBuilder({
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
+      <AlertDialog open={showWarning} onOpenChange={setShowWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Some attributes may be ignored
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              The following attributes exceed 100 distinct values and will be skipped by the miner:{' '}
+              <strong className="text-foreground">
+                {getHighCardinalityAttrs(activeSection).join(', ')}
+              </strong>
+              . Consider applying a binning transformation first.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowWarning(false)}>
+              Go back and fix
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-amber-500 text-white hover:bg-amber-600"
+              onClick={() => {
+                setCurrentSection(pendingSection!);
+                setShowWarning(false);
+                setPendingSection(null);
+              }}
+            >
+              Continue anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

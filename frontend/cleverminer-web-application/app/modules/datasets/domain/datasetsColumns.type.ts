@@ -3,4 +3,5 @@ export type DatasetsColumnsType = {
   dtype: string;
   null_sample: number;
   non_null_sample: number;
+  distinct: number;
 };
