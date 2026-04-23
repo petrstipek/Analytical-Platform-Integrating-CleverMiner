@@ -36,7 +36,7 @@ class DatasetSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "source": {"required": False, "allow_blank": True},
             "source_type": {"required": False},
-            "delimiter": {"required": False},
+            "delimiter": {"required": False, "trim_whitespace": False},
             "encoding": {"required": False},
         }
 

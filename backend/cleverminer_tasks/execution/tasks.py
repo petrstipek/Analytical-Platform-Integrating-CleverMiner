@@ -2,6 +2,8 @@ import logging
 import os
 import tempfile
 
+from charset_normalizer import from_bytes
+
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -131,6 +133,17 @@ def apply_dataset_transformation(self, transformation_id: int) -> None:
 def convert_csv_to_parquet(self, dataset_id: int):
     try:
         dataset = Dataset.objects.get(id=dataset_id)
+
+        with dataset.file.open("rb") as django_file:
+            raw_sample = django_file.read(524_288)
+        result = from_bytes(raw_sample).best()
+        detected_encoding = result.encoding if result else None
+        if detected_encoding and detected_encoding.lower() != dataset.encoding.lower():
+            dataset.encoding = detected_encoding
+            dataset.save(update_fields=["encoding"])
+            logger.info(
+                f"Dataset {dataset_id}: encoding auto-detected as {detected_encoding!r}"
+            )
 
         base = os.path.splitext(os.path.basename(dataset.file.name))[0]
         parquet_filename = f"datasets/{dataset.id}/{base}.parquet"
