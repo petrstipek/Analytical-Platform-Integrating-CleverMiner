@@ -158,7 +158,7 @@ export default function DatasetColumnsAnalysisView({
                   </Badge>
                   transformations staged
                 </span>
-                <ScrollArea className="h-[250px] w-full rounded-md pr-4">
+                <div className="max-h-[250px] w-full overflow-y-auto rounded-md pr-4">
                   <div className="flex flex-col gap-3 pb-2">
                     {Object.entries(
                       steps.reduce<Record<string, { step: TransformStep; idx: number }[]>>(
@@ -201,7 +201,7 @@ export default function DatasetColumnsAnalysisView({
                       </div>
                     ))}
                   </div>
-                </ScrollArea>
+                </div>
               </div>
 
               <div className="flex shrink-0 flex-row gap-2 md:flex-col">
