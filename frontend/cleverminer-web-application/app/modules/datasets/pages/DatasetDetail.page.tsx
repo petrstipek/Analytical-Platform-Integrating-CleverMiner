@@ -53,7 +53,10 @@ export default function DatasetDetailPage() {
   return (
     <Dialog>
       <div className="grid w-full grid-cols-1 gap-6">
-        <DatasetDetailHeader datasetStatsOverview={datasetStatsOverview!} />
+        <DatasetDetailHeader
+          datasetStatsOverview={datasetStatsOverview!}
+          datasetId={Number(datasetId)}
+        />
 
         <Tabs defaultValue="datasetProfile" className="w-full">
           <div className="flex items-end justify-between">

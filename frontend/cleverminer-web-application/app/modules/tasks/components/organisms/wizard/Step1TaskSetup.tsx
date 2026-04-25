@@ -12,6 +12,7 @@ import { type CreateTaskFormValues } from '@/modules/tasks/utils/task-validation
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import type { ProjectType } from '@/modules/projects/domain/project.type';
 import { ProceduresType } from '@/shared/domain/procedures.type';
+import { useSearchParams } from 'react-router';
 
 type Step1TaskSetupProps = {
   datasets?: DatasetType[];

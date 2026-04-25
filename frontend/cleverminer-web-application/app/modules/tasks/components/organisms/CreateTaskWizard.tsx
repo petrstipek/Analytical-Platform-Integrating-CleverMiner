@@ -15,7 +15,7 @@ import { NavBarWizard } from '@/modules/tasks/components/atoms';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import { getDatasetsColumns } from '@/modules/tasks/api/tasks.api';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation } from 'react-router';
+import { useLocation, useSearchParams } from 'react-router';
 import type { Task } from '@/modules/tasks/domain/task.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getBaseProjects } from '@/modules/projects/api/queries/projects.query';
@@ -53,12 +53,15 @@ export default function CreateTaskWizard({
   const { mutate: createTaskAndRun, isPending } = useCreateTaskAndRunMutation();
   const { mutate: createTask, isPending: isCreating } = useCreateTaskMutation();
 
+  const [searchParams] = useSearchParams();
+  const datasetFromUrl = searchParams.get('dataset');
+
   const methods = useForm<CreateTaskFormValues>({
     resolver: zodResolver(createTaskSchema),
     mode: 'onChange',
     defaultValues: {
       name: '',
-      dataset: 0,
+      dataset: datasetFromUrl ? parseInt(datasetFromUrl, 10) : undefined,
       procedure: ProceduresType.FOURFTMINER,
       project: projectId ? Number(projectId) : undefined,
       configuration: {
