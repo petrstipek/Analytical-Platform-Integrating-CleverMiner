@@ -59,15 +59,27 @@ export default function DatasetDetailPage() {
           <div className="flex items-end justify-between">
             <TabsList className="bg-muted w-full rounded-full p-1">
               <TabsTrigger value="datasetProfile" className="flex-1">
+                <span className="bg-cleverminer-one flex h-5 w-5 items-center justify-center rounded-full border text-xs text-white">
+                  1
+                </span>
                 Exploratory Data Analysis
               </TabsTrigger>
               <TabsTrigger value="preview" className="flex-1">
+                <span className="bg-cleverminer-one flex h-5 w-5 items-center justify-center rounded-full border text-xs text-white">
+                  2
+                </span>
                 Data Preview
               </TabsTrigger>
               <TabsTrigger value="clmGuidance" className="flex-1">
+                <span className="bg-cleverminer-one flex h-5 w-5 items-center justify-center rounded-full border text-xs text-white">
+                  3
+                </span>
                 CleverMiner Guidance
               </TabsTrigger>
               <TabsTrigger value="ColumnsAnalysis" className="flex-1">
+                <span className="bg-cleverminer-one flex h-5 w-5 items-center justify-center rounded-full border text-xs text-white">
+                  4
+                </span>
                 Columns Analysis and Preprocessing
               </TabsTrigger>
             </TabsList>

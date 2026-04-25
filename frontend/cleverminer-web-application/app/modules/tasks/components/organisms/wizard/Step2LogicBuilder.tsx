@@ -64,7 +64,6 @@ export default function Step2LogicBuilder({
   if (isLoading) return <div>Loading columns...</div>;
 
   const activeSection = visibleSections[currentSection];
-  const sectionError = configErrors?.[activeSection as keyof typeof configErrors];
   const isLast = currentSection === visibleSections.length - 1;
   const isFirst = currentSection === 0;
 
