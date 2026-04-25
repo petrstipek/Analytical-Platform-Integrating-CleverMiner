@@ -147,6 +147,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {!isPending && (isError || !user) && (
           <NavUser user={{ name: 'Guest', email: '', avatar: '/avatars/shadcn.jpg' }} />
         )}
+        <span className="text-muted-foreground px-2 pb-2 text-xs group-data-[collapsible=icon]:hidden">
+          v{__APP_VERSION__}
+        </span>
       </SidebarFooter>
     </Sidebar>
   );
