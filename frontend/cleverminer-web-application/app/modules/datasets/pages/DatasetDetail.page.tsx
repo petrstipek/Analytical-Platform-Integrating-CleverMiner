@@ -18,6 +18,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/molecules/dialog';
+import { AlertTriangle } from 'lucide-react';
+import { useCleverMinerGuidance } from '@/modules/datasets/hooks/cleverMinerGuidance.hook';
+import { useDatasetPreprocessing } from '@/modules/datasets/hooks/datasetPreprocessing.hook';
+import { cn } from '@/lib/utils';
 
 export default function DatasetDetailPage() {
   const { datasetId } = useParams();
@@ -32,6 +36,11 @@ export default function DatasetDetailPage() {
     isReady,
     datasetPreview,
   } = useDatasetAnalysis(Number(datasetId));
+
+  const { warningCols, ignoredCols } = useCleverMinerGuidance({
+    clmGuidance: clmCandidatesData!,
+  });
+  const { stats } = useDatasetPreprocessing(columnStatsData!);
 
   if (!datasetId) return <div>No dataset ID provided.</div>;
   if (!isReady)
@@ -48,7 +57,11 @@ export default function DatasetDetailPage() {
         description={'Application is analyzing the dataset.'}
       />
     );
+
   if (error) return <div>Error loading dataset analysis.</div>;
+
+  const clmGuidanceIssues = warningCols.length + ignoredCols.length > 0;
+  const preprocessingIssues = (stats.warning || 0 + stats.bad) > 0;
 
   return (
     <Dialog>
@@ -62,28 +75,45 @@ export default function DatasetDetailPage() {
           <div className="flex items-end justify-between">
             <TabsList className="bg-muted w-full rounded-full p-1">
               <TabsTrigger value="datasetProfile" className="flex-1">
-                <span className="bg-cleverminer-one flex h-5 w-5 items-center justify-center rounded-full border text-xs text-white">
+                <span className="bg-cleverminer-one flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs text-white">
                   1
                 </span>
-                Exploratory Data Analysis
+                <span className="flex-1 text-center">Exploratory Data Analysis</span>
+                <span className="w-3" />
               </TabsTrigger>
+
               <TabsTrigger value="preview" className="flex-1">
-                <span className="bg-cleverminer-one flex h-5 w-5 items-center justify-center rounded-full border text-xs text-white">
+                <span className="bg-cleverminer-one flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs text-white">
                   2
                 </span>
-                Data Preview
+                <span className="flex-1 text-center">Data Preview</span>
+                <span className="w-3" />
               </TabsTrigger>
+
               <TabsTrigger value="clmGuidance" className="flex-1">
-                <span className="bg-cleverminer-one flex h-5 w-5 items-center justify-center rounded-full border text-xs text-white">
+                <span className="bg-cleverminer-one flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs text-white">
                   3
                 </span>
-                CleverMiner Guidance
+                <span className="flex-1 text-center">CleverMiner Guidance</span>
+                <AlertTriangle
+                  className={cn(
+                    'h-3 w-3 shrink-0 text-amber-500',
+                    !clmGuidanceIssues && 'invisible',
+                  )}
+                />
               </TabsTrigger>
+
               <TabsTrigger value="ColumnsAnalysis" className="flex-1">
-                <span className="bg-cleverminer-one flex h-5 w-5 items-center justify-center rounded-full border text-xs text-white">
+                <span className="bg-cleverminer-one flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs text-white">
                   4
                 </span>
-                Columns Analysis and Preprocessing
+                <span className="flex-1 text-center">Columns Analysis and Preprocessing</span>
+                <AlertTriangle
+                  className={cn(
+                    'h-3 w-3 shrink-0 text-amber-500',
+                    !preprocessingIssues && 'invisible',
+                  )}
+                />
               </TabsTrigger>
             </TabsList>
           </div>
