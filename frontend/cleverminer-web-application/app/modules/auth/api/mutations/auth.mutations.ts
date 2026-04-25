@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { login, logout, register } from '@/modules/auth/api/auth.api';
 import { storage } from '@/modules/auth/utils/storage';
+import axios from 'axios';
 
 export function useLogin() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: login,
@@ -45,8 +45,12 @@ export function useRegister() {
       toast.success('Successfully registered!');
       navigate('/');
     },
-    onError: () => {
-      toast.error('Registration failed');
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        const data = error.response?.data;
+        const message = data ? Object.values(data).flat().join(' ') : error.message;
+        toast.error('Registration failed: ' + message);
+      }
     },
   });
 }

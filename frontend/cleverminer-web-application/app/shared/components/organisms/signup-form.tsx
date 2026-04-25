@@ -17,7 +17,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 export const registerSchema = z
   .object({
     email: z.email('Please enter a valid email'),
-    username: z.string().min(3, 'Username must be at least 3 characters'),
+    username: z
+      .string()
+      .min(3, 'Username must be at least 3 characters')
+      .max(150, 'Username must be at most 150 characters')
+      .regex(/^[\w.@+-]+$/, 'Username may only contain letters, numbers, and @/./+/-/_ characters'),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
@@ -81,7 +85,7 @@ export function SignupForm({ className, ...props }: ComponentProps<'div'>) {
                   <p className="mt-1 text-xs text-red-500">{errors.username.message}</p>
                 )}
                 <FieldDescription>
-                  Username is used for your presence on the platform.
+                  Username may only contain letters, numbers, and @/./+/-/_ characters
                 </FieldDescription>
               </Field>
               <Field>
@@ -106,7 +110,9 @@ export function SignupForm({ className, ...props }: ComponentProps<'div'>) {
                     )}
                   </Field>
                 </Field>
-                <FieldDescription>Must be at least 8 characters long.</FieldDescription>
+                <FieldDescription>
+                  Must be at least 8 characters long, contain one upper case letter and one number.
+                </FieldDescription>
               </Field>
               <Field>
                 <Button type="submit" disabled={isPending}>
@@ -120,10 +126,6 @@ export function SignupForm({ className, ...props }: ComponentProps<'div'>) {
           </form>
         </CardContent>
       </Card>
-      <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a> and{' '}
-        <a href="#">Privacy Policy</a>.
-      </FieldDescription>
     </div>
   );
 }
