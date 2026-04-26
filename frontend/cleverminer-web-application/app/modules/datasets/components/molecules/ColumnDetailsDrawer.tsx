@@ -284,9 +284,7 @@ export default function ColumnDetailsDrawer({
                             addColumnStep(TransformOptions.discretize, {
                               method: 'quantile',
                               k: config.binK,
-                              output_column: config.overwriteOriginal
-                                ? column.name
-                                : `${column.name}_bin`,
+                              output_column: derived.resolvedOutputCol,
                             });
                           }}
                         >
@@ -304,9 +302,7 @@ export default function ColumnDetailsDrawer({
                             addColumnStep(TransformOptions.discretize, {
                               method: 'equal_width',
                               k: config.binK,
-                              output_column: config.overwriteOriginal
-                                ? column.name
-                                : `${column.name}_bin`,
+                              output_column: derived.resolvedOutputCol,
                             });
                           }}
                         >
