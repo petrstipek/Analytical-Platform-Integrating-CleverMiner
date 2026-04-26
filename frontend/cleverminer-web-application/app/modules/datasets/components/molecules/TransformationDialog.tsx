@@ -34,7 +34,8 @@ export default function TransformationDialog({
             <p>This action will apply the selected transformations to the dataset.</p>
             <p>
               New dataset will be created! You can later view the dataset in the Datasets overview
-              or look at derived dataset in the Explore Dataset Transformations button.
+              or look at derived dataset in the Explore Dataset Transformations button on the top of
+              this page.
             </p>
             <div className={'space-y-6'}>
               <div>
