@@ -203,7 +203,7 @@ export default function CreateTaskWizard({
                 )}
                 {step === 2 && (
                   <Step2LogicBuilder
-                    availableColumns={columns}
+                    columns={columns}
                     isLoading={isLoadingColumns}
                     procedure={procedure}
                   />

@@ -4,4 +4,5 @@ export type DatasetsColumnsType = {
   null_sample: number;
   non_null_sample: number;
   distinct: number;
+  visible: boolean;
 };

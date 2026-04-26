@@ -5,29 +5,21 @@ import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation
 import type { DatasetsColumnsType } from '@/modules/datasets/domain/datasetsColumns.type';
 import { TargetEditor } from '@/modules/tasks/components/molecules';
 import { Fragment, useState } from 'react';
-import { AlertCircle, AlertTriangle, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertCircle, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/atoms/button';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/components/ui/molecules/alert-dialog';
+import { getHighCardinalityAttrs } from '@/modules/tasks/utils/taskWizard/getHighCardinalityAttributes';
+import { HighCardinalityWarning } from '@/modules/tasks/components/organisms';
 
 interface Step2LogicBuilderProps {
   procedure: string;
-  availableColumns: DatasetsColumnsType[];
+  columns: DatasetsColumnsType[];
   isLoading: boolean;
 }
 
 export default function Step2LogicBuilder({
   procedure,
-  availableColumns,
+  columns = [],
   isLoading,
 }: Step2LogicBuilderProps) {
   const {
@@ -35,16 +27,14 @@ export default function Step2LogicBuilder({
     watch,
     formState: { errors },
   } = useFormContext<CreateTaskFormValues>();
-  const getHighCardinalityAttrs = (section: string) => {
-    const attrs = (config?.[section as keyof typeof config] as any)?.attributes ?? [];
-    return attrs
-      .map((a: any) => availableColumns.find((col) => col.name === a.name))
-      .filter((col: DatasetsColumnsType | undefined) => col && col.distinct > 100)
-      .map((col: DatasetsColumnsType) => col.name);
-  };
+
+  const config = watch('configuration');
+  const datasetId = watch('dataset');
+
+  const configErrors = errors.configuration;
 
   const navigateTo = (index: number) => {
-    const offenders = getHighCardinalityAttrs(activeSection);
+    const offenders = getHighCardinalityAttrs(activeSection, columns, config);
     if (offenders.length > 0) {
       setPendingSection(index);
       setShowWarning(true);
@@ -58,16 +48,13 @@ export default function Step2LogicBuilder({
   const [showWarning, setShowWarning] = useState(false);
   const [pendingSection, setPendingSection] = useState<number | null>(null);
 
-  const config = watch('configuration');
-  const configErrors = errors.configuration;
-
   if (isLoading) return <div>Loading columns...</div>;
 
   const activeSection = visibleSections[currentSection];
   const isLast = currentSection === visibleSections.length - 1;
   const isFirst = currentSection === 0;
-
-  const datasetId = watch('dataset');
+  console.log(columns);
+  const availableColumns = columns.filter((column) => column.visible);
 
   return (
     <div className="space-y-6">
@@ -193,38 +180,16 @@ export default function Step2LogicBuilder({
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-      <AlertDialog open={showWarning} onOpenChange={setShowWarning}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
-              Some attributes may be ignored
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              The following attributes exceed 100 distinct values and will be skipped by the miner:{' '}
-              <strong className="text-foreground">
-                {getHighCardinalityAttrs(activeSection).join(', ')}
-              </strong>
-              . Consider applying a binning transformation first.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowWarning(false)}>
-              Go back and fix
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-amber-500 text-white hover:bg-amber-600"
-              onClick={() => {
-                setCurrentSection(pendingSection!);
-                setShowWarning(false);
-                setPendingSection(null);
-              }}
-            >
-              Continue anyway
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <HighCardinalityWarning
+        open={showWarning}
+        onOpenChange={setShowWarning}
+        offenders={getHighCardinalityAttrs(activeSection, columns, config)}
+        onConfirm={() => {
+          setCurrentSection(pendingSection!);
+          setShowWarning(false);
+          setPendingSection(null);
+        }}
+      />
     </div>
   );
 }
