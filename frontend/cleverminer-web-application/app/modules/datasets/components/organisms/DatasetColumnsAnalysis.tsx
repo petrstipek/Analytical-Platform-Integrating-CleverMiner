@@ -1,35 +1,19 @@
-import { useState, useMemo } from 'react';
-import { Search, Play, Trash2, Book } from 'lucide-react';
-import { ScrollArea } from '@/shared/components/ui/molecules/scroll-area';
-import { Input } from '@/shared/components/ui/atoms/input';
+import { useState } from 'react';
 import type {
   DatasetColumnStats,
   DatasetStats,
 } from '@/modules/datasets/api/types/clmGuidance.type';
-import { ColumnCard } from '@/modules/datasets/components/molecules';
-import ColumnDetailsDrawer from '@/modules/datasets/components/molecules/ColumnDetailsDrawer';
-import { useTransformations } from '@/modules/datasets/hooks/datasetTransformation.hook';
-import { Badge } from '@/shared/components/ui/atoms/badge';
-import { Button } from '@/shared/components/ui/atoms/button';
 import {
-  TransformOptions,
-  type TransformStep,
-} from '@/modules/datasets/domain/datasetTransformations.type';
-import { createDerivedDataset } from '@/modules/datasets/api/dataset-analysis.api';
+  PreparedTransformations,
+  TransformationDialog,
+} from '@/modules/datasets/components/molecules';
+import ColumnDetailsDrawer from '@/modules/datasets/components/molecules/ColumnDetailsDrawer';
 import { BaseStatCard } from '@/shared/components/atoms';
 import { PlatformCard } from '@/shared/components/molecules';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/components/ui/molecules/dialog';
-import { DialogTrigger } from '@radix-ui/react-dialog';
+import { Dialog } from '@/shared/components/ui/molecules/dialog';
 import { useDatasetPreprocessing } from '@/modules/datasets/hooks/datasetPreprocessing.hook';
-import { formatStepLabel } from '@/modules/datasets/utils/formatStepLabel';
+import { useDatasetColumnsAnalysis } from '@/modules/datasets/hooks/datasetColumnsAnalysis.hook';
+import { PreprocessingColumnsList } from '@/modules/datasets/components/organisms/index';
 
 type DatasetColumnsAnalysisView = {
   columnsAnalysis: DatasetStats;
@@ -39,175 +23,35 @@ export default function DatasetColumnsAnalysisView({
   columnsAnalysis,
   datasetId,
 }: DatasetColumnsAnalysisView) {
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedColumn, setSelectedColumn] = useState<DatasetColumnStats | null>(null);
-  const [derivedName, setDerivedName] = useState(`Derived_${new Date().toISOString()}`);
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const { steps, upsertStep, removeStepAtGlobalIndex, clearAll } = useTransformations();
   const { columnVisibilityAction } = useDatasetPreprocessing(Number(datasetId));
-
-  const processedColumns = useMemo(() => {
-    if (!columnsAnalysis?.columns) return [];
-
-    return columnsAnalysis.columns.map((col: any) => {
-      let status: 'good' | 'warning' | 'bad' = 'warning';
-
-      if (col.clm_guidance?.recommended_representation === 'ignore') {
-        status = 'bad';
-      } else if (col.clm_guidance?.clm_usable_as_is) {
-        status = 'good';
-      }
-
-      const mappedCol = {
-        ...col,
-        clm: col.clm_guidance,
-        reason: col.clm_guidance?.reasons?.[0],
-      };
-
-      return { data: mappedCol, status };
-    });
-  }, [columnsAnalysis]);
-
-  const filteredColumns = useMemo(() => {
-    return processedColumns.filter((item) =>
-      item.data.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-  }, [processedColumns, searchTerm]);
-
-  const stats = useMemo(() => {
-    return {
-      total: processedColumns.length,
-      good: processedColumns.filter((c) => c.status === 'good').length,
-      warning: processedColumns.filter((c) => c.status === 'warning').length,
-      bad: processedColumns.filter((c) => c.status === 'bad').length,
-    };
-  }, [processedColumns]);
-
-  function hasColumn(step: TransformStep): step is Extract<TransformStep, { column: string }> {
-    return 'column' in step;
-  }
+  const {
+    searchTerm,
+    setSearchTerm,
+    derivedName,
+    setDerivedName,
+    dialogOpen,
+    setDialogOpen,
+    steps,
+    upsertStep,
+    removeStepAtGlobalIndex,
+    clearAll,
+    filteredColumns,
+    stats,
+    hasColumn,
+    isPending,
+    handleTransformation,
+    statusFilter,
+    setStatusFilter,
+  } = useDatasetColumnsAnalysis(columnsAnalysis, datasetId);
 
   const stagedStepsForColumn = steps
     .map((step, index) => ({ step, index }))
     .filter(({ step }) => hasColumn(step) && step.column === selectedColumn?.name);
 
-  function affectedColumns(step: TransformStep): string[] {
-    if ('column' in step) return [step.column];
-    if (step.op === TransformOptions.dropColumns) return step.columns;
-    return [];
-  }
-
-  const {
-    mutate: applyTransformation,
-    isPending,
-    data,
-  } = useMutation({
-    mutationFn: async (payload: { name: string; transform_spec: { steps: TransformStep[] } }) => {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      return createDerivedDataset(datasetId, payload);
-    },
-    onError: (error: any) => toast.error(error.message),
-    onSuccess: () => {
-      toast.success('Transformation applied successfully! The dataset will be available soon.');
-      console.log('Transformation applied successfully!', data);
-      clearAll();
-    },
-  });
-
-  async function handleTransformation() {
-    if (steps.length === 0) {
-      return toast.error('No transformation steps staged. Please add some transformations first.');
-    }
-
-    setDialogOpen(false);
-
-    applyTransformation({
-      name: derivedName,
-      transform_spec: { steps },
-    });
-  }
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <div className="flex flex-col gap-4">
-        {steps.length > 0 && (
-          <PlatformCard
-            cardTitle={'Applied Preprocess steps'}
-            cardDescription={'Preview preprocessed steps.'}
-          >
-            <div className="animate-in fade-in slide-in-from-top-2 sticky top-0 z-10 grid grid-cols-1 items-start gap-4 rounded-2xl border-b bg-blue-50 p-4 shadow-sm md:grid-cols-[1fr_auto]">
-              <div className="flex min-w-0 flex-col gap-3">
-                <span className="flex items-center gap-2 text-sm font-semibold text-blue-900">
-                  <Badge variant="secondary" className="bg-blue-200 text-blue-800">
-                    {steps.length}
-                  </Badge>
-                  transformations staged
-                </span>
-                <div className="max-h-[250px] w-full overflow-y-auto rounded-md pr-4">
-                  <div className="flex flex-col gap-3 pb-2">
-                    {Object.entries(
-                      steps.reduce<Record<string, { step: TransformStep; idx: number }[]>>(
-                        (acc, s, idx) => {
-                          const cols = affectedColumns(s);
-                          const key = cols.length > 0 ? cols.join(', ') : '(no column)';
-                          if (!acc[key]) acc[key] = [];
-                          acc[key].push({ step: s, idx });
-                          return acc;
-                        },
-                        {},
-                      ),
-                    ).map(([colName, entries]) => (
-                      <div
-                        key={colName}
-                        className="overflow-hidden rounded-xl border border-blue-100 bg-white shadow-sm"
-                      >
-                        <div className="border-b border-blue-100 bg-blue-100/50 px-3 py-1.5 text-[11px] font-bold tracking-wider text-blue-700 uppercase">
-                          Column: {colName}
-                        </div>
-                        <ul className="divide-y divide-gray-50">
-                          {entries.map(({ step, idx }) => (
-                            <li
-                              key={idx}
-                              className="flex items-center justify-between px-3 py-2 text-xs transition-colors hover:bg-gray-50"
-                            >
-                              <span className="font-medium text-gray-700">
-                                {formatStepLabel(step)}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => removeStepAtGlobalIndex(idx)}
-                                className="ml-2 flex h-5 w-5 items-center justify-center rounded-full text-gray-400 transition-all hover:bg-red-50 hover:text-red-500"
-                              >
-                                ×
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex shrink-0 flex-row gap-2 md:flex-col">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearAll}
-                  className="bg-white text-gray-600"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" /> Clear All
-                </Button>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                    <Book className="mr-2 h-4 w-4" /> Dataset Transformation
-                  </Button>
-                </DialogTrigger>
-              </div>
-            </div>
-          </PlatformCard>
-        )}
         <PlatformCard
           cardTitle={'Columns Base Stats'}
           cardDescription={'Explore summary statistics.'}
@@ -236,49 +80,33 @@ export default function DatasetColumnsAnalysisView({
           </div>
         </PlatformCard>
 
-        <PlatformCard
-          cardTitle={'Dataset Columns'}
-          cardDescription={'Explore Columns and Preprocess them'}
-        >
-          <div className="relative mb-4">
-            <Search className="text-muted-foreground absolute top-2.5 left-3 h-4 w-4" />
-            <Input
-              placeholder="Search columns..."
-              className="pl-9"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+        {steps.length > 0 && (
+          <PlatformCard
+            cardTitle={'Applied Preprocess steps'}
+            cardDescription={'Preview preprocessed steps.'}
+          >
+            <PreparedTransformations
+              steps={steps}
+              removeStepAtGlobalIndex={removeStepAtGlobalIndex}
+              clearAll={clearAll}
             />
-          </div>
+          </PlatformCard>
+        )}
 
-          <p className="text-muted-foreground mb-3 text-sm">
-            Click any column to configure transformations. Use the filters to focus on columns that
-            need attention.
-          </p>
+        <PreprocessingColumnsList
+          filteredColumns={filteredColumns}
+          steps={steps}
+          stats={stats}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          onColumnClick={setSelectedColumn}
+          onVisibilityChange={(column, visible) =>
+            columnVisibilityAction.mutation({ column, visible })
+          }
+        />
 
-          <ScrollArea className="h-[800px] w-full rounded-md border bg-gray-50/50 p-4">
-            {filteredColumns.map((item) => {
-              const hasSteps = steps.some(
-                (s) =>
-                  ('column' in s && s.column === item.data.name) ||
-                  (s.op === TransformOptions.dropColumns && s.columns.includes(item.data.name)),
-              );
-
-              return (
-                <ColumnCard
-                  key={item.data.name}
-                  col={item.data}
-                  status={item.status}
-                  onClick={() => setSelectedColumn(item.data)}
-                  className={hasSteps ? 'border-blue-200 bg-blue-50' : ''}
-                  visible={item.data.visible ?? true}
-                  onVisibilityChange={(visible) =>
-                    columnVisibilityAction.mutation({ column: item.data.name, visible })
-                  }
-                />
-              );
-            })}
-          </ScrollArea>
-        </PlatformCard>
         <ColumnDetailsDrawer
           key={selectedColumn?.name ?? 'none'}
           open={!!selectedColumn}
@@ -292,45 +120,14 @@ export default function DatasetColumnsAnalysisView({
           }}
         />
       </div>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Apply Dataset Transformation</DialogTitle>
-          <DialogDescription>
-            <div className={'space-y-4'}>
-              <p>This action will apply the selected transformations to the dataset.</p>
-              <p>
-                New dataset will be created! You can later view the dataset in the Datasets overview
-                or look at derived dataset in the Explore Dataset Transformations button.
-              </p>
-              <div className={'space-y-6'}>
-                <div>
-                  <label className="flex items-center gap-2">Derived dataset name</label>
-                  <Input
-                    placeholder="e.g. Derived Dataset 2024-01-01"
-                    value={derivedName}
-                    onChange={(e) => setDerivedName(e.target.value)}
-                  />
-                </div>
-                <div className={'flex flex-col gap-2'}>
-                  <Button
-                    size="sm"
-                    onClick={handleTransformation}
-                    disabled={isPending}
-                    className="bg-green-500"
-                  >
-                    <Play className="mr-2 h-4 w-4 fill-current" />
-                    {isPending ? 'Applying...' : 'Apply All'}
-                  </Button>
-                  <Button variant={'destructive'}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Clear All
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
+      <TransformationDialog
+        handleTransformation={handleTransformation}
+        isPending={isPending}
+        clearAll={clearAll}
+        derivedName={derivedName}
+        setDerivedName={setDerivedName}
+        onClose={() => setDialogOpen(false)}
+      />
     </Dialog>
   );
 }

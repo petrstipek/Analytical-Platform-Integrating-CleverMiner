@@ -20,7 +20,6 @@ import {
 } from '@/shared/components/ui/molecules/dialog';
 import { AlertTriangle } from 'lucide-react';
 import { useCleverMinerGuidance } from '@/modules/datasets/hooks/cleverMinerGuidance.hook';
-import { useDatasetPreprocessing } from '@/modules/datasets/hooks/datasetPreprocessing.hook';
 import { cn } from '@/lib/utils';
 
 export default function DatasetDetailPage() {
@@ -37,7 +36,7 @@ export default function DatasetDetailPage() {
     datasetPreview,
   } = useDatasetAnalysis(Number(datasetId));
 
-  const { warningCols, ignoredCols } = useCleverMinerGuidance({
+  const { goodCols, warningCols, ignoredCols } = useCleverMinerGuidance({
     clmGuidance: clmCandidatesData!,
   });
 
@@ -137,7 +136,12 @@ export default function DatasetDetailPage() {
             value="clmGuidance"
             className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
           >
-            <DatasetAnalysisView datasetId={Number(datasetId)} clmGuidance={clmCandidatesData!} />
+            <DatasetAnalysisView
+              datasetId={Number(datasetId)}
+              goodCols={goodCols}
+              warningCols={warningCols}
+              ignoredCols={ignoredCols}
+            />
           </TabsContent>
 
           <TabsContent

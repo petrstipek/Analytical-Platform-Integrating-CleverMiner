@@ -12,6 +12,7 @@ type ColumnCardProps = {
   className?: string;
   visible?: boolean;
   onVisibilityChange?: (visible: boolean) => void;
+  showVisibility?: boolean;
 };
 
 export default function ColumnCard({
@@ -21,6 +22,7 @@ export default function ColumnCard({
   className,
   visible = true,
   onVisibilityChange,
+  showVisibility = false,
 }: ColumnCardProps) {
   const dtype = col.dtype || 'N/A';
 
@@ -87,13 +89,15 @@ export default function ColumnCard({
         </div>
       </div>
 
-      <div
-        className="mr-4 flex shrink-0 flex-col items-center gap-1 self-center"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <Switch checked={visible} onCheckedChange={onVisibilityChange} className="scale-150" />
-        <Label className="text-muted-foreground text-[10px]">Visible in Analysis</Label>
-      </div>
+      {showVisibility && (
+        <div
+          className="mr-4 flex shrink-0 flex-col items-center gap-1 self-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Switch checked={visible} onCheckedChange={onVisibilityChange} className="scale-150" />
+          <Label className="text-muted-foreground text-[10px]">Visible in Analysis</Label>
+        </div>
+      )}
     </div>
   );
 }

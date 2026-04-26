@@ -1,28 +1,21 @@
 import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { ScrollArea } from '@/shared/components/ui/molecules/scroll-area';
 import { ColumnCard } from '@/modules/datasets/components/molecules';
-import type { ClmAnalysisResponse } from '@/modules/datasets/api/types/clmGuidance.type';
+import type { ClmCandidate } from '@/modules/datasets/api/types/clmGuidance.type';
 import { PlatformCard } from '@/shared/components/molecules';
 
 type DatasetClmGuidanceViewProps = {
   datasetId: number;
-  clmGuidance: ClmAnalysisResponse;
+  goodCols: ClmCandidate[];
+  warningCols: ClmCandidate[];
+  ignoredCols: ClmCandidate[];
 };
 
 export default function DatasetClmGuidanceView({
-  clmGuidance: analysis,
+  goodCols,
+  warningCols,
+  ignoredCols,
 }: DatasetClmGuidanceViewProps) {
-  const allCols = [
-    ...analysis.target_candidates,
-    ...analysis.cond_candidates.filter(
-      (c) => !analysis.target_candidates.some((t) => t.name === c.name),
-    ),
-  ];
-
-  const goodCols = allCols.filter((c) => c.clm?.clm_usable_as_is);
-  const warningCols = allCols.filter((c) => c.clm && !c.clm.clm_usable_as_is);
-  const ignoredCols = analysis.ignored_candidates;
-
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-500">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
