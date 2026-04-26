@@ -3,8 +3,10 @@ from typing import Dict, Any
 import pandas as pd
 
 from cleverminer_tasks.execution.procedures.sdFourftMiner.configs import Sd4FtConfig
+from cleverminer_tasks.execution.procedures.sdFourftMiner.serialization import (
+    serialize_sd4ft_result,
+)
 from cleverminer_tasks.execution.shared.baseMining import BaseMiningService
-from cleverminer_tasks.execution.shared.baseSerializer import base_serialization
 
 
 class Sd4FtMiningService(BaseMiningService):
@@ -37,7 +39,7 @@ class Sd4FtMiningService(BaseMiningService):
 
         clm = self._run_miner(params)
 
-        return base_serialization(clm)
+        return serialize_sd4ft_result(clm)
 
     def _required_attributes(self) -> list[str]:
         columns = set()
