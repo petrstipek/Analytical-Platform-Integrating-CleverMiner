@@ -44,6 +44,7 @@ export type DatasetColumnStats = {
   non_null: number;
   nulls: number;
   nunique: number;
+  visible: boolean;
   clm_guidance: ClmGuidance & {
     suggested_attribute_spec: {
       attr_type: string;

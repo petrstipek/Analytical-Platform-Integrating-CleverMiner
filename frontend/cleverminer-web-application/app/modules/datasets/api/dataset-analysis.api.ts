@@ -61,3 +61,10 @@ export async function getDatasetChildrenTransformations(
   const res = await apiClient.get(`/datasets/${datasetId}/children-transformations/`);
   return res.data;
 }
+
+export async function patchColumnVisibility(datasetId: number, column: string, visible: boolean) {
+  const res = await apiClient.patch(`/datasets/${datasetId}/columns/${column}/visible/`, {
+    visible,
+  });
+  return res.data;
+}

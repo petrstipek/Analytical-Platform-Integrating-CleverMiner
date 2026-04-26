@@ -1,41 +1,33 @@
-import type { DatasetStats } from '@/modules/datasets/api/types/clmGuidance.type';
-import { useMemo } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { patchColumnVisibility } from '@/modules/datasets/api/dataset-analysis.api';
+import { toast } from 'sonner';
 
-export function useDatasetPreprocessing(columnsAnalysis: DatasetStats) {
-  if (!columnsAnalysis) return { stats: { total: 0, good: 0, warning: 0, bad: 0 } };
+export function useDatasetPreprocessing(datasetId: number) {
+  const queryClient = useQueryClient();
 
-  const processedColumns = useMemo(() => {
-    if (!columnsAnalysis?.columns) return [];
-
-    return columnsAnalysis.columns.map((col: any) => {
-      let status: 'good' | 'warning' | 'bad' = 'warning';
-
-      if (col.clm_guidance?.recommended_representation === 'ignore') {
-        status = 'bad';
-      } else if (col.clm_guidance?.clm_usable_as_is) {
-        status = 'good';
-      }
-
-      const mappedCol = {
-        ...col,
-        clm: col.clm_guidance,
-        reason: col.clm_guidance?.reasons?.[0],
-      };
-
-      return { data: mappedCol, status };
-    });
-  }, [columnsAnalysis]);
-
-  const stats = useMemo(() => {
-    return {
-      total: processedColumns.length,
-      good: processedColumns.filter((c) => c.status === 'good').length,
-      warning: processedColumns.filter((c) => c.status === 'warning').length,
-      bad: processedColumns.filter((c) => c.status === 'bad').length,
-    };
-  }, [processedColumns]);
+  const {
+    mutate: patchColumnVisibilityMutation,
+    isPending: patchColumnVisibilityPending,
+    data: patchColumnVisibilityData,
+  } = useMutation({
+    mutationFn: ({ column, visible }: { column: string; visible: boolean }) =>
+      patchColumnVisibility(datasetId, column, visible),
+    onSuccess: () => {
+      console.log('Column visibility updated successfully!');
+      toast.success('Column visibility updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ['dataset-column-stats', datasetId] });
+    },
+    onError: (error: any) => {
+      console.error('Error updating column visibility:', error);
+      toast.error('Error updating column visibility: ' + (error.response?.data?.detail || ''));
+    },
+  });
 
   return {
-    stats,
+    columnVisibilityAction: {
+      mutation: patchColumnVisibilityMutation,
+      isPending: patchColumnVisibilityPending,
+      data: patchColumnVisibilityData,
+    },
   };
 }

@@ -1,19 +1,27 @@
-import { Badge, BarChart3, CheckCircle, XCircle } from 'lucide-react';
+import { BarChart3, CheckCircle, XCircle } from 'lucide-react';
 import { DataTypeIcon } from '@/modules/datasets/components/atoms';
 import type { ClmCandidate } from '@/modules/datasets/api/types/clmGuidance.type';
 import { cn } from '@/lib/utils';
+import { Label } from '@/shared/components/ui/atoms/label';
+import { Switch } from '@/shared/components/ui/atoms/switch';
+
+type ColumnCardProps = {
+  col: ClmCandidate;
+  status: 'good' | 'warning' | 'bad';
+  onClick?: () => void;
+  className?: string;
+  visible?: boolean;
+  onVisibilityChange?: (visible: boolean) => void;
+};
 
 export default function ColumnCard({
   col,
   status,
   onClick,
   className,
-}: {
-  col: ClmCandidate;
-  status: 'good' | 'warning' | 'bad';
-  onClick?: () => void;
-  className?: string;
-}) {
+  visible = true,
+  onVisibilityChange,
+}: ColumnCardProps) {
   const dtype = col.dtype || 'N/A';
 
   const uniqueCount = col.nunique ?? col.clm?.stats?.nunique ?? col.stats?.nunique ?? '-';
@@ -77,6 +85,14 @@ export default function ColumnCard({
             </div>
           )}
         </div>
+      </div>
+
+      <div
+        className="mr-4 flex shrink-0 flex-col items-center gap-1 self-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Switch checked={visible} onCheckedChange={onVisibilityChange} className="scale-150" />
+        <Label className="text-muted-foreground text-[10px]">Visible in Analysis</Label>
       </div>
     </div>
   );

@@ -28,6 +28,8 @@ import {
   DialogTitle,
 } from '@/shared/components/ui/molecules/dialog';
 import { DialogTrigger } from '@radix-ui/react-dialog';
+import { useDatasetPreprocessing } from '@/modules/datasets/hooks/datasetPreprocessing.hook';
+import { formatStepLabel } from '@/modules/datasets/utils/formatStepLabel';
 
 type DatasetColumnsAnalysisView = {
   columnsAnalysis: DatasetStats;
@@ -43,6 +45,7 @@ export default function DatasetColumnsAnalysisView({
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const { steps, upsertStep, removeStepAtGlobalIndex, clearAll } = useTransformations();
+  const { columnVisibilityAction } = useDatasetPreprocessing(Number(datasetId));
 
   const processedColumns = useMemo(() => {
     if (!columnsAnalysis?.columns) return [];
@@ -123,23 +126,6 @@ export default function DatasetColumnsAnalysisView({
       name: derivedName,
       transform_spec: { steps },
     });
-  }
-
-  function formatStepLabel(step: TransformStep): string {
-    switch (step.op) {
-      case TransformOptions.fillMissingNumbers:
-        if (step.strategy === 'constant') return `Fill missing → constant (${step.value})`;
-        return `Fill missing → ${step.strategy}`;
-      case TransformOptions.discretize:
-        if (step.method === 'equal_width') return `Bin → equal width (k=${step.k})`;
-        if (step.method === 'quantile') return `Bin → quantile (k=${step.k})`;
-        if (step.method === 'explicit') return `Bin → explicit (${step.bins?.join(', ')})`;
-        return `Bin → ${step.method}`;
-      case TransformOptions.dropColumns:
-        return `Drop column`;
-      default:
-        return step.op;
-    }
   }
 
   return (
@@ -264,6 +250,11 @@ export default function DatasetColumnsAnalysisView({
             />
           </div>
 
+          <p className="text-muted-foreground mb-3 text-sm">
+            Click any column to configure transformations. Use the filters to focus on columns that
+            need attention.
+          </p>
+
           <ScrollArea className="h-[800px] w-full rounded-md border bg-gray-50/50 p-4">
             {filteredColumns.map((item) => {
               const hasSteps = steps.some(
@@ -279,6 +270,10 @@ export default function DatasetColumnsAnalysisView({
                   status={item.status}
                   onClick={() => setSelectedColumn(item.data)}
                   className={hasSteps ? 'border-blue-200 bg-blue-50' : ''}
+                  visible={item.data.visible ?? true}
+                  onVisibilityChange={(visible) =>
+                    columnVisibilityAction.mutation({ column: item.data.name, visible })
+                  }
                 />
               );
             })}

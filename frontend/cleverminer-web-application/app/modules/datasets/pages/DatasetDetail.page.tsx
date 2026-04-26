@@ -40,7 +40,6 @@ export default function DatasetDetailPage() {
   const { warningCols, ignoredCols } = useCleverMinerGuidance({
     clmGuidance: clmCandidatesData!,
   });
-  const { stats } = useDatasetPreprocessing(columnStatsData!);
 
   if (!datasetId) return <div>No dataset ID provided.</div>;
   if (!isReady)
@@ -61,7 +60,9 @@ export default function DatasetDetailPage() {
   if (error) return <div>Error loading dataset analysis.</div>;
 
   const clmGuidanceIssues = warningCols.length + ignoredCols.length > 0;
-  const preprocessingIssues = (stats.warning || 0 + stats.bad) > 0;
+  const preprocessingIssues = (columnStatsData?.columns ?? []).some(
+    (col: any) => !col.clm_guidance?.clm_usable_as_is,
+  );
 
   return (
     <Dialog>
