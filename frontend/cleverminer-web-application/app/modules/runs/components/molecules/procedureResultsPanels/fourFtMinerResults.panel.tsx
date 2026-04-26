@@ -20,6 +20,7 @@ export default function FourFtMinerResultsPanel({ task }: { task: any }) {
       rules.map((r) => ({
         id: r.id,
         text: r.text,
+        structure: r.structure,
         metrics: { confidence: r.quantifiers.conf, base: r.quantifiers.base },
       })),
     [rules],

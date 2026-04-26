@@ -77,6 +77,16 @@ export default function RulesList({
       );
     }
 
+    if (procedure === ProceduresType.FOURFTMINER) {
+      return (
+        <div className="flex flex-wrap items-center gap-2">
+          {renderCedent(rule.structure?.ante ?? [], procedure)}
+          <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
+          {renderCedent(rule.structure?.succ ?? [], procedure)}
+        </div>
+      );
+    }
+
     if (parts.length !== 2) return <span className="font-mono text-xs">{text}</span>;
 
     const parseChunk = (chunk: string) => {

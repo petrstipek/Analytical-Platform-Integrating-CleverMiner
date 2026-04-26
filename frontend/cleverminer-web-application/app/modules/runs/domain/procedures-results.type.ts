@@ -1,6 +1,7 @@
 export type FourftRule = {
   id: number;
   text: string;
+  structure: Record<string, { variable: string; categories: (string | number)[] }[]>;
   quantifiers: {
     base: number;
     rel_base: number;
