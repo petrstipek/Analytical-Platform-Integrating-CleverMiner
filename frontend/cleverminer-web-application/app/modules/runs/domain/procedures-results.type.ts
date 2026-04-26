@@ -47,6 +47,9 @@ export type UicRule = {
 export type CfRule = {
   id: number;
   text: string;
+  histogram: number[];
+  histogram_full: number[];
+  structure: Record<string, { variable: string; categories: (string | number)[] }[]>;
   quantifiers: {
     base: number;
     rel_base: number;

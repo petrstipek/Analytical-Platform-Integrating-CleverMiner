@@ -19,7 +19,9 @@ export default function HistogramBars({
       <CardHeader className="border-border/40 border-b pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-md font-semibold tracking-tight">{title}</CardTitle>
-          <span className="text-muted-foreground text-xs tabular-nums">{total} total</span>
+          <span className="text-muted-foreground text-xs tabular-nums">
+            {total.toLocaleString()} total
+          </span>
         </div>
       </CardHeader>
       <CardContent className="space-y-2.5 pt-4">
@@ -36,7 +38,9 @@ export default function HistogramBars({
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground text-xs tabular-nums">{sharePct}%</span>
-                  <span className="w-8 text-right text-xs font-semibold tabular-nums">{v}</span>
+                  <span className="min-w-[4rem] text-right text-xs font-semibold tabular-nums">
+                    {v.toLocaleString()}
+                  </span>
                 </div>
               </div>
               <div className="bg-muted relative h-1.5 w-full overflow-hidden rounded-full">

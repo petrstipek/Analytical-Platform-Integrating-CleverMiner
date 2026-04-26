@@ -23,6 +23,7 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
       task.result.rules.map((r) => ({
         id: r.id,
         text: r.text,
+        structure: r.structure,
         metrics: { base: r.quantifiers.base },
       })),
     [task.result.rules],
@@ -30,8 +31,6 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
 
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
   const selectedRule = task.result.rules.find((r) => r.id === selectedId) ?? null;
-
-  console.log('rules:', listRules);
 
   return (
     <div>
@@ -72,8 +71,14 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
                   <HistogramBars
                     title="Histogram (Rule)"
                     categories={categories}
-                    values={selectedRule.quantifiers.hist}
+                    values={selectedRule.histogram}
                     colorClass={PROCEDURE_STYLES[ProceduresType.CFMINER].bg_histogram}
+                  />
+                  <HistogramBars
+                    title="Histogram (Full Dataset)"
+                    categories={categories}
+                    values={selectedRule.histogram_full}
+                    colorClass="bg-gray-300"
                   />
 
                   <Card>
