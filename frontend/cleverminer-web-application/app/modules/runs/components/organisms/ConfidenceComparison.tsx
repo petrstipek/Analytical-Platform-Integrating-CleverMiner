@@ -17,7 +17,7 @@ export default function ConfidenceComparison({
     const [a, b] = fourfold;
     const total = a + b;
     return [
-      { name: 'S', value: a, percent: ((a / total) * 100).toFixed(1) },
+      { name: 'Succedent', value: a, percent: ((a / total) * 100).toFixed(1) },
       { name: 'not S', value: b, percent: ((b / total) * 100).toFixed(1) },
     ];
   };

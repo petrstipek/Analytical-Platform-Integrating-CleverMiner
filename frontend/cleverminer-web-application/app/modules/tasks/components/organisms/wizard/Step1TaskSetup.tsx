@@ -12,7 +12,6 @@ import { type CreateTaskFormValues } from '@/modules/tasks/utils/task-validation
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import type { ProjectType } from '@/modules/projects/domain/project.type';
 import { ProceduresType } from '@/shared/domain/procedures.type';
-import { useSearchParams } from 'react-router';
 
 type Step1TaskSetupProps = {
   datasets?: DatasetType[];
@@ -56,10 +55,10 @@ export default function Step1TaskSetup({ datasets, projects }: Step1TaskSetupPro
               <SelectValue placeholder="Select procedure..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ProceduresType.SD4FTMINER}>SD4ftMiner</SelectItem>
-              <SelectItem value={ProceduresType.CFMINER}>CFMiner</SelectItem>
-              <SelectItem value={ProceduresType.UICMINER}>UICMiner</SelectItem>
-              <SelectItem value={ProceduresType.FOURFTMINER}>4ftMiner</SelectItem>
+              <SelectItem value={ProceduresType.SD4FTMINER}>SD4-ftMiner</SelectItem>
+              <SelectItem value={ProceduresType.CFMINER}>CF-Miner</SelectItem>
+              <SelectItem value={ProceduresType.UICMINER}>UIC-Miner</SelectItem>
+              <SelectItem value={ProceduresType.FOURFTMINER}>4ft-Miner</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -22,7 +22,7 @@ import {
 import { Button } from '@/shared/components/ui/atoms/button';
 import { Input } from '@/shared/components/ui/atoms/input';
 import { Search, ChevronLeft, ChevronRight, Inbox, Download } from 'lucide-react';
-import { ProceduresType } from '@/shared/domain/procedures.type';
+import { PROCEDURE_LABELS, ProceduresType } from '@/shared/domain/procedures.type';
 import {
   Select,
   SelectContent,
@@ -145,7 +145,7 @@ export function DataTable<TData, TValue>({
                       <SelectItem value="all">All procedures</SelectItem>
                       {procedureOptions.map((procedure) => (
                         <SelectItem key={procedure} value={procedure}>
-                          {procedure}
+                          {PROCEDURE_LABELS[procedure]}
                         </SelectItem>
                       ))}
                     </SelectContent>

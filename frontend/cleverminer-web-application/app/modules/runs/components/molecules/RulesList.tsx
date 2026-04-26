@@ -36,9 +36,6 @@ export default function RulesList({
   procedure,
 }: RulesListProps) {
   const formatRule = (rule: RuleListRow) => {
-    const text = rule.text;
-    const [logic] = text.split(' | ');
-
     if (procedure === ProceduresType.CFMINER) {
       return (
         <div className="flex flex-wrap items-center gap-2">
