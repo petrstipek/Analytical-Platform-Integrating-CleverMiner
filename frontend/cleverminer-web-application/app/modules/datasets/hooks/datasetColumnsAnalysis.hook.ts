@@ -57,7 +57,11 @@ export function useDatasetColumnsAnalysis(columnsAnalysis: DatasetStats, dataset
     return [];
   }
 
-  const { mutate: applyTransformation, isPending } = useMutation({
+  const {
+    mutate: applyTransformation,
+    isPending,
+    isSuccess,
+  } = useMutation({
     mutationFn: async (payload: { name: string; transform_spec: { steps: TransformStep[] } }) => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       return createDerivedDataset(datasetId, payload);
@@ -94,6 +98,7 @@ export function useDatasetColumnsAnalysis(columnsAnalysis: DatasetStats, dataset
     hasColumn,
     affectedColumns,
     isPending,
+    isSuccess,
     handleTransformation,
     statusFilter,
     setStatusFilter,

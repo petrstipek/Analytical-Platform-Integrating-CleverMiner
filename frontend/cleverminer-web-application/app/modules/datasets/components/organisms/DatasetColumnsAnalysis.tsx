@@ -40,6 +40,7 @@ export default function DatasetColumnsAnalysisView({
     stats,
     hasColumn,
     isPending,
+    isSuccess,
     handleTransformation,
     statusFilter,
     setStatusFilter,
@@ -89,6 +90,8 @@ export default function DatasetColumnsAnalysisView({
               steps={steps}
               removeStepAtGlobalIndex={removeStepAtGlobalIndex}
               clearAll={clearAll}
+              isPending={isPending}
+              isSuccess={isSuccess}
             />
           </PlatformCard>
         )}

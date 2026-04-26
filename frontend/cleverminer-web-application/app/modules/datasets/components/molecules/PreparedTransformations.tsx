@@ -5,19 +5,22 @@ import {
 } from '@/modules/datasets/domain/datasetTransformations.type';
 import { formatStepLabel } from '@/modules/datasets/utils/formatStepLabel';
 import { Button } from '@/shared/components/ui/atoms/button';
-import { Book, Trash2 } from 'lucide-react';
+import { Book, Loader2, Trash2 } from 'lucide-react';
 import { DialogTrigger } from '@/shared/components/ui/molecules/dialog';
 
 type PreparedTransformationsProps = {
   steps: TransformStep[];
   removeStepAtGlobalIndex: (globalIndex: number) => void;
   clearAll: () => void;
+  isPending?: boolean;
+  isSuccess?: boolean;
 };
 
 export default function PreparedTransformations({
   steps,
   removeStepAtGlobalIndex,
   clearAll,
+  isPending,
 }: PreparedTransformationsProps) {
   function affectedColumns(step: TransformStep): string[] {
     if ('column' in step) return [step.column];
@@ -34,6 +37,14 @@ export default function PreparedTransformations({
           </Badge>
           Transformations staged
         </span>
+
+        {isPending && (
+          <div className="mb-3 flex items-center gap-2 rounded-lg bg-blue-100 px-3 py-2 text-sm text-blue-800">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Processing transformation...
+          </div>
+        )}
+
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={clearAll} className="bg-white text-gray-600">
             <Trash2 className="mr-2 h-4 w-4" /> Clear All

@@ -1,4 +1,4 @@
-import { GitBranch, AlertCircle } from 'lucide-react';
+import { GitBranch, AlertCircle, Loader2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -31,6 +31,14 @@ export default function DatasetDerivedList({ datasetId }: DatasetDerivedListProp
     queryKey: ['dataset-children-transformations', datasetId],
     queryFn: () => getDatasetChildrenTransformations(datasetId!),
     enabled: !!datasetId,
+    refetchInterval: (query) => {
+      const children = query.state.data?.children ?? [];
+      const hasPending = children.some(
+        (c: any) =>
+          c.transformation?.status === 'pending' || c.transformation?.status === 'running',
+      );
+      return hasPending ? 3000 : false;
+    },
   });
 
   return (
