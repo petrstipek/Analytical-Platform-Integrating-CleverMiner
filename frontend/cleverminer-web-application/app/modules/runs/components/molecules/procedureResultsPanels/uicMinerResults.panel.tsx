@@ -6,7 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/molecules/card';
-import { DiscoveredRulesContainer, HistogramBars } from '@/modules/runs/components/molecules';
+import {
+  DiscoveredRulesContainer,
+  HistogramBars,
+  RuleDetail,
+} from '@/modules/runs/components/molecules';
 import type { RunResultUic } from '@/modules/runs/domain/runs-results.type';
 import type { RuleListRow } from '@/modules/runs/components/molecules/RulesList';
 import { UICMinerDetails } from '@/modules/tasks/components/organisms/procedures';
@@ -37,112 +41,101 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
       <RunConfigurationDetails procedure={ProceduresType.UICMINER}>
         <UICMinerDetails params={task.run_snapshot} />
       </RunConfigurationDetails>
-      <div className="mt-6 grid grid-cols-1 items-stretch gap-6 lg:h-[70vh] lg:min-h-0 lg:grid-cols-3">
+      <div className="my-6 grid grid-cols-1 items-stretch gap-6 lg:h-[90vh] lg:grid-cols-3">
         <DiscoveredRulesContainer
           rules={listRules}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
           procedure={ProceduresType.UICMINER}
         />
+        <RuleDetail>
+          {selectedRule ? (
+            <div className="sticky top-6 space-y-4">
+              <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
+                <CardContent className="space-y-2 pt-6 text-sm">
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Target</span>
+                    <span className="font-mono font-bold">{target}</span>
+                  </div>
+                  <div className="flex justify-between pb-2">
+                    <span className="text-muted-foreground">Categories</span>
+                    <span className="font-mono">{categories.join(', ') || '-'}</span>
+                  </div>
+                </CardContent>
+              </Card>
 
-        <div className="h-full min-h-0 space-y-4 overflow-y-auto">
-          <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-xl font-semibold">Rule Detail</CardTitle>
-              <CardDescription>Find more about selected rule.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {selectedRule ? (
-                <div className="sticky top-6 space-y-4">
-                  <Card
-                    className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}
-                  >
-                    <CardContent className="space-y-2 pt-6 text-sm">
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Target</span>
-                        <span className="font-mono font-bold">{target}</span>
+              <HistogramBars
+                title="Histogram (Selected Rule)"
+                categories={categories}
+                values={selectedRule.histogram_rule}
+                colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
+              />
+
+              <HistogramBars
+                title="Histogram (Entire Dataset)"
+                categories={categories}
+                values={selectedRule.histogram_background}
+                colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
+              />
+              {selectedRule.quantifiers && (
+                <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
+                  <CardContent className="space-y-2 pt-6 text-sm">
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">Base</span>
+                      <span className="font-mono font-bold">
+                        {selectedRule.quantifiers.base.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">Relative Base</span>
+                      <span className="font-mono">
+                        {(selectedRule.quantifiers.rel_base! * 100).toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">AAD Score</span>
+                      <span className="font-mono font-bold text-indigo-600">
+                        {selectedRule.quantifiers.aad.toFixed(4)}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1 pt-2">
+                      <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                        Interpretation
                       </div>
-                      <div className="flex justify-between pb-2">
-                        <span className="text-muted-foreground">Categories</span>
-                        <span className="font-mono">{categories.join(', ') || '-'}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <HistogramBars
-                    title="Histogram (Selected Rule)"
-                    categories={categories}
-                    values={selectedRule.histogram_rule}
-                    colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
-                  />
-
-                  <HistogramBars
-                    title="Histogram (Entire Dataset)"
-                    categories={categories}
-                    values={selectedRule.histogram_background}
-                    colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
-                  />
-                  {selectedRule.quantifiers && (
-                    <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
-                      <CardContent className="space-y-2 pt-6 text-sm">
-                        <div className="flex justify-between border-b pb-2">
-                          <span className="text-muted-foreground">Base</span>
-                          <span className="font-mono font-bold">
-                            {selectedRule.quantifiers.base.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between border-b pb-2">
-                          <span className="text-muted-foreground">Relative Base</span>
-                          <span className="font-mono">
-                            {(selectedRule.quantifiers.rel_base! * 100).toFixed(2)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between border-b pb-2">
-                          <span className="text-muted-foreground">AAD Score</span>
-                          <span className="font-mono font-bold text-indigo-600">
-                            {selectedRule.quantifiers.aad.toFixed(4)}
-                          </span>
-                        </div>
-
-                        <div className="space-y-1 pt-2">
-                          <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                            Interpretation
-                          </div>
-                          {categories.map((cat, i) => {
-                            const times = selectedRule.quantifiers!.times_more[i];
-                            const bgPct = (
-                              selectedRule.quantifiers!.rel_hist_background[i] * 100
-                            ).toFixed(1);
-                            const rulePct = (
-                              selectedRule.quantifiers!.rel_hist_rule[i] * 100
-                            ).toFixed(1);
-                            const color =
-                              times > 1.2
-                                ? 'text-red-500'
-                                : times < 0.8
-                                  ? 'text-green-600'
-                                  : 'text-slate-500';
-                            return (
-                              <p key={cat} className="text-xs text-slate-600">
-                                <span className="font-medium">{cat}</span> occurs {bgPct}% in
-                                background, {rulePct}% with antecedent —{' '}
-                                <span className={`font-semibold ${color}`}>
-                                  {times.toFixed(2)}× more
-                                </span>
-                              </p>
-                            );
-                          })}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              ) : (
-                <div className="text-muted-foreground text-sm">Select a rule to view details</div>
+                      {categories.map((cat, i) => {
+                        const times = selectedRule.quantifiers!.times_more[i];
+                        const bgPct = (
+                          selectedRule.quantifiers!.rel_hist_background[i] * 100
+                        ).toFixed(1);
+                        const rulePct = (selectedRule.quantifiers!.rel_hist_rule[i] * 100).toFixed(
+                          1,
+                        );
+                        const color =
+                          times > 1.2
+                            ? 'text-red-500'
+                            : times < 0.8
+                              ? 'text-green-600'
+                              : 'text-slate-500';
+                        return (
+                          <p key={cat} className="text-xs text-slate-600">
+                            <span className="font-medium">{cat}</span> occurs {bgPct}% in
+                            background, {rulePct}% with antecedent —{' '}
+                            <span className={`font-semibold ${color}`}>
+                              {times.toFixed(2)}× more
+                            </span>
+                          </p>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
               )}
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          ) : (
+            <div className="text-muted-foreground text-sm">Select a rule to view details</div>
+          )}
+        </RuleDetail>
       </div>
     </div>
   );

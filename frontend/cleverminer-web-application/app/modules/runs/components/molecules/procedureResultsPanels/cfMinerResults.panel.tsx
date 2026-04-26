@@ -1,12 +1,10 @@
 import { useMemo, useState } from 'react';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/shared/components/ui/molecules/card';
-import { DiscoveredRulesContainer, HistogramBars } from '@/modules/runs/components/molecules';
+  DiscoveredRulesContainer,
+  HistogramBars,
+  RuleDetail,
+} from '@/modules/runs/components/molecules';
 import type { RunResultCf } from '@/modules/runs/domain/runs-results.type';
 import type { RuleListRow } from '@/modules/runs/components/molecules/RulesList';
 import { CFMinerDetails } from '@/modules/tasks/components/organisms/procedures';
@@ -44,93 +42,83 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
           setSelectedId={setSelectedId}
           procedure={ProceduresType.CFMINER}
         />
-        <div className="space-y-4">
-          <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-xl font-semibold">Rule Detail</CardTitle>
-              <CardDescription>Find more about selected rule.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {selectedRule ? (
-                <div className="sticky top-6 space-y-4">
-                  <Card
-                    className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}
-                  >
-                    <CardContent className="space-y-2 pt-6 text-sm">
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Target</span>
-                        <span className="font-mono font-bold">{target}</span>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <span className="text-muted-foreground">Categories</span>
-                        <span className="font-mono">{categories.join(', ') || '-'}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
+        <RuleDetail>
+          {selectedRule ? (
+            <div className="sticky top-6 space-y-4">
+              <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
+                <CardContent className="space-y-2 pt-6 text-sm">
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Target</span>
+                    <span className="font-mono font-bold">{target}</span>
+                  </div>
+                  <div className="flex justify-between pb-2">
+                    <span className="text-muted-foreground">Categories</span>
+                    <span className="font-mono">{categories.join(', ') || '-'}</span>
+                  </div>
+                </CardContent>
+              </Card>
 
-                  <HistogramBars
-                    title="Histogram (Selected Rule)"
-                    categories={categories}
-                    values={selectedRule.histogram}
-                    colorClass={PROCEDURE_STYLES[ProceduresType.CFMINER].bg_histogram}
-                  />
-                  <HistogramBars
-                    title="Histogram (Entire Dataset)"
-                    categories={categories}
-                    values={selectedRule.histogram_full}
-                    colorClass={PROCEDURE_STYLES[ProceduresType.CFMINER].bg_histogram}
-                  />
+              <HistogramBars
+                title="Histogram (Selected Rule)"
+                categories={categories}
+                values={selectedRule.histogram}
+                colorClass={PROCEDURE_STYLES[ProceduresType.CFMINER].bg_histogram}
+              />
+              <HistogramBars
+                title="Histogram (Entire Dataset)"
+                categories={categories}
+                values={selectedRule.histogram_full}
+                colorClass={PROCEDURE_STYLES[ProceduresType.CFMINER].bg_histogram}
+              />
 
-                  <Card>
-                    <CardContent className="space-y-2 pt-6 text-sm">
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Base</span>
-                        <span className="font-mono font-bold">{selectedRule.quantifiers.base}</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Relative Base</span>
-                        <span className="font-mono">
-                          {(selectedRule.quantifiers.rel_base * 100).toFixed(2)}%
-                        </span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Min / Max</span>
-                        <span className="font-mono">
-                          {selectedRule.quantifiers.min} / {selectedRule.quantifiers.max}
-                        </span>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <span className="text-muted-foreground">Rel Min / Rel Max</span>
-                        <span className="font-mono">
-                          {(selectedRule.quantifiers.rel_min * 100).toFixed(2)}% /{' '}
-                          {(selectedRule.quantifiers.rel_max * 100).toFixed(2)}%
-                        </span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Steps Up (consecutive)</span>
-                        <span className="font-mono">{selectedRule.quantifiers.s_up}</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Steps Down (consecutive)</span>
-                        <span className="font-mono">{selectedRule.quantifiers.s_down}</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Steps Up (any)</span>
-                        <span className="font-mono">{selectedRule.quantifiers.s_any_up}</span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Steps Down (any)</span>
-                        <span className="font-mono">{selectedRule.quantifiers.s_any_down}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              ) : (
-                <div className="text-muted-foreground text-sm">Select a rule to view details</div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              <Card>
+                <CardContent className="space-y-2 pt-6 text-sm">
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Base</span>
+                    <span className="font-mono font-bold">{selectedRule.quantifiers.base}</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Relative Base</span>
+                    <span className="font-mono">
+                      {(selectedRule.quantifiers.rel_base * 100).toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Min / Max</span>
+                    <span className="font-mono">
+                      {selectedRule.quantifiers.min} / {selectedRule.quantifiers.max}
+                    </span>
+                  </div>
+                  <div className="flex justify-between pb-2">
+                    <span className="text-muted-foreground">Rel Min / Rel Max</span>
+                    <span className="font-mono">
+                      {(selectedRule.quantifiers.rel_min * 100).toFixed(2)}% /{' '}
+                      {(selectedRule.quantifiers.rel_max * 100).toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Steps Up (consecutive)</span>
+                    <span className="font-mono">{selectedRule.quantifiers.s_up}</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Steps Down (consecutive)</span>
+                    <span className="font-mono">{selectedRule.quantifiers.s_down}</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Steps Up (any)</span>
+                    <span className="font-mono">{selectedRule.quantifiers.s_any_up}</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Steps Down (any)</span>
+                    <span className="font-mono">{selectedRule.quantifiers.s_any_down}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <div className="text-muted-foreground text-sm">Select a rule to view details</div>
+          )}
+        </RuleDetail>
       </div>
     </div>
   );
