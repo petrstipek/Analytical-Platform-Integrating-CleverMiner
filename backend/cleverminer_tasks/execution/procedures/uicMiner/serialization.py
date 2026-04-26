@@ -3,7 +3,10 @@ import re
 import sys
 from typing import Any, Dict, List
 
-from cleverminer_tasks.execution.shared.baseSerializer import serialize_rule_structure
+from cleverminer_tasks.execution.shared.baseSerializer import (
+    serialize_rule_structure,
+    save_rule_chart,
+)
 
 
 def get_uic_aad(clm, rule_id: int) -> float | None:
@@ -19,7 +22,7 @@ def get_uic_aad(clm, rule_id: int) -> float | None:
     return float(match.group(1)) if match else None
 
 
-def serialize_uic_result(clm, target_column: str) -> Dict[str, Any]:
+def serialize_uic_result(clm, target_column: str, run_id: int) -> Dict[str, Any]:
     rule_count = clm.get_rulecount()
 
     if rule_count is None:
@@ -79,6 +82,7 @@ def serialize_uic_result(clm, target_column: str) -> Dict[str, Any]:
                     "structure": serialize_rule_structure(clm, rule_id),
                     "histogram_rule": hist_rule,
                     "histogram_background": hist_background,
+                    "chart_path": save_rule_chart(clm, rule_id, run_id),
                 }
             )
 

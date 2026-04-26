@@ -1,9 +1,12 @@
 from typing import Any, Dict, List
 
-from cleverminer_tasks.execution.shared.baseSerializer import serialize_rule_structure
+from cleverminer_tasks.execution.shared.baseSerializer import (
+    serialize_rule_structure,
+    save_rule_chart,
+)
 
 
-def serialize_sd4ft_result(clm) -> Dict[str, Any]:
+def serialize_sd4ft_result(clm, run_id: int) -> Dict[str, Any]:
     rule_count = clm.get_rulecount()
     if rule_count is None:
         return {"summary": {"rule_count": 0}, "rules": [], "status": "failed"}
@@ -21,6 +24,7 @@ def serialize_sd4ft_result(clm) -> Dict[str, Any]:
                     "quantifiers": clm.get_quantifiers(rule_id),
                     "fourfold1": fourfold1,
                     "fourfold2": fourfold2,
+                    "chart_path": save_rule_chart(clm, rule_id, run_id),
                 }
             )
         except Exception:

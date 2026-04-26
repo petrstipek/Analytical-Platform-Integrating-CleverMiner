@@ -36,7 +36,7 @@ class FourFtMiningService(BaseMiningService):
 
         clm = self._run_miner(params)
 
-        return serialize_4ft_result(clm)
+        return serialize_4ft_result(clm, self.run_instance.id)
 
     def _required_attributes(self) -> list[str]:
         columns = set()

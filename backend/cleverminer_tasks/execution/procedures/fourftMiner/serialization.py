@@ -1,9 +1,12 @@
 from typing import Any, Dict, List
 
-from cleverminer_tasks.execution.shared.baseSerializer import serialize_rule_structure
+from cleverminer_tasks.execution.shared.baseSerializer import (
+    serialize_rule_structure,
+    save_rule_chart,
+)
 
 
-def serialize_4ft_result(clm) -> Dict[str, Any]:
+def serialize_4ft_result(clm, run_id: int) -> Dict[str, Any]:
     rule_count = clm.get_rulecount()
 
     if rule_count is None:
@@ -18,6 +21,7 @@ def serialize_4ft_result(clm) -> Dict[str, Any]:
                 "text": clm.get_ruletext(rule_id),
                 "quantifiers": clm.get_quantifiers(rule_id),
                 "structure": serialize_rule_structure(clm, rule_id),
+                "chart_path": save_rule_chart(clm, rule_id, run_id),
             }
         )
 

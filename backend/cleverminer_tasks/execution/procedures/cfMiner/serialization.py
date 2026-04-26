@@ -1,10 +1,13 @@
 from typing import Any, Dict, List
 
 
-from cleverminer_tasks.execution.shared.baseSerializer import serialize_rule_structure
+from cleverminer_tasks.execution.shared.baseSerializer import (
+    serialize_rule_structure,
+    save_rule_chart,
+)
 
 
-def serialize_cf_result(clm, target_column: str, df) -> Dict[str, Any]:
+def serialize_cf_result(clm, target_column: str, df, run_id: int) -> Dict[str, Any]:
     hist_full = []
     rule_count = clm.get_rulecount()
 
@@ -29,6 +32,7 @@ def serialize_cf_result(clm, target_column: str, df) -> Dict[str, Any]:
                     "quantifiers": clm.get_quantifiers(rule_id),
                     "histogram": clm.get_hist(rule_id),
                     "histogram_full": hist_full,
+                    "chart_path": save_rule_chart(clm, rule_id, run_id),
                 }
             )
         except Exception:

@@ -39,7 +39,7 @@ class UICMiningService(BaseMiningService):
 
         clm = self._run_miner(params)
 
-        return serialize_uic_result(clm, self.config.target)
+        return serialize_uic_result(clm, self.config.target, self.run_instance.id)
 
     def _required_attributes(self) -> list[str]:
         columns = set()
