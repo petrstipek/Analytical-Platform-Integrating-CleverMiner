@@ -52,6 +52,7 @@ export type DatasetColumnStats = {
       maxlen: number;
     }[];
   };
+  category_order?: string[];
 };
 
 export type DatasetStats = {

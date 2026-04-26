@@ -141,6 +141,7 @@ export default function DatasetDetailPage() {
               goodCols={goodCols}
               warningCols={warningCols}
               ignoredCols={ignoredCols}
+              columnStatsData={columnStatsData!}
             />
           </TabsContent>
 

@@ -1,7 +1,11 @@
 import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { ScrollArea } from '@/shared/components/ui/molecules/scroll-area';
 import { ColumnCard } from '@/modules/datasets/components/molecules';
-import type { ClmCandidate } from '@/modules/datasets/api/types/clmGuidance.type';
+import type {
+  ClmCandidate,
+  DatasetColumnStats,
+  DatasetStats,
+} from '@/modules/datasets/api/types/clmGuidance.type';
 import { PlatformCard } from '@/shared/components/molecules';
 
 type DatasetClmGuidanceViewProps = {
@@ -9,13 +13,19 @@ type DatasetClmGuidanceViewProps = {
   goodCols: ClmCandidate[];
   warningCols: ClmCandidate[];
   ignoredCols: ClmCandidate[];
+  columnStatsData?: DatasetStats;
 };
 
 export default function DatasetClmGuidanceView({
   goodCols,
   warningCols,
   ignoredCols,
+  columnStatsData,
 }: DatasetClmGuidanceViewProps) {
+  const getCategoryOrder = (colName: string): string[] =>
+    columnStatsData?.columns?.find((c: DatasetColumnStats) => c.name === colName)?.category_order ??
+    [];
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-500">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -29,7 +39,12 @@ export default function DatasetClmGuidanceView({
         >
           <ScrollArea className="h-[800px] pr-4">
             {goodCols.map((col) => (
-              <ColumnCard key={col.name} col={col} status="good" />
+              <ColumnCard
+                key={col.name}
+                col={col}
+                status="good"
+                categoryOrder={getCategoryOrder(col.name)}
+              />
             ))}
           </ScrollArea>
         </PlatformCard>
@@ -43,7 +58,12 @@ export default function DatasetClmGuidanceView({
         >
           <ScrollArea className="h-[800px] pr-4">
             {warningCols.map((col) => (
-              <ColumnCard key={col.name} col={col} status="warning" />
+              <ColumnCard
+                key={col.name}
+                col={col}
+                status="warning"
+                categoryOrder={getCategoryOrder(col.name)}
+              />
             ))}
           </ScrollArea>
         </PlatformCard>
@@ -58,7 +78,12 @@ export default function DatasetClmGuidanceView({
         >
           <ScrollArea className="h-[800px] pr-4">
             {ignoredCols.map((col) => (
-              <ColumnCard key={col.name} col={col} status="bad" />
+              <ColumnCard
+                key={col.name}
+                col={col}
+                status="bad"
+                categoryOrder={getCategoryOrder(col.name)}
+              />
             ))}
           </ScrollArea>
         </PlatformCard>
