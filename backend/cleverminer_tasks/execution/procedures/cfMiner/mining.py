@@ -36,7 +36,7 @@ class CfMiningService(BaseMiningService):
 
         clm = self._run_miner(params)
 
-        return serialize_cf_result(clm, self.config.target)
+        return serialize_cf_result(clm, self.config.target, df)
 
     def _required_attributes(self) -> list[str]:
         columns = set()

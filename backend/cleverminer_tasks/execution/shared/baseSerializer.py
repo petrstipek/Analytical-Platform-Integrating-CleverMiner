@@ -1,6 +1,24 @@
 from typing import Any, Dict, List
 
 
+def serialize_rule_structure(clm, rule_id: int) -> Dict[str, Any]:
+    try:
+        cedents = clm.get_rule_cedent_list(rule_id)
+        structure = {}
+        for cedent in cedents:
+            variables = clm.get_rule_variables(rule_id, cedent)
+            structure[cedent] = [
+                {
+                    "variable": var,
+                    "categories": clm.get_rule_categories(rule_id, cedent, var),
+                }
+                for var in variables
+            ]
+        return structure
+    except Exception:
+        return {}
+
+
 def base_serialization(clm) -> Dict[str, Any]:
     rule_count = clm.get_rulecount()
 
