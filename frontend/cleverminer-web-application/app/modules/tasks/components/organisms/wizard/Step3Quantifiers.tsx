@@ -82,12 +82,15 @@ export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
                 <div key={field.key} className="space-y-1.5">
                   <Label className="flex items-center gap-2 text-sm font-medium">
                     {field.label}
+                    {field.required && <span className="text-red-500">*</span>}
                     {field.desc && <InfoTooltip text={field.desc} />}
                   </Label>
                   <Input
                     type="number"
                     step={field.type === 'float' ? '0.01' : '1'}
-                    placeholder="Not set"
+                    min={field.min}
+                    max={field.max}
+                    placeholder={field.required ? 'Required' : 'Not set'}
                     {...register(`configuration.quantifiers.${field.key}`, {
                       setValueAs: (v) => {
                         if (v === '' || v === undefined) return null;
@@ -96,6 +99,15 @@ export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
                       },
                     })}
                   />
+                  {(field.min !== undefined || field.max !== undefined) && (
+                    <p className="text-muted-foreground text-[11px]">
+                      {field.min !== undefined && field.max !== undefined
+                        ? `Between ${field.min} and ${field.max}`
+                        : field.min !== undefined
+                          ? `Min: ${field.min}`
+                          : `Max: ${field.max}`}
+                    </p>
+                  )}
                   {fieldError?.message && (
                     <p className="text-destructive text-sm">{fieldError.message}</p>
                   )}

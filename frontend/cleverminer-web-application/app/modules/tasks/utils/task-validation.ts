@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ProceduresType } from '@/shared/domain/procedures.type';
+import { QUANTIFIER_SCHEMAS } from '@/modules/tasks/domain/quantifier-definitions';
 
 const attributeSchema = z
   .object({
@@ -123,5 +124,43 @@ export const createTaskSchema = z
         requireCedent('ante', 'Antecedent');
         break;
     }
+  })
+
+  .superRefine((data, ctx) => {
+    const schema = QUANTIFIER_SCHEMAS[data.procedure] ?? [];
+    const quantifiers = data.configuration?.quantifiers ?? {};
+
+    for (const field of schema) {
+      if (field.required && field.type !== 'vector') {
+        const val = quantifiers[field.key];
+        if (val == null) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `${field.label} is required`,
+            path: ['configuration', 'quantifiers', field.key],
+          });
+        }
+      }
+    }
+
+    for (const field of schema) {
+      const val = quantifiers[field.key];
+      if (val == null || typeof val !== 'number') continue;
+      if (field.min !== undefined && val < field.min) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `${field.label} must be at least ${field.min}`,
+          path: ['configuration', 'quantifiers', field.key],
+        });
+      }
+      if (field.max !== undefined && val > field.max) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `${field.label} must be at most ${field.max}`,
+          path: ['configuration', 'quantifiers', field.key],
+        });
+      }
+    }
   });
+
 export type CreateTaskFormValues = z.infer<typeof createTaskSchema>;

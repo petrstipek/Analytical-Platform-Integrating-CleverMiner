@@ -114,7 +114,13 @@ export default function CreateTaskWizard({
     if (step === 1) {
       isValid = await methods.trigger(['name', 'dataset', 'procedure']);
     } else if (step === 2) {
-      isValid = await methods.trigger('configuration');
+      isValid = await methods.trigger([
+        'configuration.ante',
+        'configuration.succ',
+        'configuration.cond',
+        'configuration.set1',
+        'configuration.set2',
+      ]);
     }
 
     if (isValid) {

@@ -12,6 +12,9 @@ export interface QuantifierFieldDef {
   desc?: string;
   type: 'int' | 'float' | 'vector';
   group: QuantifierGroup;
+  required?: boolean;
+  min?: number;
+  max?: number;
 }
 
 export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
@@ -22,6 +25,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Min records in Set 1',
       type: 'int',
       group: 'Base',
+      required: true,
+      min: 1,
     },
     {
       key: 'ScndBase',
@@ -29,6 +34,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Min records in Set 2',
       type: 'int',
       group: 'Base',
+      required: true,
+      min: 1,
     },
     {
       key: 'FrstRelBase',
@@ -36,6 +43,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Percentage of Set 1',
       type: 'float',
       group: 'Relative Base',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'ScndRelBase',
@@ -43,6 +53,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Percentage of Set 2',
       type: 'float',
       group: 'Relative Base',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'Frstconf',
@@ -50,6 +63,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'P(Succ|Ante) in Set 1',
       type: 'float',
       group: 'Confidence',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'Scndconf',
@@ -57,6 +73,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'P(Succ|Ante) in Set 2',
       type: 'float',
       group: 'Confidence',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'Deltaconf',
@@ -64,6 +83,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: '|Conf1 - Conf2|',
       type: 'float',
       group: 'Confidence',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'Ratioconf',
@@ -71,6 +93,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Relative difference',
       type: 'float',
       group: 'Confidence',
+      required: true,
+      min: 1,
     },
     {
       key: 'Ratioconf_leq',
@@ -78,17 +102,30 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Max ratio',
       type: 'float',
       group: 'Confidence',
+      required: false,
+      min: 1,
     },
   ],
 
   CFMiner: [
-    { key: 'Base', label: 'Base', desc: 'Abs. number of records', type: 'int', group: 'Base' },
+    {
+      key: 'Base',
+      label: 'Base',
+      desc: 'Abs. number of records',
+      type: 'int',
+      group: 'Base',
+      required: true,
+      min: 1,
+    },
     {
       key: 'RelBase',
       label: 'Relative Base',
       desc: 'Base / Total records',
       type: 'float',
       group: 'Relative Base',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'S_Up',
@@ -96,6 +133,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Consecutive steps up',
       type: 'int',
       group: 'Histogram Steps',
+      required: false,
+      min: 1,
     },
     {
       key: 'S_Down',
@@ -103,6 +142,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Consecutive steps down',
       type: 'int',
       group: 'Histogram Steps',
+      required: true,
+      min: 1,
     },
     {
       key: 'S_Any_Up',
@@ -110,6 +151,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Total steps up',
       type: 'int',
       group: 'Histogram Steps',
+      required: false,
+      min: 1,
     },
     {
       key: 'S_Any_Down',
@@ -117,6 +160,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Total steps down',
       type: 'int',
       group: 'Histogram Steps',
+      required: false,
+      min: 1,
     },
     {
       key: 'Max',
@@ -124,6 +169,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Maximal value in histogram',
       type: 'float',
       group: 'Extremes',
+      required: false,
+      min: 0,
     },
     {
       key: 'Min',
@@ -131,6 +178,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Minimal value in histogram',
       type: 'float',
       group: 'Extremes',
+      required: false,
+      min: 0,
     },
     {
       key: 'RelMax',
@@ -138,6 +187,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Relative max value',
       type: 'float',
       group: 'Extremes',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'RelMin',
@@ -145,6 +197,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Relative min value',
       type: 'float',
       group: 'Extremes',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'RelMax_leq',
@@ -152,6 +207,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Upper bound for RelMax',
       type: 'float',
       group: 'Bounds',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'RelMin_leq',
@@ -159,16 +217,30 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Upper bound for RelMin',
       type: 'float',
       group: 'Bounds',
+      required: false,
+      min: 0,
+      max: 1,
     },
   ],
   UICMiner: [
-    { key: 'base', label: 'Base', desc: 'Min absolute records', type: 'int', group: 'Base' },
+    {
+      key: 'base',
+      label: 'Base',
+      desc: 'Min absolute records',
+      type: 'int',
+      group: 'Base',
+      required: true,
+      min: 1,
+    },
     {
       key: 'RelBase',
       label: 'Relative Base',
       desc: 'Base / Total records',
       type: 'float',
       group: 'Relative Base',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'aad_score',
@@ -176,6 +248,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Min interestingness score',
       type: 'float',
       group: 'Confidence',
+      required: true,
+      min: 0,
     },
     {
       key: 'aad_weights',
@@ -183,6 +257,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Weights for categories (e.g. 5,1,0)',
       type: 'vector',
       group: 'Confidence',
+      required: true,
+      min: 0,
     },
   ],
   fourftMiner: [
@@ -192,6 +268,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Min absolute records (A & S)',
       type: 'int',
       group: 'Base',
+      required: true,
+      min: 1,
     },
     {
       key: 'RelBase',
@@ -199,6 +277,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Base / Total records',
       type: 'float',
       group: 'Relative Base',
+      required: false,
+      min: 0,
+      max: 1,
     },
     {
       key: 'conf',
@@ -206,6 +287,9 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Probability P(Succ | Ante)',
       type: 'float',
       group: 'Confidence',
+      required: true,
+      min: 0,
+      max: 1,
     },
     {
       key: 'aad',
@@ -213,6 +297,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'How much Antecedent increases probability of Succedent (vs avg)',
       type: 'float',
       group: 'Confidence',
+      required: false,
+      min: 0,
     },
     {
       key: 'bad',
@@ -220,6 +306,8 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Negative value of AAD (Decrease in probability)',
       type: 'float',
       group: 'Confidence',
+      required: false,
+      min: 0,
     },
   ],
 };
