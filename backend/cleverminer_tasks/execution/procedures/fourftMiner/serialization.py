@@ -1,5 +1,7 @@
 from typing import Any, Dict, List
 
+from cleverminer_tasks.execution.shared.baseSerializer import serialize_rule_structure
+
 
 def serialize_4ft_result(clm) -> Dict[str, Any]:
     rule_count = clm.get_rulecount()
@@ -10,14 +12,12 @@ def serialize_4ft_result(clm) -> Dict[str, Any]:
     rules: List[Dict[str, Any]] = []
 
     for rule_id in range(1, rule_count + 1):
-        text = clm.get_ruletext(rule_id)
-        quantifiers = clm.get_quantifiers(rule_id)
-
         rules.append(
             {
                 "id": rule_id,
-                "text": text,
-                "quantifiers": quantifiers,
+                "text": clm.get_ruletext(rule_id),
+                "quantifiers": clm.get_quantifiers(rule_id),
+                "structure": serialize_rule_structure(clm, rule_id),
             }
         )
 
