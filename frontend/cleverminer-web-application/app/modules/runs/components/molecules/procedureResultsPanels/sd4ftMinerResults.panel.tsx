@@ -18,6 +18,7 @@ import { SD4ftMinerDetails } from '@/modules/tasks/components/organisms/procedur
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import { ConfidenceComparison } from '@/modules/runs/components/organisms';
+import { getLabel } from '@/modules/runs/utils/getRuleLabel';
 
 export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft }) {
   const listRules: RuleListRow[] = useMemo(
@@ -33,13 +34,6 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
       })),
     [task.result.rules],
   );
-
-  const getLabel = (
-    cedent: { variable: string; categories: (string | number)[] }[] | undefined,
-  ) => {
-    if (!cedent) return '';
-    return cedent.map((c) => `${c.variable}(${c.categories.join(' ')})`).join(' & ');
-  };
 
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
   const selectedRule = task.result.rules.find((r) => r.id === selectedId) ?? null;

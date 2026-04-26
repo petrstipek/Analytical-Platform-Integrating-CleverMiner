@@ -8,8 +8,8 @@ import {
   TableRow,
 } from '@/shared/components/ui/organisms/table';
 import { ProceduresType } from '@/shared/domain/procedures.type';
-import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 import { renderCedent } from '@/modules/runs/utils/renderCedent';
+import { getLabel } from '@/modules/runs/utils/getRuleLabel';
 
 export type RuleListRow = {
   id: number;
@@ -35,17 +35,9 @@ export default function RulesList({
   onSelectRule,
   procedure,
 }: RulesListProps) {
-  const getLabel = (
-    cedent: { variable: string; categories: (string | number)[] }[] | undefined,
-  ) => {
-    if (!cedent) return '';
-    return cedent.map((c) => `${c.variable}(${c.categories.join(', ')})`).join(' & ');
-  };
-
   const formatRule = (rule: RuleListRow) => {
     const text = rule.text;
     const [logic] = text.split(' | ');
-    const parts = logic.split('=>');
 
     if (procedure === ProceduresType.CFMINER) {
       return (
@@ -95,54 +87,7 @@ export default function RulesList({
       );
     }
 
-    if (parts.length !== 2) return <span className="font-mono text-xs">{text}</span>;
-
-    const parseChunk = (chunk: string) => {
-      const match = chunk.trim().match(/^(.+?)\((.+)\)$/);
-      if (!match) return { field: chunk.trim(), values: [] as string[] };
-      const field = match[1].replace(/_/g, ' ');
-      const values = match[2].split(/\s+/).filter(Boolean);
-      return { field, values };
-    };
-
-    const lhs = parseChunk(parts[0]);
-    const rhs = parseChunk(parts[1]);
-
-    const { bg_light, text: textColour } = PROCEDURE_STYLES[procedure];
-
-    return (
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex flex-wrap items-center gap-1">
-          <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-            {lhs.field}
-          </span>
-          {lhs.values.map((v) => (
-            <span
-              key={v}
-              className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-            >
-              {v}
-            </span>
-          ))}
-        </div>
-
-        <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
-
-        <div className="flex flex-wrap items-center gap-1">
-          <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-            {rhs.field}
-          </span>
-          {rhs.values.map((v) => (
-            <span
-              key={v}
-              className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-            >
-              {v}
-            </span>
-          ))}
-        </div>
-      </div>
-    );
+    return <span className="font-mono text-xs text-amber-500">Unknown procedure: {procedure}</span>;
   };
 
   const showConfidence = rules.some((r) => r.metrics?.confidence != null);
