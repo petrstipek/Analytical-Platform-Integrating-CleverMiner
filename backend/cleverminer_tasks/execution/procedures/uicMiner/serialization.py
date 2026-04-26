@@ -3,6 +3,8 @@ import re
 import sys
 from typing import Any, Dict, List
 
+from cleverminer_tasks.execution.shared.baseSerializer import serialize_rule_structure
+
 
 def get_uic_aad(clm, rule_id: int) -> float | None:
     buffer = io.StringIO()
@@ -74,6 +76,7 @@ def serialize_uic_result(clm, target_column: str) -> Dict[str, Any]:
                     "id": rule_id,
                     "text": text,
                     "quantifiers": quantifiers,
+                    "structure": serialize_rule_structure(clm, rule_id),
                     "histogram_rule": hist_rule,
                     "histogram_background": hist_background,
                 }
