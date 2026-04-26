@@ -9,6 +9,7 @@ import {
 } from '@/shared/components/ui/organisms/table';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { renderCedent } from '@/modules/runs/utils/renderCedent';
 
 export type RuleListRow = {
   id: number;
@@ -34,96 +35,44 @@ export default function RulesList({
   onSelectRule,
   procedure,
 }: RulesListProps) {
+  const getLabel = (
+    cedent: { variable: string; categories: (string | number)[] }[] | undefined,
+  ) => {
+    if (!cedent) return '';
+    return cedent.map((c) => `${c.variable}(${c.categories.join(', ')})`).join(' & ');
+  };
+
   const formatRule = (rule: RuleListRow) => {
     const text = rule.text;
     const [logic] = text.split(' | ');
     const parts = logic.split('=>');
 
     if (procedure === ProceduresType.CFMINER) {
-      const { bg_light, text: textColour } = PROCEDURE_STYLES[procedure];
-      const conditions = rule.structure?.cond ?? [];
-
       return (
         <div className="flex flex-wrap items-center gap-2">
-          {conditions.map((condition, i) => (
-            <div key={i} className="flex flex-wrap items-center gap-1">
-              {i > 0 && <span className="text-xs font-semibold text-slate-400">&amp;</span>}
-              <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-                {condition.variable.replace(/_/g, ' ')}
-              </span>
-              {condition.categories.map((v) => (
-                <span
-                  key={v}
-                  className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-                >
-                  {v}
-                </span>
-              ))}
-            </div>
-          ))}
+          {renderCedent(rule.structure?.cond ?? [], procedure)}
         </div>
       );
     }
 
     if (procedure === ProceduresType.SD4FTMINER) {
-      const [logic, rest] = text.split(' | ');
-      const [, groups] = (rest ?? '').split(' : ');
-      const [group1, group2] = (groups ?? '').split(' x ').map((g) => g.trim());
-
-      const parts = logic.split('=>');
-      const parseChunk = (chunk: string) => {
-        const match = chunk.trim().match(/^(.+?)\((.+)\)$/);
-        if (!match) return { field: chunk.trim(), values: [] as string[] };
-        return {
-          field: match[1].replace(/_/g, ' '),
-          values: match[2].split(/\s+/).filter(Boolean),
-        };
-      };
-
-      const lhs = parseChunk(parts[0]);
-      const rhs = parseChunk(parts[1]);
-      const { bg_light, text: textColour } = PROCEDURE_STYLES[procedure];
-
       return (
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex flex-wrap items-center gap-1">
-            <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-              {lhs.field}
-            </span>
-            {lhs.values.map((v) => (
-              <span
-                key={v}
-                className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-              >
-                {v}
-              </span>
-            ))}
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-wrap items-center gap-2">
+            {renderCedent(rule.structure?.ante ?? [], procedure)}
+            <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
+            {renderCedent(rule.structure?.succ ?? [], procedure)}
           </div>
-
-          <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
-
-          <div className="flex flex-wrap items-center gap-1">
-            <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-              {rhs.field}
+          <div className="flex items-center gap-1 text-xs text-slate-500">
+            <span className="font-semibold">:</span>
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">
+              {getLabel(rule.structure?.frst)}
             </span>
-            {rhs.values.map((v) => (
-              <span
-                key={v}
-                className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-              >
-                {v}
-              </span>
-            ))}
+            <span className="font-semibold">×</span>
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">
+              {getLabel(rule.structure?.scnd)}
+            </span>
           </div>
-
-          {group1 && group2 && (
-            <div className="flex items-center gap-1 text-xs text-slate-500">
-              <span className="font-semibold">:</span>
-              <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{group1}</span>
-              <span className="font-semibold">×</span>
-              <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{group2}</span>
-            </div>
-          )}
         </div>
       );
     }

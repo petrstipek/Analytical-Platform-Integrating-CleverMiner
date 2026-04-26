@@ -14,6 +14,7 @@ export type FourftRule = {
 export type Sd4ftRule = {
   id: number;
   text: string;
+  structure: Record<string, { variable: string; categories: (string | number)[] }[]>;
   quantifiers: {
     base1: number;
     base2: number;
