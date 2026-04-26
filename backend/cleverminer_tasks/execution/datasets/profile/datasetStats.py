@@ -25,6 +25,7 @@ def build_stats(dataset: Dataset):
                 "nulls": nulls,
                 "nunique": nunique,
                 "clm_guidance": guidance,
+                "visible": True,
             }
         )
 

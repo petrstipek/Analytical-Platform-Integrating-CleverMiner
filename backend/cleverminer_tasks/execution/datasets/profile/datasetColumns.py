@@ -14,6 +14,7 @@ def create_dataset_columns(dataset: Dataset):
                 "null_sample": int(df[c].isnull().sum()),
                 "non_null_sample": int(df[c].notna().sum()),
                 "distinct": int(df[c].nunique(dropna=True)),
+                "visible": True,
             }
         )
 
