@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import {
   DiscoveredRulesContainer,
   HistogramBars,
+  RuleChartDialog,
   RuleDetail,
 } from '@/modules/runs/components/molecules';
 import type { RunResultCf } from '@/modules/runs/domain/runs-results.type';
@@ -11,6 +12,9 @@ import { CFMinerDetails } from '@/modules/tasks/components/organisms/procedures'
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { getRuleChart } from '@/modules/runs/api/runs.api';
+import { useQuery } from '@tanstack/react-query';
+import { useRuleChart } from '@/modules/runs/hooks/useRuleChart';
 
 export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
   const categories = task.result.summary.categories ?? [];
@@ -29,6 +33,8 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
 
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
   const selectedRule = task.result.rules.find((r) => r.id === selectedId) ?? null;
+
+  const { chartUrl, chartLoading, loadChart } = useRuleChart(task.id, selectedId);
 
   return (
     <div>
@@ -114,6 +120,14 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
                   </div>
                 </CardContent>
               </Card>
+              {selectedRule.chart_path && (
+                <RuleChartDialog
+                  ruleId={selectedRule.id}
+                  chartUrl={chartUrl}
+                  chartLoading={chartLoading}
+                  onOpen={() => loadChart()}
+                />
+              )}
             </div>
           ) : (
             <div className="text-muted-foreground text-sm">Select a rule to view details</div>

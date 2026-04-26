@@ -43,3 +43,8 @@ export async function deleteRun(id: number) {
   const response = await apiClient.delete(`/runs/${id}/`);
   return response.data;
 }
+
+export async function getRuleChart(runId: number, selectedRuleId: number) {
+  const res = await apiClient.get(`/runs/${runId}/rules/${selectedRuleId}/chart/`);
+  return res.data.url;
+}

@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import {
   DiscoveredRulesContainer,
   FourfoldTable,
+  RuleChartDialog,
   RuleCharts,
   RuleDetail,
 } from '@/modules/runs/components/molecules';
@@ -11,7 +12,7 @@ import type { FourftRule } from '@/modules/runs/domain/procedures-results.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
 import { FourFtMinerDetails } from '@/modules/tasks/components/organisms/procedures';
 import { ProceduresType } from '@/shared/domain/procedures.type';
-import { PlatformCard } from '@/shared/components/molecules';
+import { useRuleChart } from '@/modules/runs/hooks/useRuleChart';
 
 export default function FourFtMinerResultsPanel({ task }: { task: any }) {
   const rules: FourftRule[] = task.result.rules;
@@ -29,6 +30,8 @@ export default function FourFtMinerResultsPanel({ task }: { task: any }) {
 
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
   const selectedRule = rules.find((r) => r.id === selectedId) ?? null;
+
+  const { chartUrl, chartLoading, loadChart } = useRuleChart(task.id, selectedId);
 
   return (
     <div>
@@ -80,6 +83,14 @@ export default function FourFtMinerResultsPanel({ task }: { task: any }) {
                   </div>
                 </CardContent>
               </Card>
+              {selectedRule.chart_path && (
+                <RuleChartDialog
+                  ruleId={selectedRule.id}
+                  chartUrl={chartUrl}
+                  chartLoading={chartLoading}
+                  onOpen={() => loadChart()}
+                />
+              )}
             </div>
           ) : (
             <div className="text-muted-foreground text-sm">Select a rule to view details</div>

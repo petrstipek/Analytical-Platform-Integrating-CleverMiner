@@ -1,14 +1,9 @@
 import { useMemo, useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/shared/components/ui/molecules/card';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import {
   DiscoveredRulesContainer,
   HistogramBars,
+  RuleChartDialog,
   RuleDetail,
 } from '@/modules/runs/components/molecules';
 import type { RunResultUic } from '@/modules/runs/domain/runs-results.type';
@@ -17,6 +12,7 @@ import { UICMinerDetails } from '@/modules/tasks/components/organisms/procedures
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { useRuleChart } from '@/modules/runs/hooks/useRuleChart';
 
 export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
   const categories = task.result.summary.categories ?? [];
@@ -35,6 +31,8 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
 
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
   const selectedRule = task.result.rules.find((r) => r.id === selectedId) ?? null;
+
+  const { chartUrl, chartLoading, loadChart } = useRuleChart(task.id, selectedId);
 
   return (
     <div>
@@ -100,9 +98,7 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
                     </div>
 
                     <div className="space-y-1 pt-2">
-                      <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                        Interpretation
-                      </div>
+                      <div className="text-md font-semibold tracking-tight">Interpretation</div>
                       {categories.map((cat, i) => {
                         const times = selectedRule.quantifiers!.times_more[i];
                         const bgPct = (
@@ -130,6 +126,14 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
                     </div>
                   </CardContent>
                 </Card>
+              )}
+              {selectedRule.chart_path && (
+                <RuleChartDialog
+                  ruleId={selectedRule.id}
+                  chartUrl={chartUrl}
+                  chartLoading={chartLoading}
+                  onOpen={() => loadChart()}
+                />
               )}
             </div>
           ) : (

@@ -71,6 +71,7 @@ type RunResultBase = {
 };
 
 export type RunResultFourft = {
+  id: number;
   procedure: ProceduresType.FOURFTMINER;
   result: {
     summary: FourftSummary;
@@ -79,6 +80,7 @@ export type RunResultFourft = {
 };
 
 export type RunResultSd4ft = {
+  id: number;
   procedure: ProceduresType.SD4FTMINER;
   run_snapshot?: string;
   result: {
@@ -88,6 +90,7 @@ export type RunResultSd4ft = {
 };
 
 export type RunResultUic = {
+  id: number;
   procedure: ProceduresType.UICMINER;
   run_snapshot?: string;
   result: {
@@ -97,6 +100,7 @@ export type RunResultUic = {
 };
 
 export type RunResultCf = {
+  id: number;
   procedure: ProceduresType.CFMINER;
   run_snapshot?: string;
   result: {

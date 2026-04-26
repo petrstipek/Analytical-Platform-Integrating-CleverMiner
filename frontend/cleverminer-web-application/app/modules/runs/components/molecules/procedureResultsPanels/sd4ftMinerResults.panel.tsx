@@ -1,15 +1,9 @@
 import { useMemo, useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/shared/components/ui/molecules/card';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import {
   DiscoveredRulesContainer,
   FourfoldTable,
-  RuleCharts,
+  RuleChartDialog,
   RuleDetail,
 } from '@/modules/runs/components/molecules';
 import type { RunResultSd4ft } from '@/modules/runs/domain/runs-results.type';
@@ -20,6 +14,9 @@ import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConf
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import { ConfidenceComparison } from '@/modules/runs/components/organisms';
 import { getLabel } from '@/modules/runs/utils/getRuleLabel';
+import { getRuleChart } from '@/modules/runs/api/runs.api';
+import { useQuery } from '@tanstack/react-query';
+import { useRuleChart } from '@/modules/runs/hooks/useRuleChart';
 
 export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft }) {
   const listRules: RuleListRow[] = useMemo(
@@ -41,6 +38,8 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
 
   const label1 = selectedRule ? getLabel(selectedRule.structure?.frst) : '';
   const label2 = selectedRule ? getLabel(selectedRule.structure?.scnd) : '';
+
+  const { chartUrl, chartLoading, loadChart } = useRuleChart(task.id, selectedId);
 
   return (
     <div>
@@ -108,6 +107,14 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
                   },
                 ]}
               />
+              {selectedRule.chart_path && (
+                <RuleChartDialog
+                  ruleId={selectedRule.id}
+                  chartUrl={chartUrl}
+                  chartLoading={chartLoading}
+                  onOpen={() => loadChart()}
+                />
+              )}
             </div>
           ) : (
             <div className="text-muted-foreground text-sm">Select a rule to view details</div>
