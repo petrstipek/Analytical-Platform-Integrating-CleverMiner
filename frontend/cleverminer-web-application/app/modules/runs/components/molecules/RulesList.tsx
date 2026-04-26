@@ -100,7 +100,7 @@ export default function RulesList({
             <TableHead>Rule Logic</TableHead>
             {showConfidence && <TableHead className="text-right">Confidence</TableHead>}
             {showRatioconf && <TableHead className="text-right">Ratio Conf</TableHead>}
-            {showBase && <TableHead className="text-right">Base</TableHead>}
+            {showBase && <TableHead className="pr-6 text-right">Base</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -122,7 +122,7 @@ export default function RulesList({
                 <TableCell className="text-muted-foreground font-mono text-xs">{rule.id}</TableCell>
                 <TableCell className="text-sm">{formatRule(rule)}</TableCell>
                 {showConfidence && (
-                  <TableCell className={`text-right font-mono text-xs ${confidenceColor}`}>
+                  <TableCell className={`pr-6 text-right font-mono text-xs ${confidenceColor}`}>
                     {rule.metrics?.confidence != null
                       ? `${(rule.metrics.confidence * 100).toFixed(1)}%`
                       : '—'}
@@ -134,7 +134,7 @@ export default function RulesList({
                   </TableCell>
                 )}
                 {showBase && (
-                  <TableCell className="text-right font-mono text-xs">
+                  <TableCell className="pr-6 text-right font-mono text-xs">
                     {rule.metrics?.base != null ? rule.metrics.base.toLocaleString() : '—'}
                   </TableCell>
                 )}
