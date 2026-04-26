@@ -33,6 +33,7 @@ export type Sd4ftRule = {
 export type UicRule = {
   id: number;
   text: string;
+  structure: Record<string, { variable: string; categories: (string | number)[] }[]>;
   quantifiers: {
     base: number;
     rel_base: number;

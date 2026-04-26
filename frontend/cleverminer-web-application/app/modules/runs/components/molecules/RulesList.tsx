@@ -87,6 +87,14 @@ export default function RulesList({
       );
     }
 
+    if (procedure === ProceduresType.UICMINER) {
+      return (
+        <div className="flex flex-wrap items-center gap-2">
+          {renderCedent(rule.structure?.ante ?? [], procedure)}
+        </div>
+      );
+    }
+
     if (parts.length !== 2) return <span className="font-mono text-xs">{text}</span>;
 
     const parseChunk = (chunk: string) => {

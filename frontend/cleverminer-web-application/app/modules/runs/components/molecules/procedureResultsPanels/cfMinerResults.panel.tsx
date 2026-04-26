@@ -69,16 +69,16 @@ export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
                   </Card>
 
                   <HistogramBars
-                    title="Histogram (Rule)"
+                    title="Histogram (Selected Rule)"
                     categories={categories}
                     values={selectedRule.histogram}
                     colorClass={PROCEDURE_STYLES[ProceduresType.CFMINER].bg_histogram}
                   />
                   <HistogramBars
-                    title="Histogram (Full Dataset)"
+                    title="Histogram (Entire Dataset)"
                     categories={categories}
                     values={selectedRule.histogram_full}
-                    colorClass="bg-gray-300"
+                    colorClass={PROCEDURE_STYLES[ProceduresType.CFMINER].bg_histogram}
                   />
 
                   <Card>

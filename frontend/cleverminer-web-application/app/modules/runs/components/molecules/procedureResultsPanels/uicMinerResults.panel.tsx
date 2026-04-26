@@ -13,14 +13,19 @@ import { UICMinerDetails } from '@/modules/tasks/components/organisms/procedures
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
-import { PlatformCard } from '@/shared/components/molecules';
 
 export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
   const categories = task.result.summary.categories ?? [];
   const target = task.result.summary.target;
 
   const listRules: RuleListRow[] = useMemo(
-    () => task.result.rules.map((r) => ({ id: r.id, text: r.text })),
+    () =>
+      task.result.rules.map((r) => ({
+        id: r.id,
+        text: r.text,
+        structure: r.structure,
+        metrics: { base: r.quantifiers?.base },
+      })),
     [task.result.rules],
   );
 
@@ -65,14 +70,14 @@ export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
                   </Card>
 
                   <HistogramBars
-                    title="Histogram (Rule)"
+                    title="Histogram (Selected Rule)"
                     categories={categories}
                     values={selectedRule.histogram_rule}
                     colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
                   />
 
                   <HistogramBars
-                    title="Histogram (Background)"
+                    title="Histogram (Entire Dataset)"
                     categories={categories}
                     values={selectedRule.histogram_background}
                     colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
