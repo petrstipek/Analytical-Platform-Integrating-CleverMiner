@@ -12,11 +12,11 @@ import type { Task } from '@/modules/tasks/domain/task.type';
 export const renderProcedureDetails = (task: Task) => {
   switch (task.procedure) {
     case ProceduresType.SD4FTMINER:
-      return <SD4ftMinerDetails params={task.params} />;
+      return <SD4ftMinerDetails params={task.params} task={task} />;
     case ProceduresType.CFMINER:
-      return <CFMinerDetails params={task.params} />;
+      return <CFMinerDetails params={task.params} task={task} />;
     case ProceduresType.FOURFTMINER:
-      return <FourFtMinerDetails params={task.params} />;
+      return <FourFtMinerDetails params={task.params} task={task} />;
     case ProceduresType.UICMINER:
       return <UICMinerDetails params={task.params} task={task} />;
     default:

@@ -1,10 +1,18 @@
 import { Target } from 'lucide-react';
 import { Card, CardContent } from '@/shared/components/ui/molecules/card';
-import { CedentDetail, QuantifiersDetail } from '@/modules/tasks/components/molecules';
+import {
+  CedentDetail,
+  QuantifiersDetail,
+  TaskBaseOverview,
+} from '@/modules/tasks/components/molecules';
+import type { Task } from '@/modules/tasks/domain/task.type';
 
-export default function CFMinerDetails({ params }: { params: any }) {
+export default function CFMinerDetails({ params, task }: { params: any; task: Task }) {
   return (
     <div className="space-y-6">
+      <TaskBaseOverview task={task} />
+      <QuantifiersDetail data={params.quantifiers} />
+
       {params.target && (
         <Card className="border-indigo-200 bg-indigo-50">
           <CardContent className="flex items-center gap-4 p-6">
@@ -20,8 +28,6 @@ export default function CFMinerDetails({ params }: { params: any }) {
           </CardContent>
         </Card>
       )}
-
-      <QuantifiersDetail data={params.quantifiers} />
 
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-4">
