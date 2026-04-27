@@ -6,12 +6,30 @@ import { RunStatusBadge } from '@/modules/runs/components/atoms/RunStatusBadge';
 import { RunAchievedResultBadge } from '@/modules/runs/components/atoms/RunAchievedResultBadge';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { Trash2 } from 'lucide-react';
+import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { PROCEDURE_LABELS } from '@/shared/domain/procedures.type';
 
 export const RunsRunningColumns: ColumnDef<RunResult>[] = [
   { accessorKey: 'id', header: 'Run id' },
   {
     accessorKey: 'task_name',
     header: 'Task',
+  },
+  {
+    accessorKey: 'procedure',
+    header: 'Procedure',
+    cell: ({ getValue }) => {
+      const procedure = getValue<RunResult['procedure']>();
+      const styles = PROCEDURE_STYLES[procedure];
+
+      return (
+        <span
+          className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${styles.bg} ${styles.text}`}
+        >
+          <span>{PROCEDURE_LABELS[procedure]}</span>
+        </span>
+      );
+    },
   },
   {
     accessorKey: 'status',
@@ -23,12 +41,11 @@ export const RunsRunningColumns: ColumnDef<RunResult>[] = [
     header: 'Started At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
   },
-
   {
-    accessorKey: 'result_summary.has_result',
+    accessorKey: 'result_summary.procedure',
     header: 'Achieved Result',
     cell: ({ row }) => (
-      <RunAchievedResultBadge status={row.original?.result_summary?.has_result!} />
+      <RunAchievedResultBadge status={row.original?.result_summary?.rule_count! > 0} />
     ),
   },
   { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },
@@ -41,6 +58,22 @@ export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<Run
     header: 'Task',
   },
   {
+    accessorKey: 'procedure',
+    header: 'Procedure',
+    cell: ({ getValue }) => {
+      const procedure = getValue<RunResult['procedure']>();
+      const styles = PROCEDURE_STYLES[procedure];
+
+      return (
+        <span
+          className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${styles.bg} ${styles.text}`}
+        >
+          <span>{PROCEDURE_LABELS[procedure]}</span>
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => <RunStatusBadge status={row.original.status} />,
@@ -50,12 +83,11 @@ export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<Run
     header: 'Started At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
   },
-
   {
-    accessorKey: 'result_summary.has_result',
+    accessorKey: 'result_summary.procedure',
     header: 'Achieved Result',
     cell: ({ row }) => (
-      <RunAchievedResultBadge status={row.original?.result_summary?.has_result!} />
+      <RunAchievedResultBadge status={row.original?.result_summary?.rule_count! > 0} />
     ),
   },
   { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },

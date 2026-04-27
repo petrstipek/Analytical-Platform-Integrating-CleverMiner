@@ -49,6 +49,7 @@ export interface RunResult {
   started_at: Date;
   finished_at: Date;
   updated_at: Date;
+  procedure: ProceduresType;
   result_summary?: {
     has_result: boolean;
     rule_count: number;

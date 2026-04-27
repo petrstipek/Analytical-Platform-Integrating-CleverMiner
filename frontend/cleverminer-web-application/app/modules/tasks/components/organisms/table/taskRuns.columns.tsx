@@ -35,7 +35,7 @@ export const TaskRunsColumns: ColumnDef<TaskRun>[] = [
     accessorKey: 'result_summary.has_result',
     header: 'Achieved Result',
     cell: ({ row }) => (
-      <RunAchievedResultBadge status={row.original?.result_summary?.has_result!} />
+      <RunAchievedResultBadge status={row.original?.result_summary?.rule_count! > 0} />
     ),
   },
   { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },

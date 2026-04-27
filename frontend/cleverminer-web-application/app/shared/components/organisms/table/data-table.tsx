@@ -129,7 +129,7 @@ export function DataTable<TData, TValue>({
               )}
 
               {showProcedureFilter && (
-                <div className="w-full sm:w-[260px]">
+                <div>
                   <Select
                     value={selectedProcedure}
                     onValueChange={(value) => {
@@ -153,7 +153,7 @@ export function DataTable<TData, TValue>({
                 </div>
               )}
               {showStatusFilter && (
-                <div className="w-full sm:w-[260px]">
+                <div>
                   <Select
                     value={selectedStatus}
                     onValueChange={(value) => {
