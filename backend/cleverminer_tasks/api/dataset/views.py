@@ -73,6 +73,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
             "children_transformations",
             "set_column_visible",
             "create_derived",
+            "column_values",
         ):
             return [permissions.IsAuthenticated(), IsDatasetOwnerOrProjectMember()]
 
