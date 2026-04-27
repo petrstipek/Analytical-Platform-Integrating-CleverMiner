@@ -358,25 +358,27 @@ class DatasetViewSet(viewsets.ModelViewSet):
     )
     def column_values(self, request, pk=None, column_name=None):
         dataset = self.get_object()
+        profile = dataset.profile
 
+        # use stored category_order if available — these are exactly CLM's names
+        stats = profile.dataset_stats or {}
+        for col in stats.get("columns", []):
+            if col["name"] == column_name and col.get("category_order"):
+                return Response(
+                    {
+                        "dataset_id": dataset.id,
+                        "column": column_name,
+                        "values": col["category_order"],
+                    }
+                )
+
+        # fallback to raw values
         df = load_dataset(dataset, columns=[column_name])
-
-        if column_name not in df.columns:
-            return Response(
-                {"detail": f"Column '{column_name}' not found in dataset."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
         values = df[column_name].dropna().unique().tolist()
         values = [str(v) for v in values]
         values.sort()
-
         return Response(
-            {
-                "dataset_id": dataset.id,
-                "column": column_name,
-                "values": values,
-            }
+            {"dataset_id": dataset.id, "column": column_name, "values": values}
         )
 
     @action(

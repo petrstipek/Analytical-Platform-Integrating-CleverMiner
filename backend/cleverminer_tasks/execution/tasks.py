@@ -163,7 +163,7 @@ def convert_csv_to_parquet(self, dataset_id: int):
                 if dtype == "object":
                     dtype_map[col] = "string"
                 elif str(dtype).startswith("int"):
-                    dtype_map[col] = "float64"
+                    dtype_map[col] = "Int64"
                 else:
                     dtype_map[col] = str(dtype)
             del sample
@@ -184,10 +184,6 @@ def convert_csv_to_parquet(self, dataset_id: int):
             writer = None
             try:
                 for chunk in chunks:
-                    for col in chunk.columns:
-                        if str(chunk[col].dtype).startswith("int"):
-                            chunk[col] = chunk[col].astype("float64")
-
                     table = pa.Table.from_pandas(chunk, preserve_index=False)
                     if writer is None:
                         writer = pq.ParquetWriter(tmp_path, table.schema)

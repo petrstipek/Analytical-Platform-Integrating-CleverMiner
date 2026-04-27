@@ -27,7 +27,14 @@ class BaseMiningService(ABC):
     @staticmethod
     def _build_attribute(attr: AttributeSpec):
         if attr.attr_type == AttributeType.ONE:
-            d = {"name": attr.name, "type": "one", "value": attr.value}
+            value = attr.value
+            try:
+                f = float(value)
+                value = int(f) if f == int(f) else f
+            except (ValueError, TypeError):
+                pass
+
+            d = {"name": attr.name, "type": "one", "value": value}
             if attr.gace != GaceType.POSITIVE:
                 d["gace"] = attr.gace.value
             return d
