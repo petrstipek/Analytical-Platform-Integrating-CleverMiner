@@ -32,7 +32,7 @@ export default function AttributeSelector({ name, columns, disabled }: Attribute
         <FormItem className="w-[200px]">
           <Select onValueChange={field.onChange} defaultValue={field.value} disabled={disabled}>
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className={'w-full'}>
                 <SelectValue placeholder="Column" />
               </SelectTrigger>
             </FormControl>
