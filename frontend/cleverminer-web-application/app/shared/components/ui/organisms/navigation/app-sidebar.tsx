@@ -74,7 +74,7 @@ const data = {
   navSecondary: [
     {
       title: 'Platform Docs',
-      url: 'https://www.cleverminer.org/doc/index.html',
+      url: 'https://cleverminer-docs.stipekdevs.cz/docs/platform-introduction',
       icon: LifeBuoy,
     },
     {
