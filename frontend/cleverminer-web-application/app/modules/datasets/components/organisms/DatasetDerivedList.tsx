@@ -1,4 +1,4 @@
-import { GitBranch, AlertCircle, Loader2 } from 'lucide-react';
+import { GitBranch, AlertCircle } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -20,9 +20,10 @@ import { DerivedChildDatasetRow } from '@/modules/datasets/components/molecules'
 
 interface DatasetDerivedListProps {
   datasetId: string;
+  onNavigate?: () => void;
 }
 
-export default function DatasetDerivedList({ datasetId }: DatasetDerivedListProps) {
+export default function DatasetDerivedList({ datasetId, onNavigate }: DatasetDerivedListProps) {
   const {
     data: childrenTransformationsData,
     isLoading: childrenTransformationsLoading,
@@ -99,7 +100,11 @@ export default function DatasetDerivedList({ datasetId }: DatasetDerivedListProp
               </TableHeader>
               <TableBody>
                 {childrenTransformationsData.children.map((child) => (
-                  <DerivedChildDatasetRow key={child.dataset_id} child={child} />
+                  <DerivedChildDatasetRow
+                    key={child.dataset_id}
+                    child={child}
+                    onNavigate={onNavigate}
+                  />
                 ))}
               </TableBody>
             </Table>

@@ -8,11 +8,13 @@ import { useNavigate } from 'react-router';
 type DatasetDetailHeaderProps = {
   datasetStatsOverview: DatasetStatsOverview;
   datasetId: number;
+  openDatasetTransformations?: () => void;
 };
 
 export default function DatasetDetailHeader({
   datasetStatsOverview,
   datasetId,
+  openDatasetTransformations,
 }: DatasetDetailHeaderProps) {
   const navigate = useNavigate();
 
@@ -22,7 +24,7 @@ export default function DatasetDetailHeader({
         title={datasetStatsOverview.dataset_name}
         description={'Explore the selected dataset.'}
       >
-        <DialogTrigger asChild>
+        <DialogTrigger asChild onClick={openDatasetTransformations}>
           <Button>Explore Dataset Transformations</Button>
         </DialogTrigger>
         <Button

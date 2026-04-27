@@ -9,7 +9,13 @@ import { formatDate } from '@/shared/utils/formatDate';
 import { Link } from 'react-router';
 import { Button } from '@/shared/components/ui/atoms/button';
 
-export default function DerivedChildDatasetRow({ child }: { child: DatasetChildren }) {
+export default function DerivedChildDatasetRow({
+  child,
+  onNavigate,
+}: {
+  child: DatasetChildren;
+  onNavigate?: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const tr = child.transformation;
 
@@ -58,7 +64,7 @@ export default function DerivedChildDatasetRow({ child }: { child: DatasetChildr
 
         <TableCell>
           {status !== 'error' ? (
-            <Link to={`/datasets/${child.dataset_id}`}>
+            <Link to={`/datasets/${child.dataset_id}`} onClick={onNavigate}>
               <Button variant={'outline'}>View Dataset</Button>
             </Link>
           ) : (

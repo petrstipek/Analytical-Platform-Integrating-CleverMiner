@@ -21,9 +21,11 @@ import {
 import { AlertTriangle } from 'lucide-react';
 import { useCleverMinerGuidance } from '@/modules/datasets/hooks/cleverMinerGuidance.hook';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 export default function DatasetDetailPage() {
   const { datasetId } = useParams();
+  const [transformationsOpen, setTransformationsOpen] = useState(false);
 
   const {
     clmCandidatesData,
@@ -64,11 +66,12 @@ export default function DatasetDetailPage() {
   );
 
   return (
-    <Dialog>
+    <Dialog open={transformationsOpen} onOpenChange={setTransformationsOpen}>
       <div className="grid w-full grid-cols-1 gap-6">
         <DatasetDetailHeader
           datasetStatsOverview={datasetStatsOverview!}
           datasetId={Number(datasetId)}
+          openDatasetTransformations={() => setTransformationsOpen(true)}
         />
 
         <Tabs defaultValue="datasetProfile" className="w-full">
@@ -160,7 +163,10 @@ export default function DatasetDetailPage() {
               Explore the transformations carried out on this dataset.
             </DialogDescription>
           </DialogHeader>
-          <DatasetDerivedList datasetId={datasetId} />
+          <DatasetDerivedList
+            datasetId={datasetId}
+            onNavigate={() => setTransformationsOpen(false)}
+          />
         </DialogContent>
       </div>
     </Dialog>
