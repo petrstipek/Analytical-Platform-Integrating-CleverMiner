@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Settings, Calculator, BrainCircuit } from 'lucide-react';
 
@@ -22,6 +22,7 @@ import { getBaseProjects } from '@/modules/projects/api/queries/projects.query';
 import { ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
+import { getDatasetAnalysisStats } from '@/modules/datasets/api/dataset-analysis.api';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -104,6 +105,12 @@ export default function CreateTaskWizard({
     queryFn: () => getBaseProjects(),
   });
 
+  const { data: datasetStats } = useQuery({
+    queryKey: ['dataset-column-stats', selectedDatasetId],
+    queryFn: () => getDatasetAnalysisStats(Number(selectedDatasetId)),
+    enabled: !!selectedDatasetId && Number(selectedDatasetId) !== 0,
+  });
+
   const validateAndMove = async (targetStep: number) => {
     if (targetStep < step) {
       setStep(targetStep);
@@ -158,6 +165,13 @@ export default function CreateTaskWizard({
   const {
     formState: { errors },
   } = methods;
+
+  const target = methods.watch('configuration.target');
+
+  const targetCategories = useMemo(
+    () => datasetStats?.columns?.find((c: any) => c.name === target)?.category_order ?? undefined,
+    [datasetStats, target],
+  );
 
   return (
     <FormProvider {...methods}>
@@ -214,7 +228,9 @@ export default function CreateTaskWizard({
                     procedure={procedure}
                   />
                 )}
-                {step === 3 && <Step3Quantifiers procedure={procedure} />}
+                {step === 3 && (
+                  <Step3Quantifiers procedure={procedure} targetCategories={targetCategories} />
+                )}
               </div>
             </CardContent>
           </Card>

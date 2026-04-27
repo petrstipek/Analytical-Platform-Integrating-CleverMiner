@@ -10,9 +10,10 @@ import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation
 
 interface Step3QuantifiersProps {
   procedure: string;
+  targetCategories?: string[];
 }
 
-export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
+export default function Step3Quantifiers({ procedure, targetCategories }: Step3QuantifiersProps) {
   const {
     register,
     control,
@@ -70,6 +71,7 @@ export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
                           desc={field.desc}
                           value={(value as number[]) || null}
                           onChange={onChange}
+                          categories={field.key === 'aad_weights' ? targetCategories : undefined}
                         />
                         {error && <p className="text-destructive text-sm">{error.message}</p>}
                       </div>
