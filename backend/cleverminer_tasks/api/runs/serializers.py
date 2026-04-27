@@ -23,6 +23,7 @@ class RunSerializer(serializers.ModelSerializer):
 class RunSummarySerializer(serializers.ModelSerializer):
     result_summary = serializers.SerializerMethodField()
     task_name = serializers.CharField(source="task.name", read_only=True)
+    procedure = serializers.CharField(source="task.procedure", read_only=True)
 
     class Meta:
         model = Run
@@ -31,6 +32,7 @@ class RunSummarySerializer(serializers.ModelSerializer):
             "task",
             "task_name",
             "status",
+            "procedure",
             "error_log",
             "created_at",
             "started_at",
