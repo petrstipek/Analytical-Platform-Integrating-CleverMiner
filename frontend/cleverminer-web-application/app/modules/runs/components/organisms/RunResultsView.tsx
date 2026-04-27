@@ -118,13 +118,13 @@ export default function RunResultsView({ runResult }: { runResult: RunWithTask }
       return createPanel(<FourFtMinerResultsPanel task={runResult as RunWithTask} />);
 
     case ProceduresType.SD4FTMINER:
-      return createPanel(<Sd4ftMinerResultsPanel task={runResult as RunResultSd4ft} />);
+      return createPanel(<Sd4ftMinerResultsPanel task={runResult as RunWithTask} />);
 
     case ProceduresType.CFMINER:
-      return createPanel(<CfMinerResultsPanel task={runResult as RunResultCf} />);
+      return createPanel(<CfMinerResultsPanel task={runResult as RunWithTask} />);
 
     case ProceduresType.UICMINER:
-      return createPanel(<UicMinerResultsPanel task={runResult as RunResultUic} />);
+      return createPanel(<UicMinerResultsPanel task={runResult as RunWithTask} />);
 
     default:
       return <div>Unsupported procedure</div>;

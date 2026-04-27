@@ -23,7 +23,11 @@ export const getBaseProjectColumns = (onDelete: (id: number) => void): ColumnDef
     header: 'Updated At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
   },
-  { accessorKey: 'members', header: 'Members Count' },
+  {
+    accessorKey: 'members',
+    header: 'Members Count',
+    cell: ({ getValue }) => getValue<any[]>()?.length ?? 0,
+  },
   {
     id: 'actions',
     header: 'Actions',

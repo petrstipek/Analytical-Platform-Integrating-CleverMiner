@@ -11,6 +11,7 @@ export type Task = {
   dataset: number;
   dataset_name: string;
   project: number;
+  project_name: string;
 };
 
 export type TasksSummary = {

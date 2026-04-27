@@ -6,40 +6,43 @@ import {
   RuleChartDialog,
   RuleDetail,
 } from '@/modules/runs/components/molecules';
-import type { RunResultCf } from '@/modules/runs/domain/runs-results.type';
 import type { RuleListRow } from '@/modules/runs/components/molecules/RulesList';
 import { CFMinerDetails } from '@/modules/tasks/components/organisms/procedures';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
-import { getRuleChart } from '@/modules/runs/api/runs.api';
-import { useQuery } from '@tanstack/react-query';
 import { useRuleChart } from '@/modules/runs/hooks/useRuleChart';
+import type { CfRule } from '@/modules/runs/domain/procedures-results.type';
+import type { RunWithTask } from '@/modules/runs/domain/runs-main.type';
+import type { CfSummary } from '@/modules/runs/domain/procedure-summary.type';
 
-export default function CfMinerResultsPanel({ task }: { task: RunResultCf }) {
-  const categories = task.result.summary.categories ?? [];
-  const target = task.result.summary.target;
+export default function CfMinerResultsPanel({ task }: { task: RunWithTask }) {
+  const rules = task.result.rules as CfRule[];
+
+  const summary = task.result.summary as CfSummary;
+  const categories = summary.categories ?? [];
+  const target = summary.target;
 
   const listRules: RuleListRow[] = useMemo(
     () =>
-      task.result.rules.map((r) => ({
+      rules.map((r) => ({
         id: r.id,
         text: r.text,
         structure: r.structure,
         metrics: { base: r.quantifiers.base },
       })),
-    [task.result.rules],
+    [rules],
   );
 
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
-  const selectedRule = task.result.rules.find((r) => r.id === selectedId) ?? null;
+  const selectedRule = rules.find((r) => r.id === selectedId) ?? null;
 
   const { chartUrl, chartLoading, loadChart } = useRuleChart(task.id, selectedId);
 
   return (
     <div>
       <RunConfigurationDetails procedure={ProceduresType.CFMINER}>
-        <CFMinerDetails params={task.run_snapshot} />
+        <CFMinerDetails params={task.run_snapshot} task={task.task} />
       </RunConfigurationDetails>
       <div className="mt-6 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
         <DiscoveredRulesContainer

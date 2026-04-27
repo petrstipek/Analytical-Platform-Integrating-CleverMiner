@@ -36,7 +36,7 @@ export default function FourFtMinerResultsPanel({ task }: { task: any }) {
   return (
     <div>
       <RunConfigurationDetails procedure={ProceduresType.FOURFTMINER}>
-        <FourFtMinerDetails params={task.run_snapshot} />
+        <FourFtMinerDetails params={task.run_snapshot} task={task.task} />
       </RunConfigurationDetails>
       <div className="my-6 grid grid-cols-1 items-stretch gap-6 lg:h-[90vh] lg:grid-cols-3">
         <DiscoveredRulesContainer

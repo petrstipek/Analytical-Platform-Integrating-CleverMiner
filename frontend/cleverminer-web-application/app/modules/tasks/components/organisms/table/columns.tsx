@@ -57,6 +57,11 @@ export const getTasksBaseColumns = (onDelete: (id: number) => void): ColumnDef<T
     },
   },
   {
+    accessorKey: 'project_name',
+    header: 'project',
+    cell: ({ getValue }) => getValue<string>() || 'Not part of a project.',
+  },
+  {
     id: 'actions',
     header: 'Actions',
     cell: ({ row }) => (

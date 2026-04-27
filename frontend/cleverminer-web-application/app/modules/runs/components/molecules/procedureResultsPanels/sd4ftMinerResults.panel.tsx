@@ -6,7 +6,6 @@ import {
   RuleChartDialog,
   RuleDetail,
 } from '@/modules/runs/components/molecules';
-import type { RunResultSd4ft } from '@/modules/runs/domain/runs-results.type';
 import type { RuleListRow } from '@/modules/runs/components/molecules/RulesList';
 import { KeyValueCard } from '@/modules/runs/components/atoms';
 import { SD4ftMinerDetails } from '@/modules/tasks/components/organisms/procedures';
@@ -14,14 +13,16 @@ import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConf
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import { ConfidenceComparison } from '@/modules/runs/components/organisms';
 import { getLabel } from '@/modules/runs/utils/getRuleLabel';
-import { getRuleChart } from '@/modules/runs/api/runs.api';
-import { useQuery } from '@tanstack/react-query';
 import { useRuleChart } from '@/modules/runs/hooks/useRuleChart';
+import type { RunWithTask } from '@/modules/runs/domain/runs-main.type';
+import type { Sd4ftRule } from '@/modules/runs/domain/procedures-results.type';
 
-export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft }) {
+export default function Sd4ftMinerResultsPanel({ task }: { task: RunWithTask }) {
+  const rules = task.result.rules as Sd4ftRule[];
+
   const listRules: RuleListRow[] = useMemo(
     () =>
-      task.result.rules.map((r) => ({
+      rules.map((r) => ({
         id: r.id,
         text: r.text,
         structure: r.structure,
@@ -30,11 +31,11 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
           base: r.quantifiers.base1,
         },
       })),
-    [task.result.rules],
+    [rules],
   );
 
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
-  const selectedRule = task.result.rules.find((r) => r.id === selectedId) ?? null;
+  const selectedRule = rules.find((r) => r.id === selectedId) ?? null;
 
   const label1 = selectedRule ? getLabel(selectedRule.structure?.frst) : '';
   const label2 = selectedRule ? getLabel(selectedRule.structure?.scnd) : '';
@@ -44,7 +45,7 @@ export default function Sd4ftMinerResultsPanel({ task }: { task: RunResultSd4ft 
   return (
     <div>
       <RunConfigurationDetails procedure={ProceduresType.SD4FTMINER}>
-        <SD4ftMinerDetails params={task.run_snapshot} />
+        <SD4ftMinerDetails params={task.run_snapshot} task={task.task} />
       </RunConfigurationDetails>
       <div className="my-6 grid grid-cols-1 items-stretch gap-6 lg:h-[90vh] lg:grid-cols-3">
         <DiscoveredRulesContainer
