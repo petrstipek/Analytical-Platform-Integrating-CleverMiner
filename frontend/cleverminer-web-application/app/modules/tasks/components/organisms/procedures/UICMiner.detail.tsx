@@ -43,9 +43,9 @@ export default function UICMinerDetails({ params, task }: { params: any; task: T
         {params.cond?.attributes?.length > 0 && (
           <div className="md:col-span-2">
             <h3 className="mb-2 text-sm font-semibold tracking-wider text-slate-500 uppercase">
-              Antecedent
+              Condition
             </h3>
-            <CedentDetail title="Antecedent" data={params.cond} color="amber" />
+            <CedentDetail title="Condition" data={params.cond} color="amber" />
           </div>
         )}
       </div>

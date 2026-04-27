@@ -51,6 +51,12 @@ export default function RulesList({
             {renderCedent(rule.structure?.ante ?? [], procedure)}
             <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
             {renderCedent(rule.structure?.succ ?? [], procedure)}
+            {(rule.structure?.cond ?? []).length > 0 && (
+              <div className="flex items-center gap-1 text-xs text-slate-500">
+                <span className="font-semibold">|</span>
+                {renderCedent(rule.structure?.cond ?? [], procedure)}
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-1 text-xs text-slate-500">
             <span className="font-semibold">:</span>
@@ -72,6 +78,12 @@ export default function RulesList({
           {renderCedent(rule.structure?.ante ?? [], procedure)}
           <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
           {renderCedent(rule.structure?.succ ?? [], procedure)}
+          {(rule.structure?.cond ?? []).length > 0 && (
+            <div className="flex items-center gap-1 text-xs text-slate-500">
+              <span className="font-semibold">|</span>
+              {renderCedent(rule.structure?.cond ?? [], procedure)}
+            </div>
+          )}
         </div>
       );
     }
@@ -80,6 +92,12 @@ export default function RulesList({
       return (
         <div className="flex flex-wrap items-center gap-2">
           {renderCedent(rule.structure?.ante ?? [], procedure)}
+          {(rule.structure?.cond ?? []).length > 0 && (
+            <div className="flex items-center gap-1 text-xs text-slate-500">
+              <span className="font-semibold">|</span>
+              {renderCedent(rule.structure?.cond ?? [], procedure)}
+            </div>
+          )}
         </div>
       );
     }

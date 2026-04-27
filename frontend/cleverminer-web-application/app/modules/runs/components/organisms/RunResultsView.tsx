@@ -10,12 +10,7 @@ import {
 import React from 'react';
 import type { RunWithTask } from '@/modules/runs/domain/runs-main.type';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
-import { collapseAllNested, darkStyles, defaultStyles, JsonView } from 'react-json-view-lite';
-import type {
-  RunResultCf,
-  RunResultSd4ft,
-  RunResultUic,
-} from '@/modules/runs/domain/runs-results.type';
+import { collapseAllNested, defaultStyles, JsonView } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 import { ModulePagesHeader } from '@/shared/components/molecules';
 import { Button } from '@/shared/components/ui/atoms/button';
