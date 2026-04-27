@@ -4,7 +4,7 @@ import { formatDate } from '@/shared/utils/formatDate';
 import { RunStatusBadge } from '@/modules/runs/components/atoms/RunStatusBadge';
 import { RunAchievedResultBadge } from '@/modules/runs/components/atoms/RunAchievedResultBadge';
 import { Button } from '@/shared/components/ui/atoms/button';
-import { Trash2 } from 'lucide-react';
+import { ArrowUpDown, Trash2 } from 'lucide-react';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 import { PROCEDURE_LABELS } from '@/shared/domain/procedures.type';
 
@@ -37,8 +37,18 @@ export const RunsRunningColumns: ColumnDef<RunResult>[] = [
   },
   {
     accessorKey: 'started_at',
-    header: 'Started At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Started At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'result_summary.procedure',
@@ -79,8 +89,18 @@ export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<Run
   },
   {
     accessorKey: 'started_at',
-    header: 'Started At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Started At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'result_summary.procedure',

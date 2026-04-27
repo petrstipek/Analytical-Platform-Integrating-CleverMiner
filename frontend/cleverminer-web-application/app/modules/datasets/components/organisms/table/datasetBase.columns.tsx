@@ -3,7 +3,7 @@ import { formatDate } from '@/shared/utils/formatDate';
 import { DatasetSourceTypeBadge } from '@/modules/datasets/components/atoms/DatasetSourceTypeBadge';
 import type { Dataset } from '@/modules/datasets/api/types/datasetBase.type';
 import { BaseBooleanStatusBadge } from '@/shared/components/atoms';
-import { Trash2 } from 'lucide-react';
+import { ArrowUpDown, Trash2 } from 'lucide-react';
 import { Button } from '@/shared/components/ui/atoms/button';
 
 export const getDatasetBaseColumns = (onDelete: (id: number) => void): ColumnDef<Dataset>[] => [
@@ -22,8 +22,18 @@ export const getDatasetBaseColumns = (onDelete: (id: number) => void): ColumnDef
   },
   {
     accessorKey: 'created_at',
-    header: 'Created At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Created At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'used_in_tasks',
