@@ -44,7 +44,7 @@ export default function CfMinerResultsPanel({ task }: { task: RunWithTask }) {
       <RunConfigurationDetails procedure={ProceduresType.CFMINER}>
         <CFMinerDetails params={task.run_snapshot} task={task.task} />
       </RunConfigurationDetails>
-      <div className="mt-6 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
+      <div className="my-6 grid grid-cols-1 items-stretch gap-6 lg:h-[90vh] lg:grid-cols-3">
         <DiscoveredRulesContainer
           rules={listRules}
           selectedId={selectedId}
