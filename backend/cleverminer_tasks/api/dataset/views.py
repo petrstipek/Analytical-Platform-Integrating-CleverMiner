@@ -301,7 +301,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
             ["id", "name", "source", "delimiter", "created_at", "parent", "is_ready"]
         )
 
-        for dataset in datasets.iterator():
+        for dataset in datasets.iterator(chunk_size=2000):
             writer.writerow(
                 [
                     dataset.id,
