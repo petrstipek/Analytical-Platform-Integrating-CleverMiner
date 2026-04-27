@@ -142,7 +142,7 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
       desc: 'Consecutive steps down',
       type: 'int',
       group: 'Histogram Steps',
-      required: true,
+      required: false,
       min: 1,
     },
     {

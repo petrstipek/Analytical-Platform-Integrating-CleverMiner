@@ -99,7 +99,7 @@ export const createTaskSchema = z
       const cedent = configuration[key] as any;
       if (!cedent || cedent.attributes.length === 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: `${label} requires at least one attribute`,
           path: ['configuration', key, 'attributes'],
         });
@@ -135,7 +135,7 @@ export const createTaskSchema = z
         const val = quantifiers[field.key];
         if (val == null) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: 'custom',
             message: `${field.label} is required`,
             path: ['configuration', 'quantifiers', field.key],
           });
@@ -148,19 +148,33 @@ export const createTaskSchema = z
       if (val == null || typeof val !== 'number') continue;
       if (field.min !== undefined && val < field.min) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: `${field.label} must be at least ${field.min}`,
           path: ['configuration', 'quantifiers', field.key],
         });
       }
       if (field.max !== undefined && val > field.max) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: `${field.label} must be at most ${field.max}`,
           path: ['configuration', 'quantifiers', field.key],
         });
       }
     }
-  });
+  })
 
+  .superRefine((data, ctx) => {
+    if (data.procedure === ProceduresType.CFMINER) {
+      const q = data.configuration?.quantifiers ?? {};
+      const hasStep = ['S_Up', 'S_Down', 'S_Any_Up', 'S_Any_Down'].some((k) => q[k] != null);
+      if (!hasStep) {
+        ctx.addIssue({
+          code: 'custom',
+          message:
+            'At least one histogram step quantifier (S_Up, S_Down, S_Any_Up or S_Any_Down) is required',
+          path: ['configuration', 'quantifiers', 'S_Down'],
+        });
+      }
+    }
+  });
 export type CreateTaskFormValues = z.infer<typeof createTaskSchema>;

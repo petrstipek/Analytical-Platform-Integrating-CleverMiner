@@ -7,6 +7,7 @@ import type { QuantifierFieldDef } from '@/modules/tasks/domain/quantifier-defin
 import { VectorInput } from '@/modules/tasks/components/molecules/';
 import InfoTooltip from '@/modules/tasks/components/atoms/InfoTooltip';
 import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
+import { ProceduresType } from '@/shared/domain/procedures.type';
 
 interface Step3QuantifiersProps {
   procedure: string;
@@ -116,6 +117,19 @@ export default function Step3Quantifiers({ procedure, targetCategories }: Step3Q
                 </div>
               );
             })}
+            {groupName === 'Histogram Steps' && procedure === ProceduresType.CFMINER && (
+              <p className="text-muted-foreground col-span-2 text-[11px]">
+                * At least one step quantifier is required.
+              </p>
+            )}
+
+            {groupName === 'Histogram Steps' &&
+              procedure === ProceduresType.CFMINER &&
+              (quantifierErrors?.S_Down as any)?.message && (
+                <p className="text-destructive col-span-2 text-sm">
+                  {(quantifierErrors?.S_Down as any)?.message}
+                </p>
+              )}
           </CardContent>
         </Card>
       ))}
