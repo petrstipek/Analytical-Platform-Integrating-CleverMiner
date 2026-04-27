@@ -99,7 +99,7 @@ export default function AttributeRow({
             value={attribute.attr_type}
             onValueChange={(v) => handleTypeChange(v as AttributeType)}
           >
-            <SelectTrigger className="h-8">
+            <SelectTrigger className="h-8 w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -113,7 +113,7 @@ export default function AttributeRow({
         </div>
 
         {isOne ? (
-          <div className="w-[160px] space-y-1">
+          <div className="w-[120px] space-y-1">
             <span className="text-muted-foreground text-xs font-medium">Value</span>
             {!columnName ? (
               <Input className="h-8" placeholder="Select column first" disabled />
@@ -124,8 +124,8 @@ export default function AttributeRow({
                 value={attribute.value ?? ''}
                 onValueChange={(val) => updateField('value', val)}
               >
-                <SelectTrigger className="h-8 bg-white">
-                  <SelectValue placeholder="Select value" />
+                <SelectTrigger className="h-8 w-full bg-white">
+                  <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
                   {columnValuesData!.values.map((v: string) => (
