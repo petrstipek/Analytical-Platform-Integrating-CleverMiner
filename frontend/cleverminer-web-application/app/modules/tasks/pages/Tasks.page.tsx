@@ -83,6 +83,7 @@ export default function TasksPage() {
             showSearch={true}
             onRowClick={(row) => navigate('/tasks/' + row.id)}
             exportData={exportTaskMutation.mutate}
+            initialSorting={[{ id: 'created_at', desc: true }]}
           />
         </PlatformCard>
       </div>

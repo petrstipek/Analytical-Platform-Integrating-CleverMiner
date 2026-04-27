@@ -46,6 +46,7 @@ interface DataTableProps<TData, TValue> {
   getSubRows?: (row: TData) => TData[] | undefined;
   showBooleanFilter?: boolean;
   booleanFilterColumn?: string;
+  initialSorting?: SortingState;
 }
 
 export function DataTable<TData, TValue>({
@@ -58,9 +59,10 @@ export function DataTable<TData, TValue>({
   getSubRows,
   showBooleanFilter,
   booleanFilterColumn,
+  initialSorting,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
 
   const table = useReactTable({
     data,
@@ -76,6 +78,9 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
+    },
+    initialState: {
+      sorting: initialSorting ?? [],
     },
   });
 

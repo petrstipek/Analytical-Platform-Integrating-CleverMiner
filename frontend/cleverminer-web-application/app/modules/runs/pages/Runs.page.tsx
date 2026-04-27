@@ -78,6 +78,7 @@ export default function RunsPage() {
               onRowClick={(row) => navigate(`/run/${row.id}`)}
               showSearch={true}
               mainSearchColumn={'task_name'}
+              initialSorting={[{ id: 'started_at', desc: true }]}
             />
           </PlatformCard>
         )}
@@ -93,6 +94,7 @@ export default function RunsPage() {
             showSearch={true}
             mainSearchColumn={'task_name'}
             exportData={exportRunsMutation.mutate}
+            initialSorting={[{ id: 'started_at', desc: true }]}
           />
         </PlatformCard>
       </div>
