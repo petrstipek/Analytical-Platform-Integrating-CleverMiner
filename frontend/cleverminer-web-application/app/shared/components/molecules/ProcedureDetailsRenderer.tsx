@@ -18,7 +18,7 @@ export const renderProcedureDetails = (task: Task) => {
     case ProceduresType.FOURFTMINER:
       return <FourFtMinerDetails params={task.params} />;
     case ProceduresType.UICMINER:
-      return <UICMinerDetails params={task.params} />;
+      return <UICMinerDetails params={task.params} task={task} />;
     default:
       return (
         <Alert>

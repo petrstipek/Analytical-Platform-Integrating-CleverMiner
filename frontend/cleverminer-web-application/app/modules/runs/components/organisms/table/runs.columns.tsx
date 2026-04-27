@@ -1,7 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { type RunResult, RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import { formatDate } from '@/shared/utils/formatDate';
-import { elapsed } from '@/modules/tasks/utils/time-calculations';
 import { RunStatusBadge } from '@/modules/runs/components/atoms/RunStatusBadge';
 import { RunAchievedResultBadge } from '@/modules/runs/components/atoms/RunAchievedResultBadge';
 import { Button } from '@/shared/components/ui/atoms/button';
