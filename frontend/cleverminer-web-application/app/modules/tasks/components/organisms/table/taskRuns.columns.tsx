@@ -7,7 +7,7 @@ import { ElapsedCell } from '@/shared/components/atoms';
 import { ErrorLogCell } from '@/modules/tasks/components/molecules';
 import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import { Button } from '@/shared/components/ui/atoms/button';
-import { Square, Trash2 } from 'lucide-react';
+import { ArrowUpDown, Square, Trash2 } from 'lucide-react';
 
 export const getTaskRunsColumns = (
   onDelete: (id: number) => void,
@@ -24,7 +24,17 @@ export const getTaskRunsColumns = (
   },
   {
     accessorKey: 'started_at',
-    header: 'Started At',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Started At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ getValue }) => formatDate(getValue<string>()),
   },
   {

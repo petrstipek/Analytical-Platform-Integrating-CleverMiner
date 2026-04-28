@@ -143,6 +143,7 @@ export default function TaskDetailPage() {
               columns={columns}
               data={tasksRuns!}
               onRowClick={(row) => handleRunClick(row as any, navigate)}
+              initialSorting={[{ id: 'started_at', desc: true }]}
             />
           )}
         </div>
