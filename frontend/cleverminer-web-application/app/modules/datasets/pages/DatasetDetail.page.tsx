@@ -156,17 +156,19 @@ export default function DatasetDetailPage() {
           </TabsContent>
         </Tabs>
 
-        <DialogContent className="max-w-6xl">
+        <DialogContent className="flex max-h-[80vh] max-w-6xl flex-col">
           <DialogHeader>
             <DialogTitle>Dataset Transformations</DialogTitle>
             <DialogDescription>
               Explore the transformations carried out on this dataset.
             </DialogDescription>
           </DialogHeader>
-          <DatasetDerivedList
-            datasetId={datasetId}
-            onNavigate={() => setTransformationsOpen(false)}
-          />
+          <div className={'min-h-0 flex-1 overflow-y-auto'}>
+            <DatasetDerivedList
+              datasetId={datasetId}
+              onNavigate={() => setTransformationsOpen(false)}
+            />
+          </div>
         </DialogContent>
       </div>
     </Dialog>

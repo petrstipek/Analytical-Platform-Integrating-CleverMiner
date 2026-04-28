@@ -74,7 +74,7 @@ export default function DerivedChildDatasetRow({
       </TableRow>
 
       {open && (
-        <TableRow>
+        <TableRow className={'max-h-[50vh] overflow-y-auto'}>
           <TableCell colSpan={5} className="max-w-0 pt-2 pb-4">
             <div className="bg-card space-y-3 overflow-hidden rounded-lg border p-4">
               <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
@@ -113,7 +113,9 @@ export default function DerivedChildDatasetRow({
               {tr?.transform_spec && Object.keys(tr.transform_spec).length > 0 && (
                 <div>
                   <p className="text-muted-foreground mb-1 text-xs">Transform spec</p>
-                  <TransformSteps spec={tr.transform_spec} />
+                  <div className="max-h-[400px] overflow-y-auto rounded-md">
+                    <TransformSteps spec={tr.transform_spec} />
+                  </div>
                 </div>
               )}
             </div>
