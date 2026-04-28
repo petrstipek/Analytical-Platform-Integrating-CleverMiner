@@ -48,3 +48,8 @@ export async function getRuleChart(runId: number, selectedRuleId: number) {
   const res = await apiClient.get(`/runs/${runId}/rules/${selectedRuleId}/chart/`);
   return res.data.url;
 }
+
+export async function stopRun(runId: number) {
+  const res = await apiClient.post(`/runs/${runId}/stop_task_execution/`);
+  return res.data;
+}

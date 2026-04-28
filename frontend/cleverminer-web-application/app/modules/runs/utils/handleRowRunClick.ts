@@ -9,6 +9,9 @@ export const handleRunClick = (row: RunResult, navigate: NavigateFunction) => {
   } else if (row.status === RunResultStatus.Failed) {
     toast.error('Run failed.');
     return;
+  } else if (row.status === RunResultStatus.Canceled) {
+    toast.warning('Run was canceled.');
+    return;
   }
   navigate(`/runs/${row.id}`);
 };

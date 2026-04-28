@@ -47,6 +47,7 @@ interface DataTableProps<TData, TValue> {
   showBooleanFilter?: boolean;
   booleanFilterColumn?: string;
   initialSorting?: SortingState;
+  showStatus?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -60,6 +61,7 @@ export function DataTable<TData, TValue>({
   showBooleanFilter,
   booleanFilterColumn,
   initialSorting,
+  showStatus = true,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
@@ -91,7 +93,7 @@ export function DataTable<TData, TValue>({
     (procedureColumn?.getFilterValue() as ProceduresType | undefined) ?? 'all';
 
   const statusColumn = table.getColumn('status');
-  const showStatusFilter = !!statusColumn;
+  const showStatusFilter = !!statusColumn && showStatus;
   const statusOptions = useMemo(() => Object.values(RunResultStatus), []);
   const selectedStatus = (statusColumn?.getFilterValue() as RunResultStatus | undefined) ?? 'all';
 

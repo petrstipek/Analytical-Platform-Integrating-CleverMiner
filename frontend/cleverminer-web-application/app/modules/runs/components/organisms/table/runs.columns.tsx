@@ -4,13 +4,16 @@ import { formatDate } from '@/shared/utils/formatDate';
 import { RunStatusBadge } from '@/modules/runs/components/atoms/RunStatusBadge';
 import { RunAchievedResultBadge } from '@/modules/runs/components/atoms/RunAchievedResultBadge';
 import { Button } from '@/shared/components/ui/atoms/button';
-import { ArrowUpDown, Trash2 } from 'lucide-react';
+import { ArrowUpDown, Square, Trash2 } from 'lucide-react';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 import { PROCEDURE_LABELS } from '@/shared/domain/procedures.type';
 import { ElapsedCell } from '@/shared/components/atoms';
 import type { TaskRun } from '@/modules/tasks/domain/task-run.type';
 
-export const RunsRunningColumns: ColumnDef<RunResult>[] = [
+export const getRunningRunsColumns = (
+  onDelete: (id: number) => void,
+  onStop?: (id: number) => void,
+): ColumnDef<RunResult>[] => [
   { accessorKey: 'id', header: 'Run id' },
   {
     accessorKey: 'task_name',
@@ -53,16 +56,58 @@ export const RunsRunningColumns: ColumnDef<RunResult>[] = [
     },
   },
   {
-    accessorKey: 'result_summary.procedure',
-    header: 'Achieved Result',
-    cell: ({ row }) => (
-      <RunAchievedResultBadge status={row.original?.result_summary?.rule_count! > 0} />
-    ),
+    id: 'elapsed',
+    header: 'Elapsed',
+    cell: ({ row }) => <ElapsedCell row={row.original as unknown as TaskRun} />,
   },
-  { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },
+  {
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => {
+      const isActive = [RunResultStatus.Queued, RunResultStatus.Running].includes(
+        row.original?.status,
+      );
+
+      if (isActive) {
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-amber-500 hover:bg-amber-50 hover:text-amber-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              onStop?.(row.original.id);
+            }}
+          >
+            Stop
+            <Square className="h-4 w-4" />
+          </Button>
+        );
+      }
+
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-red-500 hover:bg-red-50 hover:text-red-700"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(row.original.id);
+          }}
+        >
+          {' '}
+          Delete
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      );
+    },
+  },
 ];
 
-export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<RunResult>[] => [
+export const getBaseRunColumns = (
+  onDelete: (id: number) => void,
+  onStop?: (id: number) => void,
+): ColumnDef<RunResult>[] => [
   { accessorKey: 'id', header: 'Run id' },
   {
     accessorKey: 'task_name',
@@ -121,9 +166,27 @@ export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<Run
     id: 'actions',
     header: 'Actions',
     cell: ({ row }) => {
-      console.log(row.original.status);
-      if ([RunResultStatus.Queued, RunResultStatus.Running].includes(row.original?.status))
-        return <div>Cannot delete not finished run!</div>;
+      const isActive = [RunResultStatus.Queued, RunResultStatus.Running].includes(
+        row.original?.status,
+      );
+
+      if (isActive) {
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-amber-500 hover:bg-amber-50 hover:text-amber-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              onStop?.(row.original.id);
+            }}
+          >
+            Stop
+            <Square className="h-4 w-4" />
+          </Button>
+        );
+      }
+
       return (
         <Button
           variant="ghost"
@@ -134,6 +197,8 @@ export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<Run
             onDelete(row.original.id);
           }}
         >
+          {' '}
+          Delete
           <Trash2 className="h-4 w-4" />
         </Button>
       );
