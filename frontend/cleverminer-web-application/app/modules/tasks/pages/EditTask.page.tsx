@@ -41,6 +41,7 @@ export default function EditTaskPage() {
       datasets={datasets}
       datasetsLoading={datasetsLoading}
       existingTask={existingTask}
+      projectId={String(existingTask?.project)}
     />
   );
 }
