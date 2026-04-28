@@ -56,27 +56,19 @@ export default function ColumnDetailsDrawer({
   onRemoveStep,
   stagedSteps,
 }: ColumnDetailsDrawerProps) {
-  if (!column) return null;
+  const existingDiscretize = stagedSteps.find((s) => s.op === TransformOptions.discretize) as any;
+  const initialBinK = existingDiscretize?.k ?? 5;
 
-  const { config, updateConfig, derived } = useColumnTransformConfig(column.name);
-  const addStep = useCallback((step: TransformStep) => onAddStep(step), [onAddStep]);
-  const isNumeric = column.dtype.includes('int') || column.dtype.includes('float');
-  const strategies = (Object.values(FillnaStrategiesOptions) as FillnaStrategy[]).filter(
-    (s) =>
-      isNumeric || s === FillnaStrategiesOptions.mode || s === FillnaStrategiesOptions.constant,
+  const { config, updateConfig, derived } = useColumnTransformConfig(
+    column?.name ?? '',
+    initialBinK,
   );
+  const addStep = useCallback((step: TransformStep) => onAddStep(step), [onAddStep]);
+
   const [selectedFillStrategy, setSelectedFillStrategy] = useState<FillnaStrategy | null>(
     (stagedSteps.find((s) => s.op === TransformOptions.fillMissingNumbers) as any)?.strategy ??
       null,
   );
-
-  const fillNaStrategy =
-    (stagedSteps.find((s) => s.op === TransformOptions.fillMissingNumbers) as any)?.strategy ??
-    FillnaStrategiesOptions.mean;
-
-  const discretizationStrategy = (
-    stagedSteps.find((s) => s.op === TransformOptions.discretize) as any
-  )?.method;
 
   const [showExplicit, setShowExplicit] = useState(
     stagedSteps.some(
@@ -91,12 +83,28 @@ export default function ColumnDetailsDrawer({
     ) => {
       onAddStep({
         op,
-        column: column.name,
+        column: column?.name ?? '',
         ...(payload as any),
       } as T);
     },
-    [onAddStep, column.name],
+    [onAddStep, column?.name],
   );
+
+  if (!column) return null;
+
+  const isNumeric = column.dtype.includes('int') || column.dtype.includes('float');
+  const strategies = (Object.values(FillnaStrategiesOptions) as FillnaStrategy[]).filter(
+    (s) =>
+      isNumeric || s === FillnaStrategiesOptions.mode || s === FillnaStrategiesOptions.constant,
+  );
+
+  const fillNaStrategy =
+    (stagedSteps.find((s) => s.op === TransformOptions.fillMissingNumbers) as any)?.strategy ??
+    FillnaStrategiesOptions.mean;
+
+  const discretizationStrategy = (
+    stagedSteps.find((s) => s.op === TransformOptions.discretize) as any
+  )?.method;
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="right">
@@ -227,16 +235,16 @@ export default function ColumnDetailsDrawer({
                       <div className="flex items-center gap-2">
                         <Checkbox
                           id="overwrite"
-                          checked={config.overwriteOriginal}
+                          checked={!config.overwriteOriginal}
                           onCheckedChange={(checked: CheckedState) =>
-                            updateConfig({ overwriteOriginal: checked === true })
+                            updateConfig({ overwriteOriginal: checked !== true })
                           }
                         />
                         <Label htmlFor="overwrite" className="text-xs text-gray-700">
-                          Overwrite original column
+                          Create New Column
                         </Label>
                       </div>
-                      {config.overwriteOriginal && (
+                      {!config.overwriteOriginal && (
                         <div className="grid gap-2">
                           <Label className="text-xs text-gray-600">Output column</Label>
                           <Input
@@ -257,7 +265,10 @@ export default function ColumnDetailsDrawer({
                           type="number"
                           min={2}
                           value={config.binK}
-                          onChange={(e) => updateConfig({ binK: Number(e.target.value) })}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            if (!isNaN(val)) updateConfig({ binK: val });
+                          }}
                         />
                       </div>
 
@@ -269,12 +280,11 @@ export default function ColumnDetailsDrawer({
                               : 'outline'
                           }
                           onClick={() => {
+                            setShowExplicit(false);
                             addColumnStep(TransformOptions.discretize, {
                               method: 'quantile',
                               k: config.binK,
-                              output_column: config.overwriteOriginal
-                                ? column.name
-                                : `${column.name}_bin`,
+                              output_column: derived.resolvedOutputCol,
                             });
                           }}
                         >
@@ -288,24 +298,26 @@ export default function ColumnDetailsDrawer({
                               : 'outline'
                           }
                           onClick={() => {
+                            setShowExplicit(false);
                             addColumnStep(TransformOptions.discretize, {
                               method: 'equal_width',
                               k: config.binK,
-                              output_column: config.overwriteOriginal
-                                ? column.name
-                                : `${column.name}_bin`,
+                              output_column: derived.resolvedOutputCol,
                             });
                           }}
                         >
                           Equal Width ({config.binK} bins)
                         </Button>
                         <Button
-                          variant={
-                            discretizationStrategy === DiscretizeStrategiesOptions.explicit
-                              ? 'default'
-                              : 'outline'
-                          }
-                          onClick={() => setShowExplicit(true)}
+                          variant={showExplicit ? 'default' : 'outline'}
+                          onClick={() => {
+                            setShowExplicit(true);
+
+                            const existingIdx = stagedSteps.findIndex(
+                              (s) => s.op === TransformOptions.discretize,
+                            );
+                            if (existingIdx !== -1) onRemoveStep(existingIdx);
+                          }}
                         >
                           Explicit
                         </Button>

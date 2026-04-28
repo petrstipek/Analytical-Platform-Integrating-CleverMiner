@@ -22,7 +22,7 @@ import {
 import { Button } from '@/shared/components/ui/atoms/button';
 import { Input } from '@/shared/components/ui/atoms/input';
 import { Search, ChevronLeft, ChevronRight, Inbox, Download } from 'lucide-react';
-import { ProceduresType } from '@/shared/domain/procedures.type';
+import { PROCEDURE_LABELS, ProceduresType } from '@/shared/domain/procedures.type';
 import {
   Select,
   SelectContent,
@@ -46,6 +46,8 @@ interface DataTableProps<TData, TValue> {
   getSubRows?: (row: TData) => TData[] | undefined;
   showBooleanFilter?: boolean;
   booleanFilterColumn?: string;
+  initialSorting?: SortingState;
+  showStatus?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -58,9 +60,11 @@ export function DataTable<TData, TValue>({
   getSubRows,
   showBooleanFilter,
   booleanFilterColumn,
+  initialSorting,
+  showStatus = true,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
 
   const table = useReactTable({
     data,
@@ -77,6 +81,9 @@ export function DataTable<TData, TValue>({
       sorting,
       columnFilters,
     },
+    initialState: {
+      sorting: initialSorting ?? [],
+    },
   });
 
   const procedureColumn = table.getColumn('procedure');
@@ -86,7 +93,7 @@ export function DataTable<TData, TValue>({
     (procedureColumn?.getFilterValue() as ProceduresType | undefined) ?? 'all';
 
   const statusColumn = table.getColumn('status');
-  const showStatusFilter = !!statusColumn;
+  const showStatusFilter = !!statusColumn && showStatus;
   const statusOptions = useMemo(() => Object.values(RunResultStatus), []);
   const selectedStatus = (statusColumn?.getFilterValue() as RunResultStatus | undefined) ?? 'all';
 
@@ -129,7 +136,7 @@ export function DataTable<TData, TValue>({
               )}
 
               {showProcedureFilter && (
-                <div className="w-full sm:w-[260px]">
+                <div>
                   <Select
                     value={selectedProcedure}
                     onValueChange={(value) => {
@@ -145,7 +152,7 @@ export function DataTable<TData, TValue>({
                       <SelectItem value="all">All procedures</SelectItem>
                       {procedureOptions.map((procedure) => (
                         <SelectItem key={procedure} value={procedure}>
-                          {procedure}
+                          {PROCEDURE_LABELS[procedure]}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -153,7 +160,7 @@ export function DataTable<TData, TValue>({
                 </div>
               )}
               {showStatusFilter && (
-                <div className="w-full sm:w-[260px]">
+                <div>
                   <Select
                     value={selectedStatus}
                     onValueChange={(value) => {

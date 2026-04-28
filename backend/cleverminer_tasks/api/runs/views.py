@@ -1,6 +1,7 @@
 import csv
 
 from celery.result import AsyncResult
+from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework import permissions, viewsets, status
@@ -142,3 +143,18 @@ class RunViewSet(viewsets.ReadOnlyModelViewSet):
         ]
 
         return Response({"runs": data})
+
+    @action(detail=True, methods=["get"], url_path="rules/(?P<rule_id>[^/.]+)/chart")
+    def rule_chart(self, request, pk=None, rule_id=None):
+        run = self.get_object()
+        rule = next((r for r in run.result["rules"] if r["id"] == int(rule_id)), None)
+        if not rule or not rule.get("chart_path"):
+            return Response({"detail": "No chart available."}, status=404)
+
+        path = rule["chart_path"]
+        url = default_storage.url(path)
+
+        if url.startswith("/"):
+            url = request.build_absolute_uri(url)
+
+        return Response({"url": url})

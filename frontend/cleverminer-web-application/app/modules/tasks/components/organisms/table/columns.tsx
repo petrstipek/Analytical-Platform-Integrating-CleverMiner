@@ -4,6 +4,7 @@ import { Button } from '@/shared/components/ui/atoms/button';
 import { ArrowUpDown, Trash2 } from 'lucide-react';
 import { formatDate } from '@/shared/utils/formatDate';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { PROCEDURE_LABELS } from '@/shared/domain/procedures.type';
 
 export const getTasksBaseColumns = (onDelete: (id: number) => void): ColumnDef<Task>[] => [
   {
@@ -35,7 +36,7 @@ export const getTasksBaseColumns = (onDelete: (id: number) => void): ColumnDef<T
         <span
           className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${styles.bg} ${styles.text}`}
         >
-          {procedure}
+          <span>{PROCEDURE_LABELS[procedure]}</span>
         </span>
       );
     },
@@ -54,6 +55,11 @@ export const getTasksBaseColumns = (onDelete: (id: number) => void): ColumnDef<T
         </Button>
       );
     },
+  },
+  {
+    accessorKey: 'project_name',
+    header: 'project',
+    cell: ({ getValue }) => getValue<string>() || 'Not part of a project.',
   },
   {
     id: 'actions',

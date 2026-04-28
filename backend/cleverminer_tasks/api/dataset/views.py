@@ -6,7 +6,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 
 from cleverminer_tasks.api.dataset.serializers import (
@@ -71,6 +71,9 @@ class DatasetViewSet(viewsets.ModelViewSet):
             "get_dataset_profile",
             "transformation",
             "children_transformations",
+            "set_column_visible",
+            "create_derived",
+            "column_values",
         ):
             return [permissions.IsAuthenticated(), IsDatasetOwnerOrProjectMember()]
 
@@ -301,7 +304,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
             ["id", "name", "source", "delimiter", "created_at", "parent", "is_ready"]
         )
 
-        for dataset in datasets.iterator():
+        for dataset in datasets.iterator(chunk_size=2000):
             writer.writerow(
                 [
                     dataset.id,
@@ -350,3 +353,73 @@ class DatasetViewSet(viewsets.ModelViewSet):
             )
 
         return Response({"dataset_id": dataset.id, "children": data})
+
+    @action(
+        detail=True, methods=["get"], url_path="columns/(?P<column_name>[^/.]+)/values"
+    )
+    def column_values(self, request, pk=None, column_name=None):
+        dataset = self.get_object()
+        profile = dataset.profile
+
+        # use stored category_order if available — these are exactly CLM's names
+        stats = profile.dataset_stats or {}
+        for col in stats.get("columns", []):
+            if col["name"] == column_name and col.get("category_order"):
+                return Response(
+                    {
+                        "dataset_id": dataset.id,
+                        "column": column_name,
+                        "values": col["category_order"],
+                    }
+                )
+
+        # fallback to raw values
+        df = load_dataset(dataset, columns=[column_name])
+        values = df[column_name].dropna().unique().tolist()
+        values = [str(v) for v in values]
+        values.sort()
+        return Response(
+            {"dataset_id": dataset.id, "column": column_name, "values": values}
+        )
+
+    @action(
+        detail=True,
+        methods=["patch"],
+        url_path="columns/(?P<column_name>[^/.]+)/visible",
+        parser_classes=[JSONParser],
+    )
+    def set_column_visible(self, request, pk=None, column_name=None):
+        dataset = self.get_object()
+        profile = dataset.profile
+
+        columns = profile.dataset_columns
+        if not columns:
+            return Response({"detail": "No columns profile found."}, status=404)
+
+        visible = request.data.get("visible")
+        if visible is None:
+            return Response({"detail": "`visible` field is required."}, status=400)
+
+        updated = False
+        for col in columns:
+            if col["name"] == column_name:
+                col["visible"] = bool(visible)
+                updated = True
+                break
+
+        if not updated:
+            return Response(
+                {"detail": f"Column '{column_name}' not found."}, status=404
+            )
+
+        stats = profile.dataset_stats or {}
+        for col in stats.get("columns", []):
+            if col["name"] == column_name:
+                col["visible"] = bool(visible)
+                break
+
+        profile.dataset_stats = stats
+        profile.dataset_columns = columns
+        profile.save(update_fields=["dataset_columns", "dataset_stats"])
+
+        return Response({"column": column_name, "visible": bool(visible)})

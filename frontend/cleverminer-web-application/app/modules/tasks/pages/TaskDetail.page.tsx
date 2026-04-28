@@ -1,15 +1,19 @@
 import { useNavigate, useParams } from 'react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Play } from 'lucide-react';
 import { getRunsForTask, getTask } from '@/modules/tasks/api/tasks.api';
 import { Button } from '@/shared/components/ui/atoms/button';
-import { TaskRunsColumns } from '@/modules/tasks/components/organisms/table/taskRuns.columns';
+import { getTaskRunsColumns } from '@/modules/tasks/components/organisms/table/taskRuns.columns';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import { useCreateAndExecuteRunMutation } from '@/modules/tasks/hooks/tasks.hook';
 import { LoadingStatus, PlatformCard, renderProcedureDetails } from '@/shared/components/molecules';
 import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
 import { ActionContainer } from '@/shared/components/atoms';
 import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
+import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
+import { useMemo } from 'react';
+import { deleteRun, stopRun } from '@/modules/runs/api/runs.api';
+import { toast } from 'sonner';
 
 export default function TaskDetailPage() {
   const { taskId } = useParams();
@@ -33,6 +37,13 @@ export default function TaskDetailPage() {
     queryKey: ['tasksRuns', taskId],
     queryFn: () => getRunsForTask(Number(taskId)),
     enabled: isValidId,
+    refetchInterval: (query) => {
+      const runs = query.state.data;
+      const hasActiveRun = runs?.some(
+        (r) => r.status === RunResultStatus.Running || r.status === RunResultStatus.Queued,
+      );
+      return hasActiveRun ? 3000 : false;
+    },
   });
 
   const { mutate: createAndExecuteRun } = useCreateAndExecuteRunMutation({
@@ -40,6 +51,33 @@ export default function TaskDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['tasksRuns', taskId] });
     },
   });
+
+  const deleteRunMuation = useMutation({
+    mutationFn: (runId: number) => deleteRun(runId),
+    onError: (error: any) => toast.error('Delete failed:', error.message),
+    onSuccess: () => {
+      toast.success('Run deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['runs'] });
+    },
+  });
+
+  const stopRunMutation = useMutation({
+    mutationFn: (runId: number) => stopRun(runId),
+    onSuccess: () => {
+      toast.success('Run stopped');
+      queryClient.invalidateQueries({ queryKey: ['tasksRuns', taskId] });
+    },
+    onError: () => toast.error('Failed to stop run'),
+  });
+
+  const columns = useMemo(() => {
+    const hasErrors = tasksRuns?.some((r) => r.error_log);
+    const cols = getTaskRunsColumns(
+      (runId) => deleteRunMuation.mutate(runId),
+      (runId) => stopRunMutation.mutate(runId),
+    );
+    return hasErrors ? cols : cols.filter((c) => c.id !== 'error_log');
+  }, [tasksRuns]);
 
   if (!isValidId) return <div>Invalid Task ID</div>;
   if (isLoading) return <LoadingStatus title={'Loading task detail...'} />;
@@ -102,9 +140,10 @@ export default function TaskDetailPage() {
             <div className="p-10 text-center">Loading task runs...</div>
           ) : (
             <DataTable
-              columns={TaskRunsColumns}
+              columns={columns}
               data={tasksRuns!}
               onRowClick={(row) => handleRunClick(row as any, navigate)}
+              initialSorting={[{ id: 'started_at', desc: true }]}
             />
           )}
         </div>

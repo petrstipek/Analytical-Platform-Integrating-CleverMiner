@@ -7,7 +7,12 @@ import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { Card, CardContent } from '@/shared/components/ui/molecules/card';
-import { Field, FieldGroup, FieldLabel } from '@/shared/components/ui/atoms/field';
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from '@/shared/components/ui/atoms/field';
 import { Input } from '@/shared/components/ui/atoms/input';
 import { useLogin } from '@/modules/auth/api/mutations/auth.mutations';
 
@@ -40,10 +45,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
           <form onSubmit={handleSubmit(onSubmit)} className="p-6">
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
-                <p className="text-muted-foreground text-balance">
-                  Login to your CleverMiner account
-                </p>
+                <h1 className="text-2xl font-bold">Welcome to CleverMiner Analytical Platform</h1>
+                <p className="text-muted-foreground text-balance">Login to your account</p>
               </div>
 
               <Field>
@@ -79,15 +82,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   )}
                 </Button>
               </Field>
+              <FieldDescription className="text-center">
+                New here, create new account? <a href="/register">Sign up</a>
+              </FieldDescription>
             </FieldGroup>
           </form>
         </CardContent>
       </Card>
-
-      <div className="[&_a]:hover:text-primary text-center text-xs text-balance text-white [&_a]:underline [&_a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a> and{' '}
-        <a href="#">Privacy Policy</a>.
-      </div>
     </div>
   );
 }

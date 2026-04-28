@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Settings, Calculator, BrainCircuit } from 'lucide-react';
 
@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import { Step1TaskSetup, Step2LogicBuilder, Step3Quantifiers } from './wizard/';
 import { type CreateTaskFormValues, createTaskSchema } from '@/modules/tasks/utils/task-validation';
 import {
+  useCreateAndExecuteRunMutation,
   useCreateTaskAndRunMutation,
   useCreateTaskMutation,
   useUpdateTaskMutation,
@@ -15,13 +16,14 @@ import { NavBarWizard } from '@/modules/tasks/components/atoms';
 import type { DatasetType } from '@/modules/datasets/domain/dataset.type';
 import { getDatasetsColumns } from '@/modules/tasks/api/tasks.api';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation } from 'react-router';
+import { useLocation, useSearchParams } from 'react-router';
 import type { Task } from '@/modules/tasks/domain/task.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getBaseProjects } from '@/modules/projects/api/queries/projects.query';
 import { ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
+import { getDatasetAnalysisStats } from '@/modules/datasets/api/dataset-analysis.api';
 
 const STEPS = [
   { id: 1, label: 'Task Setup', icon: Settings },
@@ -49,16 +51,20 @@ export default function CreateTaskWizard({
 
   const taskId = existingTask?.id;
 
-  const { mutate: updateTask, isPending: isUpdating } = useUpdateTaskMutation();
+  const { mutate: updateTask, isPending: isUpdatingTask } = useUpdateTaskMutation();
   const { mutate: createTaskAndRun, isPending } = useCreateTaskAndRunMutation();
   const { mutate: createTask, isPending: isCreating } = useCreateTaskMutation();
+  const { mutate: createAndExecuteRun } = useCreateAndExecuteRunMutation();
+
+  const [searchParams] = useSearchParams();
+  const datasetFromUrl = searchParams.get('dataset');
 
   const methods = useForm<CreateTaskFormValues>({
     resolver: zodResolver(createTaskSchema),
     mode: 'onChange',
     defaultValues: {
       name: '',
-      dataset: 0,
+      dataset: datasetFromUrl ? parseInt(datasetFromUrl, 10) : undefined,
       procedure: ProceduresType.FOURFTMINER,
       project: projectId ? Number(projectId) : undefined,
       configuration: {
@@ -101,6 +107,12 @@ export default function CreateTaskWizard({
     queryFn: () => getBaseProjects(),
   });
 
+  const { data: datasetStats } = useQuery({
+    queryKey: ['dataset-column-stats', selectedDatasetId],
+    queryFn: () => getDatasetAnalysisStats(Number(selectedDatasetId)),
+    enabled: !!selectedDatasetId && Number(selectedDatasetId) !== 0,
+  });
+
   const validateAndMove = async (targetStep: number) => {
     if (targetStep < step) {
       setStep(targetStep);
@@ -111,7 +123,13 @@ export default function CreateTaskWizard({
     if (step === 1) {
       isValid = await methods.trigger(['name', 'dataset', 'procedure']);
     } else if (step === 2) {
-      isValid = await methods.trigger('configuration');
+      isValid = await methods.trigger([
+        'configuration.ante',
+        'configuration.succ',
+        'configuration.cond',
+        'configuration.set1',
+        'configuration.set2',
+      ]);
     }
 
     if (isValid) {
@@ -127,10 +145,19 @@ export default function CreateTaskWizard({
   const prevStep = () => validateAndMove(step - 1);
 
   const onSubmit = (data: CreateTaskFormValues) => {
-    // TODO - will not work with the update now
-    console.log('Submitting form with data:', data);
     if (taskId) {
-      updateTask({ taskId, data });
+      if (intent === 'run') {
+        updateTask(
+          { taskId, data },
+          {
+            onSuccess: () => {
+              createAndExecuteRun(taskId);
+            },
+          },
+        );
+      } else {
+        updateTask({ taskId, data });
+      }
       return;
     }
     if (intent === 'run') {
@@ -149,6 +176,13 @@ export default function CreateTaskWizard({
   const {
     formState: { errors },
   } = methods;
+
+  const target = methods.watch('configuration.target');
+
+  const targetCategories = useMemo(
+    () => datasetStats?.columns?.find((c: any) => c.name === target)?.category_order ?? undefined,
+    [datasetStats, target],
+  );
 
   return (
     <FormProvider {...methods}>
@@ -200,12 +234,14 @@ export default function CreateTaskWizard({
                 )}
                 {step === 2 && (
                   <Step2LogicBuilder
-                    availableColumns={columns}
+                    columns={columns}
                     isLoading={isLoadingColumns}
                     procedure={procedure}
                   />
                 )}
-                {step === 3 && <Step3Quantifiers procedure={procedure} />}
+                {step === 3 && (
+                  <Step3Quantifiers procedure={procedure} targetCategories={targetCategories} />
+                )}
               </div>
             </CardContent>
           </Card>
@@ -228,7 +264,7 @@ export default function CreateTaskWizard({
                     className="w-48 bg-green-600 hover:bg-green-700"
                     onClick={() => setIntent('run')}
                   >
-                    {isPending ? 'Starting Mining...' : 'Run Task'}
+                    {isPending || isUpdatingTask ? 'Starting Mining...' : 'Run Task'}
                   </Button>
                   <Button type="submit" onClick={() => setIntent('save')} className="w-32">
                     Save Task

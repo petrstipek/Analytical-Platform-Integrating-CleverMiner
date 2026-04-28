@@ -8,7 +8,9 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col items-center justify-center gap-10 px-6 py-12">
       <div className="text-center">
-        <p className="mb-3 text-xs tracking-widest text-stone-400 uppercase">Welcome back</p>
+        <p className="mb-3 text-xs tracking-widest text-stone-400 uppercase">
+          Welcome to Analytical Platform Integrating CleverMiner
+        </p>
         <h1 className="text-3xl font-semibold text-stone-800">What are you working on?</h1>
       </div>
       <div className="grid w-full max-w-2xl grid-cols-2 gap-4">

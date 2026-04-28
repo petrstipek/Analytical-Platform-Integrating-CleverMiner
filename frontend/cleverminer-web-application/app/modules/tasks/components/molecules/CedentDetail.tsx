@@ -2,20 +2,13 @@ import { Box, Layers, Hash, ArrowRightLeft } from 'lucide-react';
 import { Badge } from '@/shared/components/ui/atoms/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/molecules/card';
 import { Separator } from '@/shared/components/ui/atoms/separator';
-
-interface Attribute {
-  name: string;
-  attr_type: string;
-  minlen?: number;
-  maxlen?: number;
-  gace?: string;
-}
+import { type AttributeSpec, AttributeType } from '@/modules/tasks/domain/task-schema';
 
 interface CedentData {
   type: 'con' | 'dis';
   minlen: number;
   maxlen: number;
-  attributes: Attribute[];
+  attributes: AttributeSpec[];
 }
 
 interface CedentDetailProps {
@@ -96,9 +89,13 @@ export default function CedentDetail({ title, data, color = 'default' }: CedentD
                 title="Attribute Length (Number of values)"
               >
                 <div className="flex items-center justify-end gap-1">
-                  <span>
-                    Val: {attr.minlen}-{attr.maxlen}
-                  </span>
+                  {attr.attr_type === AttributeType.ONE ? (
+                    <span>Val: {attr.value}</span>
+                  ) : (
+                    <span>
+                      Val: {attr.minlen}-{attr.maxlen}
+                    </span>
+                  )}
                   <ArrowRightLeft className="h-3 w-3" />
                 </div>
               </div>

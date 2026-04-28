@@ -18,9 +18,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/molecules/dialog';
+import { AlertTriangle } from 'lucide-react';
+import { useCleverMinerGuidance } from '@/modules/datasets/hooks/cleverMinerGuidance.hook';
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 export default function DatasetDetailPage() {
   const { datasetId } = useParams();
+  const [transformationsOpen, setTransformationsOpen] = useState(false);
 
   const {
     clmCandidatesData,
@@ -32,6 +37,10 @@ export default function DatasetDetailPage() {
     isReady,
     datasetPreview,
   } = useDatasetAnalysis(Number(datasetId));
+
+  const { goodCols, warningCols, ignoredCols } = useCleverMinerGuidance({
+    clmGuidance: clmCandidatesData!,
+  });
 
   if (!datasetId) return <div>No dataset ID provided.</div>;
   if (!isReady)
@@ -48,27 +57,66 @@ export default function DatasetDetailPage() {
         description={'Application is analyzing the dataset.'}
       />
     );
+
   if (error) return <div>Error loading dataset analysis.</div>;
 
+  const clmGuidanceIssues = warningCols.length + ignoredCols.length > 0;
+  const preprocessingIssues = (columnStatsData?.columns ?? []).some(
+    (col: any) => !col.clm_guidance?.clm_usable_as_is,
+  );
+
   return (
-    <Dialog>
+    <Dialog open={transformationsOpen} onOpenChange={setTransformationsOpen}>
       <div className="grid w-full grid-cols-1 gap-6">
-        <DatasetDetailHeader datasetStatsOverview={datasetStatsOverview!} />
+        <DatasetDetailHeader
+          datasetStatsOverview={datasetStatsOverview!}
+          datasetId={Number(datasetId)}
+          openDatasetTransformations={() => setTransformationsOpen(true)}
+        />
 
         <Tabs defaultValue="datasetProfile" className="w-full">
           <div className="flex items-end justify-between">
             <TabsList className="bg-muted w-full rounded-full p-1">
               <TabsTrigger value="datasetProfile" className="flex-1">
-                Exploratory Data Analysis
+                <span className="bg-cleverminer-one flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs text-white">
+                  1
+                </span>
+                <span className="flex-1 text-center">Exploratory Data Analysis</span>
+                <span className="w-3" />
               </TabsTrigger>
+
               <TabsTrigger value="preview" className="flex-1">
-                Data Preview
+                <span className="bg-cleverminer-one flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs text-white">
+                  2
+                </span>
+                <span className="flex-1 text-center">Data Preview</span>
+                <span className="w-3" />
               </TabsTrigger>
+
               <TabsTrigger value="clmGuidance" className="flex-1">
-                CleverMiner Guidance
+                <span className="bg-cleverminer-one flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs text-white">
+                  3
+                </span>
+                <span className="flex-1 text-center">CleverMiner Guidance</span>
+                <AlertTriangle
+                  className={cn(
+                    'h-3 w-3 shrink-0 text-amber-500',
+                    !clmGuidanceIssues && 'invisible',
+                  )}
+                />
               </TabsTrigger>
+
               <TabsTrigger value="ColumnsAnalysis" className="flex-1">
-                Columns Analysis and Preprocessing
+                <span className="bg-cleverminer-one flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs text-white">
+                  4
+                </span>
+                <span className="flex-1 text-center">Columns Analysis and Preprocessing</span>
+                <AlertTriangle
+                  className={cn(
+                    'h-3 w-3 shrink-0 text-amber-500',
+                    !preprocessingIssues && 'invisible',
+                  )}
+                />
               </TabsTrigger>
             </TabsList>
           </div>
@@ -91,7 +139,13 @@ export default function DatasetDetailPage() {
             value="clmGuidance"
             className="animate-in fade-in slide-in-from-bottom-4 mt-4 duration-500"
           >
-            <DatasetAnalysisView datasetId={Number(datasetId)} clmGuidance={clmCandidatesData!} />
+            <DatasetAnalysisView
+              datasetId={Number(datasetId)}
+              goodCols={goodCols}
+              warningCols={warningCols}
+              ignoredCols={ignoredCols}
+              columnStatsData={columnStatsData!}
+            />
           </TabsContent>
 
           <TabsContent
@@ -102,14 +156,19 @@ export default function DatasetDetailPage() {
           </TabsContent>
         </Tabs>
 
-        <DialogContent className="max-w-6xl">
+        <DialogContent className="flex max-h-[80vh] max-w-6xl flex-col">
           <DialogHeader>
             <DialogTitle>Dataset Transformations</DialogTitle>
             <DialogDescription>
               Explore the transformations carried out on this dataset.
             </DialogDescription>
           </DialogHeader>
-          <DatasetDerivedList datasetId={datasetId} />
+          <div className={'min-h-0 flex-1 overflow-y-auto'}>
+            <DatasetDerivedList
+              datasetId={datasetId}
+              onNavigate={() => setTransformationsOpen(false)}
+            />
+          </div>
         </DialogContent>
       </div>
     </Dialog>

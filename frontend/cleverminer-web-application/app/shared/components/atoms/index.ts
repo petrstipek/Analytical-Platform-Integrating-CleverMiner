@@ -5,3 +5,4 @@ export { default as PlatformDiv } from './PlatformDiv';
 export { default as StatComponent } from './StatComponent';
 export { default as ActionContainer } from './ActionContainer';
 export { default as BaseBooleanStatusBadge } from './BaseStatusBadge';
+export { default as ElapsedCell } from './ElapsedCell';

@@ -1,4 +1,44 @@
+import matplotlib
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+
+matplotlib.use("Agg")
+
+import io
 from typing import Any, Dict, List
+import matplotlib.pyplot as plt
+
+
+def serialize_rule_structure(clm, rule_id: int) -> Dict[str, Any]:
+    try:
+        cedents = clm.get_rule_cedent_list(rule_id)
+        structure = {}
+        for cedent in cedents:
+            variables = clm.get_rule_variables(rule_id, cedent)
+            structure[cedent] = [
+                {
+                    "variable": var,
+                    "categories": clm.get_rule_categories(rule_id, cedent, var),
+                }
+                for var in variables
+            ]
+        return structure
+    except Exception:
+        return {}
+
+
+def save_rule_chart(clm, rule_id: int, run_id: int) -> str | None:
+    try:
+        clm.draw_rule(rule_id, show=False)
+        buf = io.BytesIO()
+        plt.savefig(buf, format="png", bbox_inches="tight")
+        plt.close()
+        buf.seek(0)
+        path = f"charts/run_{run_id}/rule_{rule_id}.png"
+        default_storage.save(path, ContentFile(buf.read()))
+        return path
+    except Exception:
+        return None
 
 
 def base_serialization(clm) -> Dict[str, Any]:

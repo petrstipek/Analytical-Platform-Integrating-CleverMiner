@@ -1,9 +1,11 @@
+import contextlib
+import io
 import traceback
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
 import pandas as pd
-from cleverminer import clm_lcut, clm_rcut, clm_seq, clm_subset
+from cleverminer import clm_lcut, clm_rcut, clm_seq, clm_subset, cleverminer
 from django.utils import timezone
 
 from cleverminer_tasks.execution.shared.baseConfig import (
@@ -24,6 +26,19 @@ class BaseMiningService(ABC):
 
     @staticmethod
     def _build_attribute(attr: AttributeSpec):
+        if attr.attr_type == AttributeType.ONE:
+            value = attr.value
+            try:
+                f = float(value)
+                value = int(f) if f == int(f) else f
+            except (ValueError, TypeError):
+                pass
+
+            d = {"name": attr.name, "type": "one", "value": value}
+            if attr.gace != GaceType.POSITIVE:
+                d["gace"] = attr.gace.value
+            return d
+
         method_map = {
             AttributeType.LCUT: clm_lcut,
             AttributeType.RCUT: clm_rcut,
@@ -31,16 +46,14 @@ class BaseMiningService(ABC):
             AttributeType.SUBSET: clm_subset,
         }
 
-        common_params = {"minlen": attr.minlen, "maxlen": attr.maxlen}
+        if attr.attr_type not in method_map:
+            raise ValueError(f"Unsupported attribute type: {attr.attr_type}")
 
+        common_params = {"minlen": attr.minlen, "maxlen": attr.maxlen}
         if attr.gace != GaceType.POSITIVE:
             common_params["gace"] = attr.gace.value
 
-        if attr.attr_type in method_map:
-            return method_map[attr.attr_type](attr.name, **common_params)
-        else:
-            params = {"name": attr.name, "type": attr.attr_type.value, **common_params}
-            return params
+        return method_map[attr.attr_type](attr.name, **common_params)
 
     def _build_cedent(self, cedent: CedentConfig):
         if not cedent or not cedent.attributes:
@@ -87,3 +100,34 @@ class BaseMiningService(ABC):
     @abstractmethod
     def _mine(self, df: pd.DataFrame) -> Dict[str, Any]:
         raise NotImplementedError
+
+    def _run_miner(self, params: dict):
+        stdout_capture = io.StringIO()
+        with contextlib.redirect_stdout(stdout_capture):
+            clm = cleverminer(**params)
+        self._check_miner_result(clm, stdout_capture)
+        return clm
+
+    def _check_miner_result(self, clm, stdout_capture: io.StringIO) -> None:
+        if clm.result or clm.task_actinfo.get("proc") != "":
+            return
+
+        available = set(clm.data.get("varname", [])) if clm.data else set()
+        missing = [a for a in self._required_attributes() if a not in available]
+
+        if missing:
+            max_cat = clm.options.get("max_categories", 100)
+            raise ValueError(
+                f"Task failed: attributes {missing} were excluded during data preparation "
+                f"(exceeded {max_cat} distinct values). Consider binning these columns first."
+            )
+
+        error_lines = [
+            line
+            for line in stdout_capture.getvalue().splitlines()
+            if line.startswith("Error:")
+        ]
+        if error_lines:
+            raise ValueError(f"Task failed: {' | '.join(error_lines)}")
+
+        raise ValueError("Task was not calculated. Check your configuration.")

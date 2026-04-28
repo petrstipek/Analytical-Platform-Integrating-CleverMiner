@@ -6,3 +6,5 @@ export { default as AttributesSelector } from './AttributesSelector';
 export { default as AttributeDetails } from './AttributeDetails';
 export { default as DerivedChildDatasetRow } from './DerivedChildDatasetRow';
 export { default as TransformSteps } from './TransformSteps';
+export { default as TransformationDialog } from './TransformationDialog';
+export { default as PreparedTransformations } from './PreparedTransformations';

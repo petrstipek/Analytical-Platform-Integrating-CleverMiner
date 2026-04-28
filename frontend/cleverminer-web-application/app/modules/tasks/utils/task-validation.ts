@@ -1,17 +1,48 @@
 import { z } from 'zod';
 import { ProceduresType } from '@/shared/domain/procedures.type';
+import { QUANTIFIER_SCHEMAS } from '@/modules/tasks/domain/quantifier-definitions';
 
 const attributeSchema = z
   .object({
     name: z.string().min(1, 'Column name is required'),
     attr_type: z.enum(['subset', 'lcut', 'rcut', 'seq', 'one']),
-    minlen: z.number().min(1),
-    maxlen: z.number().min(1),
+    minlen: z.number().min(1).optional(),
+    maxlen: z.number().min(1).optional(),
     gace: z.enum(['positive', 'negative', 'both']),
+    value: z.string().optional(),
   })
-  .refine((data) => data.minlen <= data.maxlen, {
-    message: 'Min length cannot be greater than Max length',
-    path: ['minlen'],
+  .superRefine((data, ctx) => {
+    if (data.attr_type === 'one') {
+      if (!data.value || data.value.trim() === '') {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'A specific value is required for "one" type',
+          path: ['value'],
+        });
+      }
+    } else {
+      if (data.minlen === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Min length is required',
+          path: ['minlen'],
+        });
+      }
+      if (data.maxlen === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Max length is required',
+          path: ['maxlen'],
+        });
+      }
+      if (data.minlen !== undefined && data.maxlen !== undefined && data.minlen > data.maxlen) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Min length cannot be greater than Max length',
+          path: ['minlen'],
+        });
+      }
+    }
   });
 
 const cedentSchema = z
@@ -68,7 +99,7 @@ export const createTaskSchema = z
       const cedent = configuration[key] as any;
       if (!cedent || cedent.attributes.length === 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: `${label} requires at least one attribute`,
           path: ['configuration', key, 'attributes'],
         });
@@ -92,6 +123,58 @@ export const createTaskSchema = z
       case ProceduresType.UICMINER:
         requireCedent('ante', 'Antecedent');
         break;
+    }
+  })
+
+  .superRefine((data, ctx) => {
+    const schema = QUANTIFIER_SCHEMAS[data.procedure] ?? [];
+    const quantifiers = data.configuration?.quantifiers ?? {};
+
+    for (const field of schema) {
+      if (field.required && field.type !== 'vector') {
+        const val = quantifiers[field.key];
+        if (val == null) {
+          ctx.addIssue({
+            code: 'custom',
+            message: `${field.label} is required`,
+            path: ['configuration', 'quantifiers', field.key],
+          });
+        }
+      }
+    }
+
+    for (const field of schema) {
+      const val = quantifiers[field.key];
+      if (val == null || typeof val !== 'number') continue;
+      if (field.min !== undefined && val < field.min) {
+        ctx.addIssue({
+          code: 'custom',
+          message: `${field.label} must be at least ${field.min}`,
+          path: ['configuration', 'quantifiers', field.key],
+        });
+      }
+      if (field.max !== undefined && val > field.max) {
+        ctx.addIssue({
+          code: 'custom',
+          message: `${field.label} must be at most ${field.max}`,
+          path: ['configuration', 'quantifiers', field.key],
+        });
+      }
+    }
+  })
+
+  .superRefine((data, ctx) => {
+    if (data.procedure === ProceduresType.CFMINER) {
+      const q = data.configuration?.quantifiers ?? {};
+      const hasStep = ['S_Up', 'S_Down', 'S_Any_Up', 'S_Any_Down'].some((k) => q[k] != null);
+      if (!hasStep) {
+        ctx.addIssue({
+          code: 'custom',
+          message:
+            'At least one histogram step quantifier (S_Up, S_Down, S_Any_Up or S_Any_Down) is required',
+          path: ['configuration', 'quantifiers', 'S_Down'],
+        });
+      }
     }
   });
 export type CreateTaskFormValues = z.infer<typeof createTaskSchema>;

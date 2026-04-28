@@ -55,10 +55,10 @@ export default function Step1TaskSetup({ datasets, projects }: Step1TaskSetupPro
               <SelectValue placeholder="Select procedure..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ProceduresType.SD4FTMINER}>SD4ftMiner</SelectItem>
-              <SelectItem value={ProceduresType.CFMINER}>CFMiner</SelectItem>
-              <SelectItem value={ProceduresType.UICMINER}>UICMiner</SelectItem>
-              <SelectItem value={ProceduresType.FOURFTMINER}>4ftMiner</SelectItem>
+              <SelectItem value={ProceduresType.SD4FTMINER}>SD4ft-Miner</SelectItem>
+              <SelectItem value={ProceduresType.CFMINER}>CF-Miner</SelectItem>
+              <SelectItem value={ProceduresType.UICMINER}>UIC-Miner</SelectItem>
+              <SelectItem value={ProceduresType.FOURFTMINER}>4ft-Miner</SelectItem>
             </SelectContent>
           </Select>
         </div>

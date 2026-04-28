@@ -1,5 +1,33 @@
 # Analytical Platform Integrating CleverMiner
 
+A full-stack web application for exploratory data mining and rule discovery, built on top of the [CleverMiner](https://cleverminer.org) library. The platform lets analysts upload datasets, configure and run association rule mining tasks using multiple procedures, and explore the discovered rules interactively — without writing any code.
+ 
+## What it does
+ 
+CleverMiner Analytical Platform provides an end-to-end workflow for data mining:
+ 
+- **Dataset management** — upload CSV datasets, explore column statistics, receive CleverMiner guidance on which columns are usable as-is, and apply preprocessing transformations (binning, filling missing values, dropping columns) to create derived datasets.
+- **Task configuration** — define mining tasks through a guided wizard. Select a procedure, configure antecedent/succedent/condition cedents using available dataset columns, and set quantifier thresholds that control which rules are interesting enough to surface.
+- **Mining execution** — tasks are executed asynchronously via Celery workers. Results are stored and can be re-explored at any time.
+- **Results exploration** — discovered rules are displayed in an interactive panel per procedure. Each rule shows its logical structure, quantifier metrics, fourfold tables, confidence comparisons, and optionally a CleverMiner-generated chart.
+- **Project collaboration** — datasets and tasks can be organized into projects and shared with other users.
+## Supported mining procedures
+ 
+| Procedure | Description |
+|-----------|-------------|
+| **4ft Miner** | Classic association rule mining (Antecedent → Succedent) |
+| **SD4ft Miner** | Subgroup discovery — compares rule behaviour across two groups |
+| **CF Miner** | Conditional frequency — finds rules with interesting histogram patterns over an ordinal target |
+| **UIC Miner** | User-defined interestingness — rules scored against category weights |
+ 
+## Technology stack
+ 
+- **Backend** — Django, Django REST Framework, Celery, Redis, PyArrow, pandas
+- **Frontend** — React, TypeScript, TanStack Query, TanStack Table, Recharts, Shadcn/Tailwind, Axios
+- **Storage** — local filesystem (development) or S3-compatible storage (production)
+- **Infrastructure** — Docker, PostgreSQL, Gunicorn
+---
+
 ## Quick Start (End Users)
 
 No source code needed — just Docker.

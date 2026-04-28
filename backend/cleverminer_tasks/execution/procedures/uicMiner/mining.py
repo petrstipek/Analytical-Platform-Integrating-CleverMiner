@@ -1,7 +1,6 @@
 from typing import Dict, Any
 
 import pandas as pd
-from cleverminer import cleverminer
 
 from cleverminer_tasks.execution.shared.baseMining import BaseMiningService
 from .config import UicMinerConfig
@@ -38,9 +37,9 @@ class UICMiningService(BaseMiningService):
             f"Running UIC-Miner on Target: {self.config.target} with weights {self.config.quantifiers.aad_weights}"
         )
 
-        clm = cleverminer(**params)
+        clm = self._run_miner(params)
 
-        return serialize_uic_result(clm, self.config.target)
+        return serialize_uic_result(clm, self.config.target, self.run_instance.id)
 
     def _required_attributes(self) -> list[str]:
         columns = set()

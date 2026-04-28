@@ -1,7 +1,14 @@
 from typing import Any, Dict, List
 
 
-def serialize_cf_result(clm, target_column: str) -> Dict[str, Any]:
+from cleverminer_tasks.execution.shared.baseSerializer import (
+    serialize_rule_structure,
+    save_rule_chart,
+)
+
+
+def serialize_cf_result(clm, target_column: str, df, run_id: int) -> Dict[str, Any]:
+    hist_full = []
     rule_count = clm.get_rulecount()
 
     if rule_count is None:
@@ -9,21 +16,23 @@ def serialize_cf_result(clm, target_column: str) -> Dict[str, Any]:
 
     try:
         categories = clm.get_dataset_category_list(target_column)
-    except Exception:
+        hist_full = [int((df[target_column] == cat).sum()) for cat in categories]
+    except ValueError:
         categories = []
 
     rules: List[Dict[str, Any]] = []
 
     for rule_id in range(1, rule_count + 1):
         try:
-            quantifiers = clm.get_quantifiers(rule_id)
-            text = clm.get_ruletext(rule_id)
-
             rules.append(
                 {
                     "id": rule_id,
-                    "text": text,
-                    "quantifiers": quantifiers,
+                    "text": clm.get_ruletext(rule_id),
+                    "structure": serialize_rule_structure(clm, rule_id),
+                    "quantifiers": clm.get_quantifiers(rule_id),
+                    "histogram": clm.get_hist(rule_id),
+                    "histogram_full": hist_full,
+                    "chart_path": save_rule_chart(clm, rule_id, run_id),
                 }
             )
         except Exception:

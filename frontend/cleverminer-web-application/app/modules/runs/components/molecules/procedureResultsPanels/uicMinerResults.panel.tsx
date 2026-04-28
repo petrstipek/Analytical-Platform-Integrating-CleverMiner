@@ -1,143 +1,150 @@
 import { useMemo, useState } from 'react';
+import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/shared/components/ui/molecules/card';
-import { DiscoveredRulesContainer, HistogramBars } from '@/modules/runs/components/molecules';
-import type { RunResultUic } from '@/modules/runs/domain/runs-results.type';
+  DiscoveredRulesContainer,
+  HistogramBars,
+  RuleChartDialog,
+  RuleDetail,
+} from '@/modules/runs/components/molecules';
 import type { RuleListRow } from '@/modules/runs/components/molecules/RulesList';
 import { UICMinerDetails } from '@/modules/tasks/components/organisms/procedures';
 import { ProceduresType } from '@/shared/domain/procedures.type';
 import RunConfigurationDetails from '@/modules/runs/components/molecules/RunConfigurationDetails';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
-import { PlatformCard } from '@/shared/components/molecules';
+import { useRuleChart } from '@/modules/runs/hooks/useRuleChart';
+import type { RunWithTask } from '@/modules/runs/domain/runs-main.type';
+import type { UicRule } from '@/modules/runs/domain/procedures-results.type';
+import type { UicSummary } from '@/modules/runs/domain/procedure-summary.type';
 
-export default function UicMinerResultsPanel({ task }: { task: RunResultUic }) {
-  const categories = task.result.summary.categories ?? [];
-  const target = task.result.summary.target;
+export default function UicMinerResultsPanel({ task }: { task: RunWithTask }) {
+  const rules = task.result.rules as UicRule[];
+
+  const summary = task.result.summary as UicSummary;
+  const categories = summary.categories ?? [];
+  const target = summary.target;
 
   const listRules: RuleListRow[] = useMemo(
-    () => task.result.rules.map((r) => ({ id: r.id, text: r.text })),
-    [task.result.rules],
+    () =>
+      rules.map((r) => ({
+        id: r.id,
+        text: r.text,
+        structure: r.structure,
+        metrics: { base: r.quantifiers?.base },
+      })),
+    [rules],
   );
 
   const [selectedId, setSelectedId] = useState<number | null>(listRules[0]?.id ?? null);
-  const selectedRule = task.result.rules.find((r) => r.id === selectedId) ?? null;
+  const selectedRule = rules.find((r) => r.id === selectedId) ?? null;
+
+  const { chartUrl, chartLoading, loadChart } = useRuleChart(task.id, selectedId);
 
   return (
     <div>
       <RunConfigurationDetails procedure={ProceduresType.UICMINER}>
-        <UICMinerDetails params={task.run_snapshot} />
+        <UICMinerDetails params={task.run_snapshot} task={task.task} />
       </RunConfigurationDetails>
-      <div className="mt-6 grid grid-cols-1 items-stretch gap-6 lg:h-[70vh] lg:min-h-0 lg:grid-cols-3">
+      <div className="my-6 grid grid-cols-1 items-stretch gap-6 lg:h-[90vh] lg:grid-cols-3">
         <DiscoveredRulesContainer
           rules={listRules}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
           procedure={ProceduresType.UICMINER}
         />
+        <RuleDetail>
+          {selectedRule ? (
+            <div className="sticky top-6 space-y-4">
+              <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
+                <CardContent className="space-y-2 pt-6 text-sm">
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">Target</span>
+                    <span className="font-mono font-bold">{target}</span>
+                  </div>
+                  <div className="flex justify-between pb-2">
+                    <span className="text-muted-foreground">Categories</span>
+                    <span className="font-mono">{categories.join(', ') || '-'}</span>
+                  </div>
+                </CardContent>
+              </Card>
 
-        <div className="h-full min-h-0 space-y-4 overflow-y-auto">
-          <Card className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-xl font-semibold">Rule Detail</CardTitle>
-              <CardDescription>Find more about selected rule.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {selectedRule ? (
-                <div className="sticky top-6 space-y-4">
-                  <Card
-                    className={'bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5'}
-                  >
-                    <CardContent className="space-y-2 pt-6 text-sm">
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Target</span>
-                        <span className="font-mono font-bold">{target}</span>
-                      </div>
-                      <div className="flex justify-between pb-2">
-                        <span className="text-muted-foreground">Categories</span>
-                        <span className="font-mono">{categories.join(', ') || '-'}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
+              <HistogramBars
+                title="Histogram (Selected Rule)"
+                categories={categories}
+                values={selectedRule.histogram_rule}
+                colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
+              />
 
-                  <HistogramBars
-                    title="Histogram (Rule)"
-                    categories={categories}
-                    values={selectedRule.histogram_rule}
-                    colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
-                  />
+              <HistogramBars
+                title="Histogram (Entire Dataset)"
+                categories={categories}
+                values={selectedRule.histogram_background}
+                colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
+              />
+              {selectedRule.quantifiers && (
+                <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
+                  <CardContent className="space-y-2 pt-6 text-sm">
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">Base</span>
+                      <span className="font-mono font-bold">
+                        {selectedRule.quantifiers.base.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">Relative Base</span>
+                      <span className="font-mono">
+                        {(selectedRule.quantifiers.rel_base! * 100).toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">AAD Score</span>
+                      <span className="font-mono font-bold text-indigo-600">
+                        {selectedRule.quantifiers.aad.toFixed(4)}
+                      </span>
+                    </div>
 
-                  <HistogramBars
-                    title="Histogram (Background)"
-                    categories={categories}
-                    values={selectedRule.histogram_background}
-                    colorClass={PROCEDURE_STYLES[ProceduresType.UICMINER].bg_histogram}
-                  />
-                  {selectedRule.quantifiers && (
-                    <Card className="bg-background/80 rounded-2xl border shadow-xl ring-1 ring-black/5">
-                      <CardContent className="space-y-2 pt-6 text-sm">
-                        <div className="flex justify-between border-b pb-2">
-                          <span className="text-muted-foreground">Base</span>
-                          <span className="font-mono font-bold">
-                            {selectedRule.quantifiers.base.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between border-b pb-2">
-                          <span className="text-muted-foreground">Relative Base</span>
-                          <span className="font-mono">
-                            {(selectedRule.quantifiers.rel_base! * 100).toFixed(2)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between border-b pb-2">
-                          <span className="text-muted-foreground">AAD Score</span>
-                          <span className="font-mono font-bold text-indigo-600">
-                            {selectedRule.quantifiers.aad.toFixed(4)}
-                          </span>
-                        </div>
-
-                        <div className="space-y-1 pt-2">
-                          <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                            Interpretation
-                          </div>
-                          {categories.map((cat, i) => {
-                            const times = selectedRule.quantifiers!.times_more[i];
-                            const bgPct = (
-                              selectedRule.quantifiers!.rel_hist_background[i] * 100
-                            ).toFixed(1);
-                            const rulePct = (
-                              selectedRule.quantifiers!.rel_hist_rule[i] * 100
-                            ).toFixed(1);
-                            const color =
-                              times > 1.2
-                                ? 'text-red-500'
-                                : times < 0.8
-                                  ? 'text-green-600'
-                                  : 'text-slate-500';
-                            return (
-                              <p key={cat} className="text-xs text-slate-600">
-                                <span className="font-medium">{cat}</span> occurs {bgPct}% in
-                                background, {rulePct}% with antecedent —{' '}
-                                <span className={`font-semibold ${color}`}>
-                                  {times.toFixed(2)}× more
-                                </span>
-                              </p>
-                            );
-                          })}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              ) : (
-                <div className="text-muted-foreground text-sm">Select a rule to view details</div>
+                    <div className="space-y-1 pt-2">
+                      <div className="text-md font-semibold tracking-tight">Interpretation</div>
+                      {categories.map((cat, i) => {
+                        const times = selectedRule.quantifiers!.times_more[i];
+                        const bgPct = (
+                          selectedRule.quantifiers!.rel_hist_background[i] * 100
+                        ).toFixed(1);
+                        const rulePct = (selectedRule.quantifiers!.rel_hist_rule[i] * 100).toFixed(
+                          1,
+                        );
+                        const color =
+                          times > 1.2
+                            ? 'text-red-500'
+                            : times < 0.8
+                              ? 'text-green-600'
+                              : 'text-slate-500';
+                        return (
+                          <p key={cat} className="text-xs text-slate-600">
+                            <span className="font-medium">{cat}</span> occurs {bgPct}% in
+                            background, {rulePct}% with antecedent —{' '}
+                            <span className={`font-semibold ${color}`}>
+                              {times.toFixed(2)}× more
+                            </span>
+                          </p>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
               )}
-            </CardContent>
-          </Card>
-        </div>
+              {selectedRule.chart_path && (
+                <RuleChartDialog
+                  ruleId={selectedRule.id}
+                  chartUrl={chartUrl}
+                  chartLoading={chartLoading}
+                  onOpen={() => loadChart()}
+                />
+              )}
+            </div>
+          ) : (
+            <div className="text-muted-foreground text-sm">Select a rule to view details</div>
+          )}
+        </RuleDetail>
       </div>
     </div>
   );

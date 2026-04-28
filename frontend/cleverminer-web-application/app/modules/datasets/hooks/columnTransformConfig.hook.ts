@@ -24,8 +24,8 @@ const initial: ColumnTransformConfig = {
   binK: 5,
 };
 
-export function useColumnTransformConfig(columnName: string) {
-  const [config, setConfig] = useState<ColumnTransformConfig>(initial);
+export function useColumnTransformConfig(columnName: string, initialBinK = 5) {
+  const [config, setConfig] = useState<ColumnTransformConfig>({ ...initial, binK: initialBinK });
 
   const updateConfig = (patch: Partial<ColumnTransformConfig>) =>
     setConfig((prev) => ({ ...prev, ...patch }));

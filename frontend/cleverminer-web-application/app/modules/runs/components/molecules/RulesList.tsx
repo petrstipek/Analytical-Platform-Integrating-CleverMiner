@@ -8,11 +8,13 @@ import {
   TableRow,
 } from '@/shared/components/ui/organisms/table';
 import { ProceduresType } from '@/shared/domain/procedures.type';
-import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { renderCedent } from '@/modules/runs/utils/renderCedent';
+import { getLabel } from '@/modules/runs/utils/getRuleLabel';
 
 export type RuleListRow = {
   id: number;
   text: string;
+  structure?: Record<string, { variable: string; categories: (string | number)[] }[]>;
   metrics?: {
     confidence?: number;
     base?: number;
@@ -33,156 +35,74 @@ export default function RulesList({
   onSelectRule,
   procedure,
 }: RulesListProps) {
-  const formatRule = (text: string) => {
-    const [logic] = text.split(' | ');
-    const parts = logic.split('=>');
-
+  const formatRule = (rule: RuleListRow) => {
     if (procedure === ProceduresType.CFMINER) {
-      const { bg_light, text: textColour } = PROCEDURE_STYLES[procedure];
-      const conditions = logic
-        .split('&')
-        .map((c) => c.trim())
-        .filter(Boolean);
-
       return (
         <div className="flex flex-wrap items-center gap-2">
-          {conditions.map((condition, i) => {
-            const match = condition.match(/^(.+?)\((.+)\)$/);
-            const field = match ? match[1].replace(/_/g, ' ') : condition;
-            const values = match ? match[2].split(/\s+/).filter(Boolean) : [];
-
-            return (
-              <div key={i} className="flex flex-wrap items-center gap-1">
-                {i > 0 && <span className="text-xs font-semibold text-slate-400">&amp;</span>}
-                <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-                  {field}
-                </span>
-                {values.map((v) => (
-                  <span
-                    key={v}
-                    className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-                  >
-                    {v}
-                  </span>
-                ))}
-              </div>
-            );
-          })}
+          {renderCedent(rule.structure?.cond ?? [], procedure)}
         </div>
       );
     }
 
     if (procedure === ProceduresType.SD4FTMINER) {
-      const [logic, rest] = text.split(' | ');
-      const [, groups] = (rest ?? '').split(' : ');
-      const [group1, group2] = (groups ?? '').split(' x ').map((g) => g.trim());
+      return (
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-wrap items-center gap-2">
+            {renderCedent(rule.structure?.ante ?? [], procedure)}
+            <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
+            {renderCedent(rule.structure?.succ ?? [], procedure)}
+            {(rule.structure?.cond ?? []).length > 0 && (
+              <div className="flex items-center gap-1 text-xs text-slate-500">
+                <span className="font-semibold">|</span>
+                {renderCedent(rule.structure?.cond ?? [], procedure)}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-1 text-xs text-slate-500">
+            <span className="font-semibold">:</span>
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">
+              {getLabel(rule.structure?.frst)}
+            </span>
+            <span className="font-semibold">×</span>
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">
+              {getLabel(rule.structure?.scnd)}
+            </span>
+          </div>
+        </div>
+      );
+    }
 
-      const parts = logic.split('=>');
-      const parseChunk = (chunk: string) => {
-        const match = chunk.trim().match(/^(.+?)\((.+)\)$/);
-        if (!match) return { field: chunk.trim(), values: [] as string[] };
-        return {
-          field: match[1].replace(/_/g, ' '),
-          values: match[2].split(/\s+/).filter(Boolean),
-        };
-      };
-
-      const lhs = parseChunk(parts[0]);
-      const rhs = parseChunk(parts[1]);
-      const { bg_light, text: textColour } = PROCEDURE_STYLES[procedure];
-
+    if (procedure === ProceduresType.FOURFTMINER) {
       return (
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex flex-wrap items-center gap-1">
-            <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-              {lhs.field}
-            </span>
-            {lhs.values.map((v) => (
-              <span
-                key={v}
-                className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-              >
-                {v}
-              </span>
-            ))}
-          </div>
-
+          {renderCedent(rule.structure?.ante ?? [], procedure)}
           <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
-
-          <div className="flex flex-wrap items-center gap-1">
-            <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-              {rhs.field}
-            </span>
-            {rhs.values.map((v) => (
-              <span
-                key={v}
-                className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-              >
-                {v}
-              </span>
-            ))}
-          </div>
-
-          {group1 && group2 && (
+          {renderCedent(rule.structure?.succ ?? [], procedure)}
+          {(rule.structure?.cond ?? []).length > 0 && (
             <div className="flex items-center gap-1 text-xs text-slate-500">
-              <span className="font-semibold">:</span>
-              <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{group1}</span>
-              <span className="font-semibold">×</span>
-              <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{group2}</span>
+              <span className="font-semibold">|</span>
+              {renderCedent(rule.structure?.cond ?? [], procedure)}
             </div>
           )}
         </div>
       );
     }
 
-    if (parts.length !== 2) return <span className="font-mono text-xs">{text}</span>;
-
-    const parseChunk = (chunk: string) => {
-      const match = chunk.trim().match(/^(.+?)\((.+)\)$/);
-      if (!match) return { field: chunk.trim(), values: [] as string[] };
-      const field = match[1].replace(/_/g, ' ');
-      const values = match[2].split(/\s+/).filter(Boolean);
-      return { field, values };
-    };
-
-    const lhs = parseChunk(parts[0]);
-    const rhs = parseChunk(parts[1]);
-
-    const { bg_light, text: textColour } = PROCEDURE_STYLES[procedure];
-
-    return (
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex flex-wrap items-center gap-1">
-          <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-            {lhs.field}
-          </span>
-          {lhs.values.map((v) => (
-            <span
-              key={v}
-              className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-            >
-              {v}
-            </span>
-          ))}
+    if (procedure === ProceduresType.UICMINER) {
+      return (
+        <div className="flex flex-wrap items-center gap-2">
+          {renderCedent(rule.structure?.ante ?? [], procedure)}
+          {(rule.structure?.cond ?? []).length > 0 && (
+            <div className="flex items-center gap-1 text-xs text-slate-500">
+              <span className="font-semibold">|</span>
+              {renderCedent(rule.structure?.cond ?? [], procedure)}
+            </div>
+          )}
         </div>
+      );
+    }
 
-        <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
-
-        <div className="flex flex-wrap items-center gap-1">
-          <span className="text-xs font-semibold tracking-wide text-indigo-500 uppercase">
-            {rhs.field}
-          </span>
-          {rhs.values.map((v) => (
-            <span
-              key={v}
-              className={`rounded px-1.5 py-0.5 font-mono text-xs ${bg_light} ${textColour}`}
-            >
-              {v}
-            </span>
-          ))}
-        </div>
-      </div>
-    );
+    return <span className="font-mono text-xs text-amber-500">Unknown procedure: {procedure}</span>;
   };
 
   const showConfidence = rules.some((r) => r.metrics?.confidence != null);
@@ -198,7 +118,7 @@ export default function RulesList({
             <TableHead>Rule Logic</TableHead>
             {showConfidence && <TableHead className="text-right">Confidence</TableHead>}
             {showRatioconf && <TableHead className="text-right">Ratio Conf</TableHead>}
-            {showBase && <TableHead className="text-right">Base</TableHead>}
+            {showBase && <TableHead className="pr-6 text-right">Base</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -218,9 +138,9 @@ export default function RulesList({
                 onClick={() => onSelectRule(rule)}
               >
                 <TableCell className="text-muted-foreground font-mono text-xs">{rule.id}</TableCell>
-                <TableCell className="text-sm">{formatRule(rule.text)}</TableCell>
+                <TableCell className="text-sm">{formatRule(rule)}</TableCell>
                 {showConfidence && (
-                  <TableCell className={`text-right font-mono text-xs ${confidenceColor}`}>
+                  <TableCell className={`pr-6 text-right font-mono text-xs ${confidenceColor}`}>
                     {rule.metrics?.confidence != null
                       ? `${(rule.metrics.confidence * 100).toFixed(1)}%`
                       : '—'}
@@ -232,7 +152,7 @@ export default function RulesList({
                   </TableCell>
                 )}
                 {showBase && (
-                  <TableCell className="text-right font-mono text-xs">
+                  <TableCell className="pr-6 text-right font-mono text-xs">
                     {rule.metrics?.base != null ? rule.metrics.base.toLocaleString() : '—'}
                   </TableCell>
                 )}

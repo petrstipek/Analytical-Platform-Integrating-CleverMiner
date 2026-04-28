@@ -4,3 +4,5 @@ export { default as VectorInput } from './VectorInput';
 export { default as CedentDetail } from './CedentDetail';
 export { default as QuantifiersDetail } from './QuantifiersDetail';
 export { default as TargetEditor } from './TargetEditor';
+export { default as ErrorLogCell } from './ErrorLogCell';
+export { default as TaskBaseOverview } from './TaskBaseOverview';
