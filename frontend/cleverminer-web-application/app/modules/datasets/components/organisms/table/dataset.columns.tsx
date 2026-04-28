@@ -2,7 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { formatDate } from '@/shared/utils/formatDate';
 import { DatasetSourceTypeBadge } from '@/modules/datasets/components/atoms/DatasetSourceTypeBadge';
 import type { DatasetNode } from '@/modules/datasets/pages/Datasets.page';
-import { ChevronRight, Trash2 } from 'lucide-react';
+import { ArrowUpDown, ChevronRight, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BaseBooleanStatusBadge } from '@/shared/components/atoms';
 import { Button } from '@/shared/components/ui/atoms/button';
@@ -46,8 +46,18 @@ export const getDatasetColumns = (onDelete: (id: number) => void): ColumnDef<Dat
   },
   {
     accessorKey: 'created_at',
-    header: 'Created At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Created At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'used_in_tasks',

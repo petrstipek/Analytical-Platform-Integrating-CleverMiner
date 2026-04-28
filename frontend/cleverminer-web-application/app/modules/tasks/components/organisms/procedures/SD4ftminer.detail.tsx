@@ -1,8 +1,14 @@
-import { CedentDetail, QuantifiersDetail } from '@/modules/tasks/components/molecules';
+import {
+  CedentDetail,
+  QuantifiersDetail,
+  TaskBaseOverview,
+} from '@/modules/tasks/components/molecules';
+import type { Task } from '@/modules/tasks/domain/task.type';
 
-export default function SD4ftMinerDetails({ params }: { params: any }) {
+export default function SD4ftMinerDetails({ params, task }: { params: any; task: Task }) {
   return (
     <div className="space-y-6">
+      <TaskBaseOverview task={task} />
       <QuantifiersDetail data={params.quantifiers} />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

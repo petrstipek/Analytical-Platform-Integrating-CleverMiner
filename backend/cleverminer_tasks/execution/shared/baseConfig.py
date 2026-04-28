@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Dict, List, Optional, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class AttributeType(str, Enum):
@@ -24,6 +24,13 @@ class AttributeSpec(BaseModel):
     minlen: int = 1
     maxlen: int = 1
     gace: GaceType = GaceType.POSITIVE
+    value: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_one_requires_value(self) -> "AttributeSpec":
+        if self.attr_type == AttributeType.ONE and self.value is None:
+            raise ValueError("attr_type='one' requires a 'value' field")
+        return self
 
 
 class CedentConfig(BaseModel):

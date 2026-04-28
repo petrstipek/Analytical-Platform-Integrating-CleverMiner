@@ -15,9 +15,10 @@ export enum GaceType {
 export interface AttributeSpec {
   name: string;
   attr_type: AttributeType;
-  minlen: number;
-  maxlen: number;
+  minlen: number | undefined;
+  maxlen: number | undefined;
   gace: GaceType;
+  value: string | undefined;
 }
 
 export interface CedentConfig {

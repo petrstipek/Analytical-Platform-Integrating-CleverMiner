@@ -1,7 +1,6 @@
 from typing import Dict, Any
 
 import pandas as pd
-from cleverminer import cleverminer
 
 from cleverminer_tasks.execution.procedures.fourftMiner.configs import FourFtConfig
 from cleverminer_tasks.execution.procedures.fourftMiner.serialization import (
@@ -35,9 +34,9 @@ class FourFtMiningService(BaseMiningService):
             if cond_cedent:
                 params["cond"] = cond_cedent
 
-        clm = cleverminer(**params)
+        clm = self._run_miner(params)
 
-        return serialize_4ft_result(clm)
+        return serialize_4ft_result(clm, self.run_instance.id)
 
     def _required_attributes(self) -> list[str]:
         columns = set()

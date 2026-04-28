@@ -12,6 +12,8 @@ import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling'
 import { deleteTask } from '@/modules/tasks/api/tasks.api';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ProcedureBadge } from '@/shared/components/atoms/ProcedureBadge';
+import { PROCEDURE_LABELS } from '@/shared/domain/procedures.type';
 
 type Props = { task: Task };
 
@@ -72,7 +74,7 @@ export default function TasksForList({ task }: Props) {
                   variant="secondary"
                   className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${bg} ${text}`}
                 >
-                  {task.procedure}
+                  {PROCEDURE_LABELS[task.procedure] || 'Unknown Procedure'}
                 </Badge>
               </div>
 
@@ -81,7 +83,7 @@ export default function TasksForList({ task }: Props) {
               </p>
 
               <p className="text-muted-foreground text-xs">
-                Dataset #{task.dataset} • Updated {formatDate(String(task.updated_at))}
+                Dataset #{task.dataset_name} • Updated {formatDate(String(task.updated_at))}
               </p>
             </div>
           </div>
@@ -92,9 +94,18 @@ export default function TasksForList({ task }: Props) {
             <div className="grid gap-2 text-sm md:grid-cols-3">
               <div className="space-y-4">
                 <div className="text-muted-foreground text-xs">Procedure</div>
-                <div className="font-medium">{task.procedure}</div>
+                <div className="font-medium">
+                  <ProcedureBadge procedure={task.procedure} />
+                </div>
                 <div className="text-muted-foreground text-xs">Dataset</div>
-                <div className="font-medium">#{task.dataset}</div>
+                <div className="font-medium">
+                  <Link
+                    to={`/datasets/${task.dataset}`}
+                    className="block max-w-[400px] truncate font-mono text-lg font-semibold text-blue-700 hover:underline"
+                  >
+                    {task.dataset_name || 'Unknown Dataset'}
+                  </Link>
+                </div>
               </div>
               <div className="space-y-4">
                 <div className="text-muted-foreground text-xs">Created</div>

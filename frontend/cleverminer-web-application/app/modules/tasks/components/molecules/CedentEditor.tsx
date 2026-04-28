@@ -14,6 +14,7 @@ interface CedentEditorProps {
   config: CedentConfig;
   onChange: (newConfig: CedentConfig) => void;
   availableColumns?: DatasetsColumnsType[];
+  datasetId: number;
 }
 
 export default function CedentEditor({
@@ -22,6 +23,7 @@ export default function CedentEditor({
   config,
   onChange,
   availableColumns,
+  datasetId,
 }: CedentEditorProps) {
   const addAttribute = () => {
     const newAttr = {
@@ -30,6 +32,7 @@ export default function CedentEditor({
       minlen: 1,
       maxlen: 1,
       gace: GaceType.POSITIVE,
+      value: undefined,
     };
     onChange({ ...config, attributes: [...config.attributes, newAttr] });
   };
@@ -121,6 +124,7 @@ export default function CedentEditor({
               onChange={(updated: any) => updateAttribute(idx, updated)}
               onRemove={() => removeAttribute(idx)}
               availableColumns={availableColumns}
+              datasetId={datasetId}
             />
           ))
         )}

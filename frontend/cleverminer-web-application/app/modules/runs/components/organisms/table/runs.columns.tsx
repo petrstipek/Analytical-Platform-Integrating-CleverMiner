@@ -1,17 +1,39 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { type RunResult, RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import { formatDate } from '@/shared/utils/formatDate';
-import { elapsed } from '@/modules/tasks/utils/time-calculations';
 import { RunStatusBadge } from '@/modules/runs/components/atoms/RunStatusBadge';
 import { RunAchievedResultBadge } from '@/modules/runs/components/atoms/RunAchievedResultBadge';
 import { Button } from '@/shared/components/ui/atoms/button';
-import { Trash2 } from 'lucide-react';
+import { ArrowUpDown, Square, Trash2 } from 'lucide-react';
+import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
+import { PROCEDURE_LABELS } from '@/shared/domain/procedures.type';
+import { ElapsedCell } from '@/shared/components/atoms';
+import type { TaskRun } from '@/modules/tasks/domain/task-run.type';
 
-export const RunsRunningColumns: ColumnDef<RunResult>[] = [
+export const getRunningRunsColumns = (
+  onDelete: (id: number) => void,
+  onStop?: (id: number) => void,
+): ColumnDef<RunResult>[] => [
   { accessorKey: 'id', header: 'Run id' },
   {
     accessorKey: 'task_name',
     header: 'Task',
+  },
+  {
+    accessorKey: 'procedure',
+    header: 'Procedure',
+    cell: ({ getValue }) => {
+      const procedure = getValue<RunResult['procedure']>();
+      const styles = PROCEDURE_STYLES[procedure];
+
+      return (
+        <span
+          className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${styles.bg} ${styles.text}`}
+        >
+          <span>{PROCEDURE_LABELS[procedure]}</span>
+        </span>
+      );
+    },
   },
   {
     accessorKey: 'status',
@@ -20,62 +42,49 @@ export const RunsRunningColumns: ColumnDef<RunResult>[] = [
   },
   {
     accessorKey: 'started_at',
-    header: 'Started At',
     cell: ({ getValue }) => formatDate(getValue<string>()),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Started At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     id: 'elapsed',
     header: 'Elapsed',
-    cell: ({ row }) => elapsed(row.original.started_at, row.original.finished_at),
+    cell: ({ row }) => <ElapsedCell row={row.original as unknown as TaskRun} />,
   },
-
-  {
-    accessorKey: 'result_summary.has_result',
-    header: 'Achieved Result',
-    cell: ({ row }) => (
-      <RunAchievedResultBadge status={row.original?.result_summary?.has_result!} />
-    ),
-  },
-  { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },
-];
-
-export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<RunResult>[] => [
-  { accessorKey: 'id', header: 'Run id' },
-  {
-    accessorKey: 'task_name',
-    header: 'Task',
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => <RunStatusBadge status={row.original.status} />,
-  },
-  {
-    accessorKey: 'started_at',
-    header: 'Started At',
-    cell: ({ getValue }) => formatDate(getValue<string>()),
-  },
-  {
-    id: 'elapsed',
-    header: 'Elapsed',
-    cell: ({ row }) => elapsed(row.original.started_at, row.original.finished_at),
-  },
-
-  {
-    accessorKey: 'result_summary.has_result',
-    header: 'Achieved Result',
-    cell: ({ row }) => (
-      <RunAchievedResultBadge status={row.original?.result_summary?.has_result!} />
-    ),
-  },
-  { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },
   {
     id: 'actions',
     header: 'Actions',
     cell: ({ row }) => {
-      console.log(row.original.status);
-      if ([RunResultStatus.Queued, RunResultStatus.Running].includes(row.original?.status))
-        return <div>Cannot delete not finished run!</div>;
+      const isActive = [RunResultStatus.Queued, RunResultStatus.Running].includes(
+        row.original?.status,
+      );
+
+      if (isActive) {
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-amber-500 hover:bg-amber-50 hover:text-amber-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              onStop?.(row.original.id);
+            }}
+          >
+            Stop
+            <Square className="h-4 w-4" />
+          </Button>
+        );
+      }
+
       return (
         <Button
           variant="ghost"
@@ -86,6 +95,110 @@ export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<Run
             onDelete(row.original.id);
           }}
         >
+          {' '}
+          Delete
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+];
+
+export const getBaseRunColumns = (
+  onDelete: (id: number) => void,
+  onStop?: (id: number) => void,
+): ColumnDef<RunResult>[] => [
+  { accessorKey: 'id', header: 'Run id' },
+  {
+    accessorKey: 'task_name',
+    header: 'Task',
+  },
+  {
+    accessorKey: 'procedure',
+    header: 'Procedure',
+    cell: ({ getValue }) => {
+      const procedure = getValue<RunResult['procedure']>();
+      const styles = PROCEDURE_STYLES[procedure];
+
+      return (
+        <span
+          className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${styles.bg} ${styles.text}`}
+        >
+          <span>{PROCEDURE_LABELS[procedure]}</span>
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => <RunStatusBadge status={row.original.status} />,
+  },
+  {
+    accessorKey: 'started_at',
+    cell: ({ getValue }) => formatDate(getValue<string>()),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Started At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    id: 'elapsed',
+    header: 'Elapsed',
+    cell: ({ row }) => <ElapsedCell row={row.original as unknown as TaskRun} />,
+  },
+  {
+    accessorKey: 'result_summary.procedure',
+    header: 'Achieved Result',
+    cell: ({ row }) => (
+      <RunAchievedResultBadge status={row.original?.result_summary?.rule_count! > 0} />
+    ),
+  },
+  { accessorKey: 'result_summary.rule_count', header: 'Found Rules' },
+  {
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => {
+      const isActive = [RunResultStatus.Queued, RunResultStatus.Running].includes(
+        row.original?.status,
+      );
+
+      if (isActive) {
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-amber-500 hover:bg-amber-50 hover:text-amber-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              onStop?.(row.original.id);
+            }}
+          >
+            Stop
+            <Square className="h-4 w-4" />
+          </Button>
+        );
+      }
+
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-red-500 hover:bg-red-50 hover:text-red-700"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(row.original.id);
+          }}
+        >
+          {' '}
+          Delete
           <Trash2 className="h-4 w-4" />
         </Button>
       );

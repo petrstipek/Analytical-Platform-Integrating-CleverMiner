@@ -44,6 +44,7 @@ export type DatasetColumnStats = {
   non_null: number;
   nulls: number;
   nunique: number;
+  visible: boolean;
   clm_guidance: ClmGuidance & {
     suggested_attribute_spec: {
       attr_type: string;
@@ -51,6 +52,7 @@ export type DatasetColumnStats = {
       maxlen: number;
     }[];
   };
+  category_order?: string[];
 };
 
 export type DatasetStats = {

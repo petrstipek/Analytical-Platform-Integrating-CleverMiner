@@ -13,6 +13,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/shared/components/ui/organisms/form';
+import { AlertTriangle, Binary, Type } from 'lucide-react';
 
 type AttributeSelectorProps = {
   name: string;
@@ -31,19 +32,30 @@ export default function AttributeSelector({ name, columns, disabled }: Attribute
         <FormItem className="w-[200px]">
           <Select onValueChange={field.onChange} defaultValue={field.value} disabled={disabled}>
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className={'w-full'}>
                 <SelectValue placeholder="Column" />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {columns.map((col) => (
-                <SelectItem key={col.name} value={col.name}>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{col.name}</span>
-                    <span className="text-muted-foreground ml-auto text-xs">{col.dtype}</span>
-                  </div>
-                </SelectItem>
-              ))}
+              {columns.length > 0 ? (
+                columns.map((col) => (
+                  <SelectItem key={col.name} value={col.name}>
+                    <div className="flex items-center gap-2">
+                      {col.dtype.includes('int') || col.dtype.includes('float') ? (
+                        <Binary className="h-3 w-3 text-blue-500" />
+                      ) : (
+                        <Type className="h-3 w-3 text-orange-500" />
+                      )}
+                      <span>{col.name}</span>
+                      {col.distinct > 100 && (
+                        <AlertTriangle className="ml-auto h-3 w-3 text-amber-500" />
+                      )}
+                    </div>
+                  </SelectItem>
+                ))
+              ) : (
+                <div className="text-muted-foreground p-2 text-xs">No columns loaded</div>
+              )}
             </SelectContent>
           </Select>
           <FormMessage />

@@ -1,14 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { deleteRun, exportRuns, getRuns, getRunsSummary } from '@/modules/runs/api/runs.api';
+import {
+  deleteRun,
+  exportRuns,
+  getRuns,
+  getRunsSummary,
+  stopRun,
+} from '@/modules/runs/api/runs.api';
 import { DataTable } from '@/shared/components/organisms/table/data-table';
 import {
   getBaseRunColumns,
-  RunsRunningColumns,
+  getRunningRunsColumns,
 } from '@/modules/runs/components/organisms/table/runs.columns';
 import { useNavigate } from 'react-router';
 import BaseSummaryCard from '@/shared/components/atoms/BaseSummaryCard';
 import { LoadingStatus, ModulePagesHeader, PlatformCard } from '@/shared/components/molecules';
-import { type RunResult, RunResultStatus } from '@/modules/runs/domain/runs-results.type';
+import { RunResultStatus } from '@/modules/runs/domain/runs-results.type';
 import { toast } from 'sonner';
 import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
 
@@ -40,14 +46,29 @@ export default function RunsPage() {
     },
   });
 
+  const stopRunMutation = useMutation({
+    mutationFn: (runId: number) => stopRun(runId),
+    onError: (error: any) => toast.error('Stop failed:', error.message),
+    onSuccess: () => {
+      toast.success('Run stopped successfully');
+      queryClient.invalidateQueries({ queryKey: ['runs'] });
+    },
+  });
+
   if (laodingRunsData || loadingRunsSummary) return <LoadingStatus />;
   if (!runsData || !runsSummaryData) return <div>No runs found</div>;
 
   const runningRuns = runsData.filter((run) => run.status === RunResultStatus.Running);
 
-  const RunsBaseColumns = getBaseRunColumns((runId: number) => {
-    deleteRunMuation.mutate(runId);
-  });
+  const RunsBaseColumns = getBaseRunColumns(
+    (runId: number) => deleteRunMuation.mutate(runId),
+    (runId: number) => stopRunMutation.mutate(runId),
+  );
+
+  const RunningRunsColumns = getRunningRunsColumns(
+    (runId: number) => deleteRunMuation.mutate(runId),
+    (runId: number) => stopRunMutation.mutate(runId),
+  );
 
   return (
     <div>
@@ -73,11 +94,13 @@ export default function RunsPage() {
             titleClassName={''}
           >
             <DataTable
-              columns={RunsRunningColumns}
+              columns={RunningRunsColumns}
               data={runningRuns}
-              onRowClick={(row) => navigate(`/run/${row.id}`)}
+              onRowClick={(row) => handleRunClick(row, navigate)}
               showSearch={true}
               mainSearchColumn={'task_name'}
+              initialSorting={[{ id: 'started_at', desc: true }]}
+              showStatus={false}
             />
           </PlatformCard>
         )}
@@ -93,6 +116,7 @@ export default function RunsPage() {
             showSearch={true}
             mainSearchColumn={'task_name'}
             exportData={exportRunsMutation.mutate}
+            initialSorting={[{ id: 'started_at', desc: true }]}
           />
         </PlatformCard>
       </div>

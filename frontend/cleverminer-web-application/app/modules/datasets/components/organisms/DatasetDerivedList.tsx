@@ -20,9 +20,10 @@ import { DerivedChildDatasetRow } from '@/modules/datasets/components/molecules'
 
 interface DatasetDerivedListProps {
   datasetId: string;
+  onNavigate?: () => void;
 }
 
-export default function DatasetDerivedList({ datasetId }: DatasetDerivedListProps) {
+export default function DatasetDerivedList({ datasetId, onNavigate }: DatasetDerivedListProps) {
   const {
     data: childrenTransformationsData,
     isLoading: childrenTransformationsLoading,
@@ -31,6 +32,14 @@ export default function DatasetDerivedList({ datasetId }: DatasetDerivedListProp
     queryKey: ['dataset-children-transformations', datasetId],
     queryFn: () => getDatasetChildrenTransformations(datasetId!),
     enabled: !!datasetId,
+    refetchInterval: (query) => {
+      const children = query.state.data?.children ?? [];
+      const hasPending = children.some(
+        (c: any) =>
+          c.transformation?.status === 'pending' || c.transformation?.status === 'running',
+      );
+      return hasPending ? 3000 : false;
+    },
   });
 
   return (
@@ -91,7 +100,11 @@ export default function DatasetDerivedList({ datasetId }: DatasetDerivedListProp
               </TableHeader>
               <TableBody>
                 {childrenTransformationsData.children.map((child) => (
-                  <DerivedChildDatasetRow key={child.dataset_id} child={child} />
+                  <DerivedChildDatasetRow
+                    key={child.dataset_id}
+                    child={child}
+                    onNavigate={onNavigate}
+                  />
                 ))}
               </TableBody>
             </Table>

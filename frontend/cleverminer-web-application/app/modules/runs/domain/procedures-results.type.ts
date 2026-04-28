@@ -1,6 +1,8 @@
 export type FourftRule = {
   id: number;
   text: string;
+  structure: Record<string, { variable: string; categories: (string | number)[] }[]>;
+  chart_path: string;
   quantifiers: {
     base: number;
     rel_base: number;
@@ -14,6 +16,8 @@ export type FourftRule = {
 export type Sd4ftRule = {
   id: number;
   text: string;
+  structure: Record<string, { variable: string; categories: (string | number)[] }[]>;
+  chart_path: string;
   quantifiers: {
     base1: number;
     base2: number;
@@ -31,6 +35,8 @@ export type Sd4ftRule = {
 export type UicRule = {
   id: number;
   text: string;
+  structure: Record<string, { variable: string; categories: (string | number)[] }[]>;
+  chart_path: string;
   quantifiers: {
     base: number;
     rel_base: number;
@@ -47,6 +53,10 @@ export type UicRule = {
 export type CfRule = {
   id: number;
   text: string;
+  histogram: number[];
+  histogram_full: number[];
+  structure: Record<string, { variable: string; categories: (string | number)[] }[]>;
+  chart_path: string;
   quantifiers: {
     base: number;
     rel_base: number;

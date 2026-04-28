@@ -10,8 +10,6 @@ export type DatasetType = {
 };
 
 export enum DatasetSourceType {
-  url = 'url',
-  local = 'local',
   storage_file = 'storage_file',
   generated = 'generated',
 }

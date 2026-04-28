@@ -89,6 +89,7 @@ export default function DatasetsPage() {
             mainSearchColumn={'name'}
             showBooleanFilter={true}
             booleanFilterColumn={'used_in_tasks'}
+            initialSorting={[{ id: 'created_at', desc: true }]}
           />
         </PlatformCard>
         <PlatformCard
@@ -105,6 +106,7 @@ export default function DatasetsPage() {
             exportData={exportDatasetsMutation.mutate}
             showBooleanFilter={true}
             booleanFilterColumn={'used_in_tasks'}
+            initialSorting={[{ id: 'created_at', desc: true }]}
           />
         </PlatformCard>
       </div>

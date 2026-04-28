@@ -7,12 +7,14 @@ import type { QuantifierFieldDef } from '@/modules/tasks/domain/quantifier-defin
 import { VectorInput } from '@/modules/tasks/components/molecules/';
 import InfoTooltip from '@/modules/tasks/components/atoms/InfoTooltip';
 import type { CreateTaskFormValues } from '@/modules/tasks/utils/task-validation';
+import { ProceduresType } from '@/shared/domain/procedures.type';
 
 interface Step3QuantifiersProps {
   procedure: string;
+  targetCategories?: string[];
 }
 
-export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
+export default function Step3Quantifiers({ procedure, targetCategories }: Step3QuantifiersProps) {
   const {
     register,
     control,
@@ -70,6 +72,7 @@ export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
                           desc={field.desc}
                           value={(value as number[]) || null}
                           onChange={onChange}
+                          categories={field.key === 'aad_weights' ? targetCategories : undefined}
                         />
                         {error && <p className="text-destructive text-sm">{error.message}</p>}
                       </div>
@@ -82,12 +85,15 @@ export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
                 <div key={field.key} className="space-y-1.5">
                   <Label className="flex items-center gap-2 text-sm font-medium">
                     {field.label}
+                    {field.required && <span className="text-red-500">*</span>}
                     {field.desc && <InfoTooltip text={field.desc} />}
                   </Label>
                   <Input
                     type="number"
                     step={field.type === 'float' ? '0.01' : '1'}
-                    placeholder="Not set"
+                    min={field.min}
+                    max={field.max}
+                    placeholder={field.required ? 'Required' : 'Not set'}
                     {...register(`configuration.quantifiers.${field.key}`, {
                       setValueAs: (v) => {
                         if (v === '' || v === undefined) return null;
@@ -96,12 +102,34 @@ export default function Step3Quantifiers({ procedure }: Step3QuantifiersProps) {
                       },
                     })}
                   />
+                  {(field.min !== undefined || field.max !== undefined) && (
+                    <p className="text-muted-foreground text-[11px]">
+                      {field.min !== undefined && field.max !== undefined
+                        ? `Between ${field.min} and ${field.max}`
+                        : field.min !== undefined
+                          ? `Min: ${field.min}`
+                          : `Max: ${field.max}`}
+                    </p>
+                  )}
                   {fieldError?.message && (
                     <p className="text-destructive text-sm">{fieldError.message}</p>
                   )}
                 </div>
               );
             })}
+            {groupName === 'Histogram Steps' && procedure === ProceduresType.CFMINER && (
+              <p className="text-muted-foreground col-span-2 text-[11px]">
+                * At least one step quantifier is required.
+              </p>
+            )}
+
+            {groupName === 'Histogram Steps' &&
+              procedure === ProceduresType.CFMINER &&
+              (quantifierErrors?.S_Down as any)?.message && (
+                <p className="text-destructive col-span-2 text-sm">
+                  {(quantifierErrors?.S_Down as any)?.message}
+                </p>
+              )}
           </CardContent>
         </Card>
       ))}

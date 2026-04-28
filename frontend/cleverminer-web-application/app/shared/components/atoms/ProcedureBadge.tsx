@@ -1,5 +1,5 @@
 import { Badge } from '@/shared/components/ui/atoms/badge';
-import { ProceduresType } from '@/shared/domain/procedures.type';
+import { PROCEDURE_LABELS, ProceduresType } from '@/shared/domain/procedures.type';
 import { cn } from '@/lib/utils';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 
@@ -14,9 +14,9 @@ export function ProcedureBadge({ procedure, className }: ProcedureBadgeProps) {
   return (
     <Badge
       variant="secondary"
-      className={cn('font-mono text-[10px] uppercase', styles.bg, styles.text, className)}
+      className={cn('font-mono text-[10px]', styles.bg, styles.text, className)}
     >
-      {procedure}
+      <span>{PROCEDURE_LABELS[procedure]}</span>
     </Badge>
   );
 }

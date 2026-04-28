@@ -24,6 +24,9 @@ class ProfileOptions:
     # histogram sampling
     sample_rows_for_hist: int | None = 200_000
 
+    # numeric vs categorical threshold
+    numeric_as_categorical_threshold: int = 10
+
 
 def build_dataset_profile(
     df: pd.DataFrame, options: ProfileOptions | None = None
@@ -37,6 +40,19 @@ def build_dataset_profile(
 
     numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
     categorical_cols = df.select_dtypes(exclude=np.number).columns.tolist()
+
+    true_numeric = []
+    low_cardinality = []
+
+    for col in numeric_cols:
+        nunique = df[col].nunique(dropna=True)
+        if nunique <= options.numeric_as_categorical_threshold:
+            low_cardinality.append(col)
+        else:
+            true_numeric.append(col)
+
+    categorical_cols = low_cardinality + categorical_cols
+    numeric_cols = true_numeric
 
     return {
         "overview": get_dataset_overview(df),

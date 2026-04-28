@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/ui/atoms/button';
 import { deleteProject } from '@/modules/projects/api/mutatations/projects.mutations';
 import { toast } from 'sonner';
 import { getBaseProjectColumns } from '@/modules/projects/components/organisms/table/projects.columns';
+import { AlertTriangle } from 'lucide-react';
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
@@ -35,6 +36,8 @@ export default function ProjectsPage() {
     deleteProjectMutation.mutate(projectId);
   });
 
+  const isLocalhost = import.meta.env.VITE_BACKEND_URL?.includes('localhost');
+
   return (
     <div>
       <ModulePagesHeader title={'Projects'} description={'See all created projects.'}>
@@ -43,6 +46,12 @@ export default function ProjectsPage() {
         </Link>
       </ModulePagesHeader>
       <div className="space-y-5">
+        {isLocalhost && (
+          <div className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <span>You're running on a local backend. Project member invitations won't work.</span>
+          </div>
+        )}
         <PlatformCard
           cardTitle={'Projects'}
           cardDescription={'Explore your projects.'}

@@ -1,27 +1,30 @@
 import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { ScrollArea } from '@/shared/components/ui/molecules/scroll-area';
 import { ColumnCard } from '@/modules/datasets/components/molecules';
-import type { ClmAnalysisResponse } from '@/modules/datasets/api/types/clmGuidance.type';
+import type {
+  ClmCandidate,
+  DatasetColumnStats,
+  DatasetStats,
+} from '@/modules/datasets/api/types/clmGuidance.type';
 import { PlatformCard } from '@/shared/components/molecules';
 
 type DatasetClmGuidanceViewProps = {
   datasetId: number;
-  clmGuidance: ClmAnalysisResponse;
+  goodCols: ClmCandidate[];
+  warningCols: ClmCandidate[];
+  ignoredCols: ClmCandidate[];
+  columnStatsData?: DatasetStats;
 };
 
 export default function DatasetClmGuidanceView({
-  clmGuidance: analysis,
+  goodCols,
+  warningCols,
+  ignoredCols,
+  columnStatsData,
 }: DatasetClmGuidanceViewProps) {
-  const allCols = [
-    ...analysis.target_candidates,
-    ...analysis.cond_candidates.filter(
-      (c) => !analysis.target_candidates.some((t) => t.name === c.name),
-    ),
-  ];
-
-  const goodCols = allCols.filter((c) => c.clm?.clm_usable_as_is);
-  const warningCols = allCols.filter((c) => c.clm && !c.clm.clm_usable_as_is);
-  const ignoredCols = analysis.ignored_candidates;
+  const getCategoryOrder = (colName: string): string[] =>
+    columnStatsData?.columns?.find((c: DatasetColumnStats) => c.name === colName)?.category_order ??
+    [];
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-500">
@@ -34,9 +37,14 @@ export default function DatasetClmGuidanceView({
           }
           cardDescription={'Explore ready columns.'}
         >
-          <ScrollArea className="h-[800px] pr-4">
+          <ScrollArea className="h-[770px] pr-4">
             {goodCols.map((col) => (
-              <ColumnCard key={col.name} col={col} status="good" />
+              <ColumnCard
+                key={col.name}
+                col={col}
+                status="good"
+                categoryOrder={getCategoryOrder(col.name)}
+              />
             ))}
           </ScrollArea>
         </PlatformCard>
@@ -48,9 +56,14 @@ export default function DatasetClmGuidanceView({
           }
           cardDescription={'Explore columns that need binning.'}
         >
-          <ScrollArea className="h-[800px] pr-4">
+          <ScrollArea className="h-[770px] pr-4">
             {warningCols.map((col) => (
-              <ColumnCard key={col.name} col={col} status="warning" />
+              <ColumnCard
+                key={col.name}
+                col={col}
+                status="warning"
+                categoryOrder={getCategoryOrder(col.name)}
+              />
             ))}
           </ScrollArea>
         </PlatformCard>
@@ -63,9 +76,14 @@ export default function DatasetClmGuidanceView({
           }
           cardDescription={'Advised to ignore,'}
         >
-          <ScrollArea className="h-[800px] pr-4">
+          <ScrollArea className="h-[770px] pr-4">
             {ignoredCols.map((col) => (
-              <ColumnCard key={col.name} col={col} status="bad" />
+              <ColumnCard
+                key={col.name}
+                col={col}
+                status="bad"
+                categoryOrder={getCategoryOrder(col.name)}
+              />
             ))}
           </ScrollArea>
         </PlatformCard>

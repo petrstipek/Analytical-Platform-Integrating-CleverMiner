@@ -8,16 +8,18 @@ import { Fragment, useState } from 'react';
 import { AlertCircle, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/atoms/button';
+import { getHighCardinalityAttrs } from '@/modules/tasks/utils/taskWizard/getHighCardinalityAttributes';
+import { HighCardinalityWarning } from '@/modules/tasks/components/organisms';
 
 interface Step2LogicBuilderProps {
   procedure: string;
-  availableColumns: DatasetsColumnsType[];
+  columns: DatasetsColumnsType[];
   isLoading: boolean;
 }
 
 export default function Step2LogicBuilder({
   procedure,
-  availableColumns,
+  columns = [],
   isLoading,
 }: Step2LogicBuilderProps) {
   const {
@@ -26,18 +28,33 @@ export default function Step2LogicBuilder({
     formState: { errors },
   } = useFormContext<CreateTaskFormValues>();
 
+  const config = watch('configuration');
+  const datasetId = watch('dataset');
+
+  const configErrors = errors.configuration;
+
+  const navigateTo = (index: number) => {
+    const offenders = getHighCardinalityAttrs(activeSection, columns, config);
+    if (offenders.length > 0) {
+      setPendingSection(index);
+      setShowWarning(true);
+    } else {
+      setCurrentSection(index);
+    }
+  };
+
   const visibleSections = (LOGIC_LAYOUTS[procedure] || []).filter((s) => s !== 'target');
   const [currentSection, setCurrentSection] = useState(0);
-
-  const config = watch('configuration');
-  const configErrors = errors.configuration;
+  const [showWarning, setShowWarning] = useState(false);
+  const [pendingSection, setPendingSection] = useState<number | null>(null);
 
   if (isLoading) return <div>Loading columns...</div>;
 
   const activeSection = visibleSections[currentSection];
-  const sectionError = configErrors?.[activeSection as keyof typeof configErrors];
   const isLast = currentSection === visibleSections.length - 1;
   const isFirst = currentSection === 0;
+  console.log(columns);
+  const availableColumns = columns.filter((column) => column.visible);
 
   return (
     <div className="space-y-6">
@@ -59,7 +76,7 @@ export default function Step2LogicBuilder({
             <Fragment key={section}>
               <button
                 type="button"
-                onClick={() => setCurrentSection(i)}
+                onClick={() => navigateTo(i)}
                 className={cn(
                   'flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors',
                   isActive
@@ -116,6 +133,7 @@ export default function Step2LogicBuilder({
                       config={field.value || { type: 'con', attributes: [], minlen: 1, maxlen: 1 }}
                       onChange={field.onChange}
                       availableColumns={availableColumns}
+                      datasetId={datasetId}
                     />
                     {sectionError && (
                       <div className="mt-3 space-y-1">
@@ -152,7 +170,7 @@ export default function Step2LogicBuilder({
 
         <Button
           type="button"
-          onClick={() => setCurrentSection((i) => i + 1)}
+          onClick={() => navigateTo(currentSection + 1)}
           disabled={isLast}
           className="flex items-center gap-2"
         >
@@ -162,6 +180,16 @@ export default function Step2LogicBuilder({
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
+      <HighCardinalityWarning
+        open={showWarning}
+        onOpenChange={setShowWarning}
+        offenders={getHighCardinalityAttrs(activeSection, columns, config)}
+        onConfirm={() => {
+          setCurrentSection(pendingSection!);
+          setShowWarning(false);
+          setPendingSection(null);
+        }}
+      />
     </div>
   );
 }

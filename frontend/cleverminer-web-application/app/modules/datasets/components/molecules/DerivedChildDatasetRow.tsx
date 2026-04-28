@@ -9,7 +9,13 @@ import { formatDate } from '@/shared/utils/formatDate';
 import { Link } from 'react-router';
 import { Button } from '@/shared/components/ui/atoms/button';
 
-export default function DerivedChildDatasetRow({ child }: { child: DatasetChildren }) {
+export default function DerivedChildDatasetRow({
+  child,
+  onNavigate,
+}: {
+  child: DatasetChildren;
+  onNavigate?: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const tr = child.transformation;
 
@@ -58,7 +64,7 @@ export default function DerivedChildDatasetRow({ child }: { child: DatasetChildr
 
         <TableCell>
           {status !== 'error' ? (
-            <Link to={`/datasets/${child.dataset_id}`}>
+            <Link to={`/datasets/${child.dataset_id}`} onClick={onNavigate}>
               <Button variant={'outline'}>View Dataset</Button>
             </Link>
           ) : (
@@ -68,7 +74,7 @@ export default function DerivedChildDatasetRow({ child }: { child: DatasetChildr
       </TableRow>
 
       {open && (
-        <TableRow>
+        <TableRow className={'max-h-[50vh] overflow-y-auto'}>
           <TableCell colSpan={5} className="max-w-0 pt-2 pb-4">
             <div className="bg-card space-y-3 overflow-hidden rounded-lg border p-4">
               <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
@@ -107,7 +113,9 @@ export default function DerivedChildDatasetRow({ child }: { child: DatasetChildr
               {tr?.transform_spec && Object.keys(tr.transform_spec).length > 0 && (
                 <div>
                   <p className="text-muted-foreground mb-1 text-xs">Transform spec</p>
-                  <TransformSteps spec={tr.transform_spec} />
+                  <div className="max-h-[400px] overflow-y-auto rounded-md">
+                    <TransformSteps spec={tr.transform_spec} />
+                  </div>
                 </div>
               )}
             </div>

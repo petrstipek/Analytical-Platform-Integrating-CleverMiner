@@ -3,21 +3,36 @@ import type { DatasetStatsOverview } from '@/modules/datasets/api/types/datasetS
 import { ModulePagesHeader } from '@/shared/components/molecules';
 import { Button } from '@/shared/components/ui/atoms/button';
 import { DialogTrigger } from '@radix-ui/react-dialog';
+import { useNavigate } from 'react-router';
 
 type DatasetDetailHeaderProps = {
   datasetStatsOverview: DatasetStatsOverview;
+  datasetId: number;
+  openDatasetTransformations?: () => void;
 };
 
-export default function DatasetDetailHeader({ datasetStatsOverview }: DatasetDetailHeaderProps) {
+export default function DatasetDetailHeader({
+  datasetStatsOverview,
+  datasetId,
+  openDatasetTransformations,
+}: DatasetDetailHeaderProps) {
+  const navigate = useNavigate();
+
   return (
     <div>
       <ModulePagesHeader
         title={datasetStatsOverview.dataset_name}
         description={'Explore the selected dataset.'}
       >
-        <DialogTrigger asChild>
+        <DialogTrigger asChild onClick={openDatasetTransformations}>
           <Button>Explore Dataset Transformations</Button>
         </DialogTrigger>
+        <Button
+          variant="secondary"
+          onClick={() => navigate(`/tasks/new-task?dataset=${datasetId}`)}
+        >
+          Use this dataset in analysis
+        </Button>
       </ModulePagesHeader>
       <div className="grid gap-4 md:grid-cols-3">
         <DatasetSummaryCard
