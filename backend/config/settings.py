@@ -200,10 +200,6 @@ SIMPLE_JWT = {
 
 # Development Only
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
     "https://frontend-production-a802.up.railway.app",
     "https://cleverminer.stipekdevs.cz",
 ]
