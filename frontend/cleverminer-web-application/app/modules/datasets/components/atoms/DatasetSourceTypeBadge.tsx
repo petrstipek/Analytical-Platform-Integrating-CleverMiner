@@ -3,8 +3,6 @@ import type { DatasetSourceType } from '@/modules/datasets/domain/dataset.type';
 import { DATASET_SOURCE_STYLES } from '@/shared/components/styles/datasetSourceType-styling';
 
 const DATASET_SOURCE_TYPE_LABELS: Record<DatasetSourceType, string> = {
-  url: 'url',
-  local: 'local',
   generated: 'generated',
   storage_file: 'storage file',
 };

@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/shared/components/ui/atoms/select';
 import { DELIMITER_OPTIONS } from '@/modules/datasets/domain/delimiterOptions';
+import { type DragEvent } from 'react';
 
 interface DatasetUploadFormProps {
   isPending: boolean;
@@ -37,18 +38,18 @@ export default function DatasetUploadCard({ isPending, onSubmit }: DatasetUpload
   const [delimiterMode, setDelimiterMode] = useState<string>(';');
   const [customDelimiter, setCustomDelimiter] = useState('');
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
   };
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = (e: DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
