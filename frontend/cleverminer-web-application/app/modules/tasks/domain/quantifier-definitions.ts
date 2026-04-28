@@ -254,7 +254,7 @@ export const QUANTIFIER_SCHEMAS: Record<string, QuantifierFieldDef[]> = {
     {
       key: 'aad_weights',
       label: 'AAD Weights',
-      desc: 'Weights for categories (e.g. 5,1,0)',
+      desc: 'Weights for categories.',
       type: 'vector',
       group: 'Confidence',
       required: true,
