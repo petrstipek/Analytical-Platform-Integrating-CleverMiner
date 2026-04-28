@@ -37,7 +37,7 @@ export default function DatasetClmGuidanceView({
           }
           cardDescription={'Explore ready columns.'}
         >
-          <ScrollArea className="h-[800px] pr-4">
+          <ScrollArea className="h-[770px] pr-4">
             {goodCols.map((col) => (
               <ColumnCard
                 key={col.name}
@@ -56,7 +56,7 @@ export default function DatasetClmGuidanceView({
           }
           cardDescription={'Explore columns that need binning.'}
         >
-          <ScrollArea className="h-[800px] pr-4">
+          <ScrollArea className="h-[770px] pr-4">
             {warningCols.map((col) => (
               <ColumnCard
                 key={col.name}
@@ -76,7 +76,7 @@ export default function DatasetClmGuidanceView({
           }
           cardDescription={'Advised to ignore,'}
         >
-          <ScrollArea className="h-[800px] pr-4">
+          <ScrollArea className="h-[770px] pr-4">
             {ignoredCols.map((col) => (
               <ColumnCard
                 key={col.name}
