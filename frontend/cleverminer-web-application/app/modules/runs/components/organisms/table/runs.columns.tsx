@@ -7,6 +7,8 @@ import { Button } from '@/shared/components/ui/atoms/button';
 import { ArrowUpDown, Trash2 } from 'lucide-react';
 import { PROCEDURE_STYLES } from '@/shared/components/styles/procedures-styling';
 import { PROCEDURE_LABELS } from '@/shared/domain/procedures.type';
+import { ElapsedCell } from '@/shared/components/atoms';
+import type { TaskRun } from '@/modules/tasks/domain/task-run.type';
 
 export const RunsRunningColumns: ColumnDef<RunResult>[] = [
   { accessorKey: 'id', header: 'Run id' },
@@ -101,6 +103,11 @@ export const getBaseRunColumns = (onDelete: (id: number) => void): ColumnDef<Run
         </Button>
       );
     },
+  },
+  {
+    id: 'elapsed',
+    header: 'Elapsed',
+    cell: ({ row }) => <ElapsedCell row={row.original as unknown as TaskRun} />,
   },
   {
     accessorKey: 'result_summary.procedure',

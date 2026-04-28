@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/shared/components/ui/molecules/card';
 import { Step1TaskSetup, Step2LogicBuilder, Step3Quantifiers } from './wizard/';
 import { type CreateTaskFormValues, createTaskSchema } from '@/modules/tasks/utils/task-validation';
 import {
+  useCreateAndExecuteRunMutation,
   useCreateTaskAndRunMutation,
   useCreateTaskMutation,
   useUpdateTaskMutation,
@@ -50,9 +51,10 @@ export default function CreateTaskWizard({
 
   const taskId = existingTask?.id;
 
-  const { mutate: updateTask, isPending: isUpdating } = useUpdateTaskMutation();
+  const { mutate: updateTask, isPending: isUpdatingTask } = useUpdateTaskMutation();
   const { mutate: createTaskAndRun, isPending } = useCreateTaskAndRunMutation();
   const { mutate: createTask, isPending: isCreating } = useCreateTaskMutation();
+  const { mutate: createAndExecuteRun } = useCreateAndExecuteRunMutation();
 
   const [searchParams] = useSearchParams();
   const datasetFromUrl = searchParams.get('dataset');
@@ -143,10 +145,19 @@ export default function CreateTaskWizard({
   const prevStep = () => validateAndMove(step - 1);
 
   const onSubmit = (data: CreateTaskFormValues) => {
-    // TODO - will not work with the update now
-    console.log('Submitting form with data:', data);
     if (taskId) {
-      updateTask({ taskId, data });
+      if (intent === 'run') {
+        updateTask(
+          { taskId, data },
+          {
+            onSuccess: () => {
+              createAndExecuteRun(taskId);
+            },
+          },
+        );
+      } else {
+        updateTask({ taskId, data });
+      }
       return;
     }
     if (intent === 'run') {
@@ -253,7 +264,7 @@ export default function CreateTaskWizard({
                     className="w-48 bg-green-600 hover:bg-green-700"
                     onClick={() => setIntent('run')}
                   >
-                    {isPending ? 'Starting Mining...' : 'Run Task'}
+                    {isPending || isUpdatingTask ? 'Starting Mining...' : 'Run Task'}
                   </Button>
                   <Button type="submit" onClick={() => setIntent('save')} className="w-32">
                     Save Task
