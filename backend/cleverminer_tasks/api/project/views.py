@@ -52,7 +52,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return qs.none()
 
     def get_permissions(self):
-        if self.action in ("add_member", "remove_member", "update_member_role"):
+        if self.action in ("add_member", "update_member_role"):
             return [permissions.IsAuthenticated(), IsUserProjectAdmin()]
 
         if self.action in (
@@ -61,6 +61,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             "project_datasets",
             "project_members",
             "summary",
+            "remove_member",
         ):
             return [permissions.IsAuthenticated(), IsUserProjectMember()]
 
