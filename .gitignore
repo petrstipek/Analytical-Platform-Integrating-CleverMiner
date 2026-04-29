@@ -62,3 +62,7 @@ frontend/.next/ # If you were using Next.js
 .ipynb_checkpoints
 
 backend/accidents.txt
+
+*.png
+*.csv
+*.parquet
