@@ -4,26 +4,37 @@ import { Avatar, AvatarFallback } from '@/shared/components/ui/atoms/avatar';
 import type { ProjectMember } from '@/modules/projects/domain/member.type';
 import { X } from 'lucide-react';
 import { useMe } from '@/modules/auth/api/queries/auth.queries';
-import { ProjectRole } from '@/modules/projects/domain/project.type';
+import { useNavigate } from 'react-router';
 
 type ProjectMembersProps = {
   projectMembers: ProjectMember[];
   onRemoveMember: (memberId: number) => void;
+  isAdmin: boolean;
 };
 
-export default function ProjectMembers({ projectMembers, onRemoveMember }: ProjectMembersProps) {
+export default function ProjectMembers({
+  projectMembers,
+  onRemoveMember,
+  isAdmin,
+}: ProjectMembersProps) {
   const { data: me } = useMe();
-
-  const myRole = projectMembers.find((m) => m.user_id === me?.id)?.role;
-  const isAdmin = myRole === ProjectRole.admin;
+  const navigate = useNavigate();
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-base font-semibold">Team Members</CardTitle>
-        <Button variant="ghost" size="sm" className="text-primary h-auto p-0 hover:bg-transparent">
-          + Add
-        </Button>
+        {!isAdmin && (
+          <Button
+            variant={'destructive'}
+            onClick={() => {
+              onRemoveMember(me?.id!);
+              navigate('/projects');
+            }}
+          >
+            Leave Project
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         {projectMembers.map((member: ProjectMember) => (

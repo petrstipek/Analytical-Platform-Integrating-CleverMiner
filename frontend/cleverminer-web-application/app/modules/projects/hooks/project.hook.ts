@@ -35,12 +35,12 @@ export const useProject = (projectId?: string) => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project-members'] });
-      toast.success('Member removed successfully!');
+      toast.success('Action performed successfully!');
     },
 
     onError: (error: any) => {
       const data = error?.response?.data;
-      toast.error(data?.detail || 'Failed to remove member');
+      toast.error(data?.detail || 'Action Failed!');
     },
   });
 

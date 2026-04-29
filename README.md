@@ -31,6 +31,8 @@ CleverMiner Analytical Platform provides an end-to-end workflow for data mining:
 ## Quick Start (End Users)
 
 No source code needed — just Docker.
+This setup will create both backend and frontend on your local machine.
+Backend is available on localhost:8000 and frontend on localhost:3000.
 
 **1. Download the compose file:**
 ```bash
