@@ -17,6 +17,7 @@ import { getDatasetBaseColumns } from '@/modules/datasets/components/organisms/t
 import type { Dataset } from '@/modules/datasets/api/types/datasetBase.type';
 import { PlatformCard } from '@/shared/components/molecules';
 import { handleRunClick } from '@/modules/runs/utils/handleRowRunClick';
+import { useMe } from '@/modules/auth/api/queries/auth.queries';
 
 type ProjectOverviewTabProps = {
   members: ProjectMember[];
@@ -36,6 +37,11 @@ export default function ProjectOverviewTab({
   datasets,
 }: ProjectOverviewTabProps) {
   const navigate = useNavigate();
+  const { data: me } = useMe();
+
+  const myRole = members.find((m) => m.user_id === me?.id)?.role;
+  const isAdmin = myRole === ProjectRole.admin;
+
   const methods = useForm<AddProjectMemberFormValues>({
     resolver: zodResolver(addProjectMemberSchema),
     mode: 'onChange',
@@ -87,12 +93,18 @@ export default function ProjectOverviewTab({
       </PlatformCard>
       <PlatformCard cardTitle={'Team Overview'}>
         <div className={'space-y-4'}>
-          <FormProvider {...methods}>
-            <form onSubmit={submit} className="space-y-4">
-              <AddProjectMember />
-            </form>
-          </FormProvider>
-          <ProjectMembers projectMembers={members} onRemoveMember={onRemoveMember} />
+          {isAdmin && (
+            <FormProvider {...methods}>
+              <form onSubmit={submit} className="space-y-4">
+                <AddProjectMember />
+              </form>
+            </FormProvider>
+          )}
+          <ProjectMembers
+            projectMembers={members}
+            onRemoveMember={onRemoveMember}
+            isAdmin={isAdmin}
+          />
         </div>
       </PlatformCard>
     </div>

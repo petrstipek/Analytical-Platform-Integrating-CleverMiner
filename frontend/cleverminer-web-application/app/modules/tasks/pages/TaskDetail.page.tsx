@@ -57,7 +57,7 @@ export default function TaskDetailPage() {
     onError: (error: any) => toast.error('Delete failed:', error.message),
     onSuccess: () => {
       toast.success('Run deleted successfully');
-      queryClient.invalidateQueries({ queryKey: ['runs'] });
+      queryClient.invalidateQueries({ queryKey: ['tasksRuns'] });
     },
   });
 
