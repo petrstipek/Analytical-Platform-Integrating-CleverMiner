@@ -31,11 +31,16 @@ CleverMiner Analytical Platform provides an end-to-end workflow for data mining:
 
 There is a publicly available documentation at [Analytical Platform Documentation](https://cleverminer-docs.stipekdevs.cz/docs/platform-introduction).
 
+---
+
 ## Quick Start (End Users)
 
 No source code needed — just Docker.
 This setup will create both backend and frontend on your local machine.
 Backend is available on localhost:8000 and frontend on localhost:3000.
+
+### Prerequisites
+- [Docker Desktop](https://docs.docker.com/get-docker/) installed and running (Windows, Mac, or Linux)
 
 **1. Download the compose file:**
 ```bash
@@ -50,9 +55,6 @@ docker compose -f docker-compose.hub.yml up -d
 ```
 
 **3. Open http://localhost:3000 register and login.**
-
-### Prerequisites
-- [Docker Desktop](https://docs.docker.com/get-docker/) installed and running (Windows, Mac, or Linux)
 
 ### Common commands
 ```bash
@@ -136,4 +138,61 @@ docker compose down
 
 # Stop and remove all data (fresh start)
 docker compose down -v
+```
+
+---
+
+## Resource Configuration
+
+The default Docker deployment (`docker-compose.hub.yml` and `docker-compose.yml`) is configured for machines with at least 8GB of RAM:
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| Celery concurrency | `2` | Max simultaneous mining/transformation tasks |
+| Max tasks per child | `5` | Worker process is recycled after this many tasks |
+
+To adjust, update the `command` field of the `worker` service in `docker-compose.hub.yml`:
+
+```yaml
+worker:
+  command: uv run python -m celery -A config worker --loglevel=info --concurrency=2 --max-tasks-per-child=5
+```
+
+For machines with more resources, `--concurrency=4 --max-tasks-per-child=10` is a reasonable starting point.
+
+## Troubleshooting
+
+### Celery worker crashes with `signal 9 (SIGKILL)`
+
+**Symptom:** Tasks fail with `WorkerLostError: Worker exited prematurely: signal 9 (SIGKILL)` in worker logs.
+
+**Cause:** The Linux OOM (out-of-memory) killer is terminating the worker process. Mining and transformation tasks load entire datasets into memory via pandas/PyArrow, which can spike to several gigabytes. With the default Celery concurrency (equal to CPU count), multiple workers can spike simultaneously and exhaust available RAM.
+
+**Fix:** Limit worker concurrency in `docker-compose.hub.yml`:
+```yaml
+worker:
+  command: uv run python -m celery -A config worker --loglevel=info --concurrency=2 --max-tasks-per-child=5
+```
+
+- `--concurrency=2` — caps simultaneous tasks to 2, preventing multiple memory spikes at once
+- `--max-tasks-per-child=5` — recycles each worker process after 5 tasks, releasing retained memory back to the OS
+
+### Backend memory grows over time and never releases
+
+**Symptom:** `docker stats` shows backend memory climbing after processing datasets and never dropping, even when idle.
+
+**Cause:** Python's memory allocator retains freed memory arenas rather than returning them to the OS. This is expected behavior, not a leak — but it means each gunicorn worker permanently holds the peak memory it ever used.
+
+**Fix:** Add `--max-requests` to your gunicorn startup so workers recycle periodically:
+```bash
+gunicorn --workers 3 --max-requests 50 --max-requests-jitter 10 ...
+```
+
+Workers restart after 50 requests, releasing all retained memory.
+
+### Checking memory usage
+
+To monitor container memory in real time:
+```bash
+docker stats
 ```
