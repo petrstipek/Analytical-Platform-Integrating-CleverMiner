@@ -179,9 +179,10 @@ For machines with more resources, `--concurrency=4 --max-tasks-per-child=10` is 
 worker:
   command: uv run python -m celery -A config worker --loglevel=info --concurrency=2 --max-tasks-per-child=5
 ```
-
 - `--concurrency=2` — caps simultaneous tasks to 2, preventing multiple memory spikes at once
 - `--max-tasks-per-child=5` — recycles each worker process after 5 tasks, releasing retained memory back to the OS
+
+Or restart the container, that should free up the used space.
 
 ### Backend memory grows over time and never releases
 
