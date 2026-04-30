@@ -26,7 +26,10 @@ CleverMiner Analytical Platform provides an end-to-end workflow for data mining:
 - **Frontend** — React, TypeScript, TanStack Query, TanStack Table, Recharts, Shadcn/Tailwind, Axios
 - **Storage** — local filesystem (development) or S3-compatible storage (production)
 - **Infrastructure** — Docker, PostgreSQL, Gunicorn
----
+
+## Documentation 
+
+There is a publicly available documentation at [Analytical Platform Documentation](https://cleverminer-docs.stipekdevs.cz/docs/platform-introduction).
 
 ## Quick Start (End Users)
 
