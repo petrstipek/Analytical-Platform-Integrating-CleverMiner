@@ -1,6 +1,6 @@
 # Analytical Platform Integrating CleverMiner
 
-A full-stack web application for exploratory data mining and rule discovery, built on top of the [CleverMiner](https://cleverminer.org) library. The platform lets analysts upload datasets, configure and run association rule mining tasks using multiple procedures, and explore the discovered rules interactively — without writing any code.
+A full-stack web application for exploratory data mining and rule discovery, built on top of the [CleverMiner](https://cleverminer.org) library. The platform lets analysts upload datasets, configure and run association rule mining tasks using multiple procedures, and explore the discovered rules interactively, without writing any code.
  
 ## What it does
  
@@ -15,10 +15,10 @@ CleverMiner Analytical Platform provides an end-to-end workflow for data mining:
  
 | Procedure | Description |
 |-----------|-------------|
-| **4ft Miner** | Classic association rule mining (Antecedent → Succedent) |
-| **SD4ft Miner** | Subgroup discovery — compares rule behaviour across two groups |
-| **CF Miner** | Conditional frequency — finds rules with interesting histogram patterns over an ordinal target |
-| **UIC Miner** | User-defined interestingness — rules scored against category weights |
+| **4ft-Miner** | Classic association rule mining (Antecedent → Succedent) |
+| **SD4ft-Miner** | Subgroup discovery — compares rule behaviour across two groups |
+| **CF-Miner** | Conditional frequency — finds rules with interesting histogram patterns over an ordinal target |
+| **UIC-Miner** | User-defined interestingness — rules scored against category weights |
  
 ## Technology stack
  
@@ -139,6 +139,8 @@ docker compose down
 # Stop and remove all data (fresh start)
 docker compose down -v
 ```
+
+More information can be found in the Platform Documentation at [Platform Setup](https://cleverminer-docs.stipekdevs.cz/docs/category/installation-and-deployment)
 
 ---
 
