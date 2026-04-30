@@ -5,6 +5,7 @@ sidebar_position: 3
 # Installation for End Users
 
 This is the simplest way to get the platform running. No source code download or build step is required — pre-built images are pulled directly from Docker Hub.
+This path will create all the services on the local machine. Backend will be available at localhost:8000 and frontend at localhost:3000
 
 ## Prerequisites
 
