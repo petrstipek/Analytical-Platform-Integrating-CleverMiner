@@ -355,7 +355,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
         return Response({"dataset_id": dataset.id, "children": data})
 
     @action(
-        detail=True, methods=["get"], url_path="columns/(?P<column_name>[^/.]+)/values"
+        detail=True, methods=["get"], url_path="columns/(?P<column_name>[^/]+)/values"
     )
     def column_values(self, request, pk=None, column_name=None):
         dataset = self.get_object()
@@ -385,7 +385,7 @@ class DatasetViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["patch"],
-        url_path="columns/(?P<column_name>[^/.]+)/visible",
+        url_path="columns/(?P<column_name>[^/]+)/visible",
         parser_classes=[JSONParser],
     )
     def set_column_visible(self, request, pk=None, column_name=None):
