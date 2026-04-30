@@ -168,7 +168,7 @@ For machines with more resources, `--concurrency=4 --max-tasks-per-child=10` is 
 
 **Symptom:** Tasks fail with `WorkerLostError: Worker exited prematurely: signal 9 (SIGKILL)` in worker logs.
 
-**Cause:** The Linux OOM (out-of-memory) killer is terminating the worker process. Mining and transformation tasks load entire datasets into memory via pandas/PyArrow, which can spike to several gigabytes. With the default Celery concurrency (equal to CPU count), multiple workers can spike simultaneously and exhaust available RAM.
+**Cause:** The Linux OOM (out-of-memory) killer is terminating the worker process. Mining and transformation tasks can load entire datasets into memory via pandas/PyArrow, which can spike to several gigabytes. With the default Celery concurrency (equal to CPU count), multiple workers can spike simultaneously and exhaust available RAM.
 
 **Fix:** Limit worker concurrency in `docker-compose.hub.yml`:
 ```yaml
