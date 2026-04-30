@@ -41,6 +41,8 @@ Backend is available on localhost:8000 and frontend on localhost:3000.
 
 ### Prerequisites
 - [Docker Desktop](https://docs.docker.com/get-docker/) installed and running (Windows, Mac, or Linux)
+- It is recommended to set up Docker with at least 8GB of available RAM memory, 12GB should be the most optimal.
+- The reason is that during heavy computations, workers can load the entire dataset into memory, which can cause memory exhaustion and a subsequent SIGKILL from the OS, resulting in task failure. For more information, see the Resource Configuration and Troubleshooting sections.
 
 **1. Download the compose file:**
 ```bash
@@ -78,6 +80,8 @@ Run the full application locally from source using Docker Compose.
 
 ### Prerequisites
 - [Docker](https://docs.docker.com/get-docker/) and Docker Compose installed
+- It is recommended to set up Docker with at least 8GB of available RAM memory, 12GB should be the most optimal.
+- The reason is that during heavy computations, workers can load the entire dataset into memory, which can cause memory exhaustion and a subsequent SIGKILL from the OS, resulting in task failure. For more information, see the Resource Configuration and Troubleshooting sections.
 - Repository cloned
 
 ### First-time setup
